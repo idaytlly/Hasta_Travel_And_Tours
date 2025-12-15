@@ -10,38 +10,32 @@ use Illuminate\Support\Facades\Auth;
 
 class RegisteredUserController extends Controller
 {
-    // Show register page
+    // Show registration form
     public function create()
     {
         return view('auth.register');
     }
 
-    // Handle registration
+    // Handle registration form submission
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|confirmed|min:6',
-            'role' => 'nullable|string' // optional, default is customer
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
+        // Create user with hashed password
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role ?? 'customer',
+            'usertype' => 'user', // default regular user
         ]);
 
+        // Auto-login after registration
         Auth::login($user);
 
-        // Redirect based on role
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.home');
-        } elseif ($user->role === 'staff') {
-            return redirect()->route('staff.dashboard');
-        } else {
-            return redirect()->route('home');
-        }
+        return redirect()->route('dashboard');
     }
 }
