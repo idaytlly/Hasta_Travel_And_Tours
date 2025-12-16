@@ -8,13 +8,17 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedSessionController extends Controller
 {
-    // Show login page
+    /**
+     * Show the login page.
+     */
     public function create()
     {
         return view('auth.login');
     }
 
-    // Handle login submission
+    /**
+     * Handle login request.
+     */
     public function store(Request $request)
     {
         $credentials = $request->validate([
@@ -22,37 +26,34 @@ class AuthenticatedSessionController extends Controller
             'password' => ['required'],
         ]);
 
+        // Attempt to login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Redirect based on role or default dashboard
-            return $this->redirectUser(Auth::user());
+            // Redirect based on user role
+            $user = Auth::user();
+            return match($user->usertype) {
+                'admin' => redirect()->route('admin.home'),
+                'staff' => redirect()->route('staff.dashboard'),
+                default => redirect()->route('dashboard'),
+            };
         }
 
-        // Failed login
+        // If login fails
         return back()->withErrors([
             'email' => 'Invalid credentials.',
         ])->onlyInput('email');
     }
 
-    // Logout user
+    /**
+     * Logout the authenticated user.
+     */
     public function destroy(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('home');
-    }
-
-    // Redirect based on user type
-    private function redirectUser($user)
-    {
-        return match($user->usertype) {
-            'admin' => redirect()->route('admin.home'),
-            'staff' => redirect()->route('staff.dashboard'),
-            default => redirect()->route('dashboard'),
-        };
     }
 }
