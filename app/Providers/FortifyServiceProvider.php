@@ -35,6 +35,22 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
+        // **Redirect after login**
+        $this->app->instance(LoginResponse::class, new class implements \Laravel\Fortify\Contracts\LoginResponse {
+            public function toResponse($request)
+            {
+                return redirect()->intended('/dashboard'); // ke dashboard
+            }
+        });
+
+        // **Redirect after register**
+        $this->app->instance(RegisterResponse::class, new class implements \Laravel\Fortify\Contracts\RegisterResponse {
+            public function toResponse($request)
+            {
+                return redirect('/dashboard'); // ke dashboard
+            }
+        });
+
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 

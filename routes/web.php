@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CarController;
-use App\Http\Controllers\StaffController;
-use App\Http\Controllers\AdminController;
+//use App\Http\Controllers\StaffController;
+//use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
@@ -48,21 +48,22 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     | Staff Routes
     |--------------------------------------------------------------------------
-    */
+    
     Route::middleware('staff')->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', [StaffController::class, 'index'])->name('dashboard');
         Route::get('/cars', [CarController::class, 'staffIndex'])->name('cars');
         Route::get('/bookings', [StaffController::class, 'bookings'])->name('bookings');
-        // Add car management routes (create, edit, delete) here
+         Add car management routes (create, edit, delete) here
     });
 
-    /*
+    
     |--------------------------------------------------------------------------
     | Admin Routes
     |--------------------------------------------------------------------------
-    */
+    
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/home', [AdminController::class, 'index'])->name('home');
-        // Add admin management routes here
+         Add admin management routes here
     });
+    */
 
