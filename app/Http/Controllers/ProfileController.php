@@ -33,8 +33,8 @@ class ProfileController extends Controller
         // Update user with only validated data
         //$user->update($validated);
         $user->update($request->all());
-        return redirect()->route('dashboard')->with('success', 'Profile updated successfully.');
-    }
 
+        return redirect()->back()->with('success', 'Profile updated successfully!');
+    }
 }
 ?>

@@ -99,23 +99,24 @@
             </ul>
 
             <ul class="navbar-nav ms-auto">
-                @if (Route::has('login'))
-                    @auth
+            @if (Route::has('login'))
+                @auth
+                    <li class="nav-item">
+                        <a href="{{ route('profile.setting') }}" class="btn btn-warning me-2">Settings</a>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a href="{{ route('login') }}" class="btn btn-outline-light me-2">Log in</a>
+                    </li>
+                    @if (Route::has('register'))
                         <li class="nav-item">
-                            <a href="{{ route('dashboard') }}" class="btn btn-warning me-2">Dashboard</a>
+                            <a href="{{ route('register') }}" class="btn btn-secondary">Register</a>
                         </li>
-                    @else
-                        <li class="nav-item">
-                            <a href="{{ route('login') }}" class="btn btn-outline-light me-2">Log in</a>
-                        </li>
-                        @if (Route::has('register'))
-                            <li class="nav-item">
-                                <a href="{{ route('register') }}" class="btn btn-secondary">Register</a>
-                            </li>
-                        @endif
-                    @endauth
-                @endif
-            </ul>
+                    @endif
+                @endauth
+            @endif
+        </ul>
+
 
             <form class="d-flex ms-3">
                 <input class="form-control me-sm-2" type="search" placeholder="Search Cars">

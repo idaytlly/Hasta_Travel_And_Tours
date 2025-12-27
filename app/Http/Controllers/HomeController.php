@@ -28,6 +28,6 @@ class HomeController extends Controller
 
         $user = auth()->user()->refresh(); // reload latest info
         $bookings = $user->bookings()->with('car')->get();
-        return view('profile.dashboard', compact('bookings', 'user'));
+        return view('profile.setting', compact('bookings', 'user'));
     }
 }
