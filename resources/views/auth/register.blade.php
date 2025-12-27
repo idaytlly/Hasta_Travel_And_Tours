@@ -88,6 +88,17 @@
     </div>
 
     <div class="mb-3">
+    <label>Identification Card (MyKad)</label>
+    <input type="text" name="ic" class="form-control" maxlength="12" placeholder="e.g. 010203040506" required value="{{ old('ic') }}">
+    </div>
+
+    <div class="mb-3">
+    <label>Phone Number</label>
+    <input type="text" name="phone" class="form-control" placeholder="e.g. 01XXXXXXXX" required value="{{ old('phone') }}">
+    </div>
+
+
+    <div class="mb-3">
         <label>Password</label>
         <input type="password" name="password" class="form-control" required>
     </div>

@@ -81,6 +81,52 @@
                 @endif
             @endif
         </div>
+
+        <!-- Phone -->
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="phone" value="{{ __('Phone') }}" />
+            <x-input id="phone" type="text" class="mt-1 block w-full" wire:model="state.phone" required autocomplete="tel" />
+            <x-input-error for="phone" class="mt-2" />
+        </div>
+
+        <!-- IC (for customers only) -->
+        @if($this->user->usertype === 'customer' || $this->user->usertype === 'user')
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="ic" value="{{ __('IC Number') }}" />
+            <x-input id="ic" type="text" class="mt-1 block w-full" wire:model="state.ic" maxlength="12" required />
+            <x-input-error for="ic" class="mt-2" />
+        </div>
+
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="street" value="{{ __('Street') }}" />
+            <x-input id="street" type="text" class="mt-1 block w-full" wire:model="state.street" />
+            <x-input-error for="street" class="mt-2" />
+        </div>
+
+        <div class="col-span-6 sm:col-span-2">
+            <x-label for="city" value="{{ __('City') }}" />
+            <x-input id="city" type="text" class="mt-1 block w-full" wire:model="state.city" />
+            <x-input-error for="city" class="mt-2" />
+        </div>
+
+        <div class="col-span-6 sm:col-span-2">
+            <x-label for="state" value="{{ __('State') }}" />
+            <x-input id="state" type="text" class="mt-1 block w-full" wire:model="state.state" />
+            <x-input-error for="state" class="mt-2" />
+        </div>
+
+        <div class="col-span-6 sm:col-span-2">
+            <x-label for="postcode" value="{{ __('Postcode') }}" />
+            <x-input id="postcode" type="text" class="mt-1 block w-full" wire:model="state.postcode" />
+            <x-input-error for="postcode" class="mt-2" />
+        </div>
+
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="license_no" value="{{ __('Driver License Number') }}" />
+            <x-input id="license_no" type="text" class="mt-1 block w-full" wire:model="state.license_no" />
+            <x-input-error for="license_no" class="mt-2" />
+        </div>
+        @endif
     </x-slot>
 
     <x-slot name="actions">

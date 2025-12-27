@@ -11,6 +11,8 @@
     .footer { background-color: #000; color: white; text-align: center; padding: 10px 0; margin-top: 40px; }
     .navbar-logo { max-height: 60px; width: auto; }
     .card img { height: 200px; object-fit: cover; }
+    .profile-header { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: center; gap: 20px; }
+    .profile-header img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; }
   </style>
 </head>
 <body>
@@ -41,7 +43,28 @@
 </nav>
 
 <div class="container mt-4">
-  <h2>Welcome, {{ auth()->user()->name }}!</h2>
+
+<!-- Profile Header -->
+<div class="profile-header shadow-sm">
+    <img src="{{ $user->avatar ?? asset('default-avatar.png') }}" alt="Avatar">
+    <div>
+        <h4>{{ $user->name }}</h4>
+        <p class="mb-1">Email: {{ $user->email }}</p>
+        <p class="mb-1">Phone: {{ $user->phone ?? '-' }}</p>
+
+        @if($user->usertype === 'customer' || $user->usertype === 'user')
+            <p class="mb-1">IC: {{ $user->ic ?? '-' }}</p>
+            <p class="mb-1">
+                Address: {{ $user->street ?? '-' }}, {{ $user->city ?? '-' }}, {{ $user->state ?? '-' }}, {{ $user->postcode ?? '-' }}
+            </p>
+            <p class="mb-0">Driver License: {{ $user->license_no ?? '-' }}</p>
+        @endif
+    </div>
+    <div class="ms-auto">
+        <a href="{{ route('profile.edit') }}" class="btn btn-primary">Edit Profile</a>
+    </div>
+</div>
+
 
   <!-- Your Bookings -->
   <h3 class="mt-4 mb-3">Your Bookings</h3>

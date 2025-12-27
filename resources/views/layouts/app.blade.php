@@ -82,7 +82,7 @@
 
 <!-- PAGE CONTENT -->
 <main>
-    {{ $slot ?? $content }}
+    @yield('content')
 </main>
 
 <!-- FOOTER -->

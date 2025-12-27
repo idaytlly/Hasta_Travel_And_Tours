@@ -20,7 +20,14 @@ class HomeController extends Controller
     // Dashboard page
     public function dashboard()
     {
-        $bookings = auth()->user()->bookings()->with('car')->get();
-        return view('dashboard', compact('bookings'));
+       $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('login'); // redirect guests to login
+        }
+
+        $user = auth()->user()->refresh(); // reload latest info
+        $bookings = $user->bookings()->with('car')->get();
+        return view('profile.dashboard', compact('bookings', 'user'));
     }
 }
