@@ -46,7 +46,6 @@
 
 <!-- Profile Header -->
 <div class="profile-header shadow-sm">
-    <img src="{{ $user->avatar ?? asset('default-avatar.png') }}" alt="Avatar">
     <div>
         <h4>{{ $user->name }}</h4>
         <p class="mb-1">Email: {{ $user->email }}</p>
