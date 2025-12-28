@@ -30,6 +30,11 @@ Route::get('/payment', function () {
     return view('payment');
 });
 
+Route::post('/receipt', function () {
+    return view('receipt');
+});
+
+
 // Guest routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');

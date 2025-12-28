@@ -66,6 +66,8 @@
 
         <!-- Payment Card -->
         <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-12">
+            <form method="POST" action="/receipt" enctype="multipart/form-data">
+                @csrf
             <!-- Company Name -->
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">HASTA TRAVEL & TOURS SDN BHD</h2>
 
@@ -153,23 +155,33 @@
             <!-- File Upload -->
             <div class="flex justify-center items-center space-x-3 mb-8">
                 <label class="relative">
-                    <input type="file" id="fileInput" class="hidden" accept="image/*">
-                    <button onclick="document.getElementById('fileInput').click()" class="px-6 py-3 bg-gray-100 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-200 transition cursor-pointer">
+                    <input type="file" name="payment_proof" id="fileInput" class="hidden" accept="image/*" required>
+                    <button type="button"
+                        onclick="document.getElementById('fileInput').click()"
+                        class="px-6 py-3 bg-gray-100 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-200 transition cursor-pointer">
                         Choose File
                     </button>
                 </label>
-                <button onclick="document.getElementById('fileInput').click()" class="w-12 h-12 bg-gray-100 border-2 border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-200 transition">
+
+                <button type="button"
+                    onclick="document.getElementById('fileInput').click()"
+                    class="w-12 h-12 bg-gray-100 border-2 border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-200 transition">
                     <i class="fas fa-upload text-gray-700"></i>
                 </button>
             </div>
-            <p class="text-center text-sm text-gray-500 mb-8">No File Chosen</p>
+
+            <p id="fileName" class="text-center text-sm text-gray-500 mb-8">
+                No File Chosen
+            </p>
 
             <!-- Submit Button -->
-            <div class="flex justify-center">
-                <button class="px-16 py-4 bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold text-lg rounded-xl hover:from-red-600 hover:to-orange-600 transition shadow-lg">
+             <div class="flex justify-center">
+                <button type="submit"
+                    class="px-16 py-4 bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold text-lg rounded-xl hover:from-red-600 hover:to-orange-600 transition shadow-lg">
                     Submit
                 </button>
             </div>
+            </form>
         </div>
     </main>
 
