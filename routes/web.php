@@ -22,6 +22,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Public car listing
 Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 
+Route::get('/admin/dashboard', function () {
+    return view('admin.dashboard'); // dashboard.blade.php
+});
+
 // Guest routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
