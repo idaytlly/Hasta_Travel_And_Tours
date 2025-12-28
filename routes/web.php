@@ -26,6 +26,10 @@ Route::get('/admin/dashboard', function () {
     return view('admin.dashboard'); // dashboard.blade.php
 });
 
+Route::get('/payment', function () {
+    return view('payment');
+});
+
 // Guest routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
