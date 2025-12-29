@@ -27,20 +27,19 @@ class AuthenticatedSessionController extends Controller
             'password' => ['required'],
         ]);
 
-        // Attempt to login
         if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
+            $request->session()->regenerate();
 
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
 
-        // Log the user in and immediately check the 'usertype' column
-        return match($user->usertype) {
-            'admin' => redirect()->intended(route('admin.dashboard')), 
-            'staff' => redirect()->intended(route('staff.dashboard')),
-            default => redirect()->intended(route('dashboard')),
-        };
-    }
+            // Redirect based on user type
+            return match($user->usertype) {
+                'admin' => redirect()->intended(route('admin.dashboard')),
+                'staff' => redirect()->intended(route('staff.dashboard')),
+                default => redirect()->intended(route('profile.setting')), // regular users
+            };
+        }
 
         // If login fails
         return back()->withErrors([
@@ -57,7 +56,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Redirect to the login page or home page
         return redirect()->route('login');
     }
 }
