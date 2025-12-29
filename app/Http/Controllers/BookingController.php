@@ -155,4 +155,13 @@ class BookingController extends Controller
             
         return view('bookings.show', compact('booking'));
     }
+
+    public function staffIndex()
+{
+    $bookings = Booking::with('car', 'user')
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+
+    return view('staff.manage-bookings', compact('bookings'));
+}
 }

@@ -3,309 +3,413 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HASTA Booking Management</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Booking Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f9fafb;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 100px;
+            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            padding: 1rem 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-box {
+            background: white;
+            color: #dc2626;
+            font-weight: bold;
+            font-size: 0.875rem;
+            padding: 0.375rem;
+            border-radius: 0.375rem;
+            text-align: center;
+        }
+
+        .nav {
+            flex: 1;
+            padding: 0 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 0;
+            margin-bottom: 0.25rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .nav-item:hover {
+            background: rgba(248, 113, 113, 0.3);
+        }
+
+        .nav-item.active {
+            background: rgba(248, 113, 113, 0.5);
+        }
+
+        .nav-item i {
+            margin-bottom: 0.125rem;
+        }
+
+        .nav-item span {
+            font-size: 0.625rem;
+            text-align: center;
+            line-height: 1.1;
+            padding: 0 0.25rem;
+        }
+
+        .profile {
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: #60a5fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.125rem;
+        }
+
+        .profile span {
+            font-size: 0.625rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+            padding: 1rem 1.5rem;
+        }
+
+        .search-container {
+            max-width: 28rem;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border-radius: 9999px;
+            border: none;
+            outline: none;
+            font-size: 0.875rem;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(252, 165, 165, 0.5);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow: auto;
+        }
+
+        .content-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs-filter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .tab {
+            padding-bottom: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: #9ca3af;
+            transition: color 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab:hover {
+            color: #4b5563;
+        }
+
+        .tab.active {
+            color: #ef4444;
+            border-bottom-color: #ef4444;
+        }
+
+        .filter-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f97316;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #ea580c;
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody td {
+            padding: 1rem 1.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #9ca3af;
+            padding: 3rem !important;
+        }
+
+        /* Status badges */
+        .status-approved {
+            color: #22c55e;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            color: #f59e0b;
+            font-weight: 500;
+        }
+
+        .status-rejected {
+            color: #ef4444;
+            font-weight: 500;
+        }
+
+        .view-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .view-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
-    <div class="flex h-screen overflow-hidden">
+<body>
+    <div class="container">
         <!-- Sidebar -->
-        <aside class="w-32 bg-gradient-to-b from-red-500 to-red-600 flex flex-col items-center py-6">
-            <!-- Logo -->
-            <div class="bg-white px-3 py-1 rounded-md mb-4 flex-shrink-0">
-                <span class="text-red-500 font-bold text-sm">HASTA</span>
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-box">HASTA</div>
             </div>
-            
-            <!-- Navigation Icons -->
-            <nav class="flex flex-col space-y-3 w-full">
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-700 py-2 transition">
-                    <i class="fas fa-home text-xl mb-1"></i>
-                    <span class="text-xs">Home</span>
-                </a>
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-700 py-2 transition">
-                    <i class="fas fa-bell text-xl mb-1"></i>
-                    <span class="text-xs">Notifications</span>
-                </a>
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-700 py-2 transition">
-                    <i class="fas fa-th text-xl mb-1"></i>
-                    <span class="text-xs">Dashboard</span>
-                </a>
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-700 py-2 transition">
-                    <i class="fas fa-car text-xl mb-1"></i>
-                    <span class="text-xs text-center leading-tight">Vehicle<br>Management</span>
-                </a>
-                <a href="#" class="flex flex-col items-center bg-red-700 text-white py-2">
-                    <i class="fas fa-file-alt text-xl mb-1"></i>
-                    <span class="text-xs text-center leading-tight">Booking<br>Management</span>
-                </a>
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-700 py-2 transition">
-                    <i class="fas fa-clock text-xl mb-1"></i>
-                    <span class="text-xs">History</span>
-                </a>
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-700 py-2 transition">
-                    <i class="fas fa-user text-xl mb-1"></i>
-                    <span class="text-xs">Profile</span>
-                </a>
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-700 py-2 transition">
-                    <i class="fas fa-cog text-xl mb-1"></i>
-                    <span class="text-xs">Settings</span>
-                </a>
+
+            <nav class="nav">
+                <div class="nav-item">
+                    <i class="fas fa-home" style="font-size: 1.125rem;"></i>
+                    <span>Home</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-bell" style="font-size: 1.125rem;"></i>
+                    <span>Notifications</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-th-large" style="font-size: 1.125rem;"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-car" style="font-size: 1.125rem;"></i>
+                    <span>Vehicle Management</span>
+                </div>
+                <div class="nav-item active">
+                    <i class="fas fa-file-alt" style="font-size: 1.125rem;"></i>
+                    <span>Booking Management</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-clock" style="font-size: 1.125rem;"></i>
+                    <span>History</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-cog" style="font-size: 1.125rem;"></i>
+                    <span>Settings</span>
+                </div>
             </nav>
-        </aside>
+
+            <div class="profile">
+                <div class="profile-avatar">
+                    <i class="fas fa-user" style="font-size: 1.25rem;"></i>
+                </div>
+                <span>Profile</span>
+            </div>
+        </div>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header with Search -->
-            <header class="bg-gradient-to-r from-red-500 to-red-600 px-8 py-4">
-                <div class="max-w-md">
-                    <div class="relative">
-                        <input type="text" placeholder="Search" class="w-full bg-white rounded-full py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-red-300">
-                        <i class="fas fa-search absolute left-4 top-4 text-gray-400"></i>
-                    </div>
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search">
                 </div>
-            </header>
+            </div>
 
-            <!-- Content Area -->
-            <main class="flex-1 overflow-y-auto bg-gray-50 p-8">
-                <!-- Title -->
-                <h1 class="text-3xl font-bold text-gray-800 mb-6">Booking Management</h1>
+            <!-- Content -->
+            <div class="content">
+                <div class="content-inner">
+                    <h1>Booking Management</h1>
 
-                <!-- Tabs and Filter -->
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex space-x-8">
-                        <button class="text-red-500 font-semibold border-b-2 border-red-500 pb-2">
-                            All Order
-                        </button>
-                        <button class="text-gray-400 hover:text-gray-600 font-semibold pb-2 transition">
-                            Pending
-                        </button>
-                        <button class="text-gray-400 hover:text-gray-600 font-semibold pb-2 transition">
-                            Approved
-                        </button>
-                        <button class="text-gray-400 hover:text-gray-600 font-semibold pb-2 transition">
-                            Rejected
+                    <!-- Tabs and Filter -->
+                    <div class="tabs-filter">
+                        <div class="tabs">
+                            <button class="tab active" data-tab="all">All Order</button>
+                            <button class="tab" data-tab="pending">Pending</button>
+                            <button class="tab" data-tab="approved">Approved</button>
+                            <button class="tab" data-tab="rejected">Rejected</button>
+                        </div>
+
+                        <button class="filter-btn">
+                            <i class="fas fa-filter"></i>
+                            <span>Filter</span>
                         </button>
                     </div>
-                    <button class="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg transition flex items-center space-x-2">
-                        <i class="fas fa-filter"></i>
-                        <span>Filter</span>
-                    </button>
+
+                    <!-- Table -->
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Id </th>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Your Laravel data loop will go here -->
+                                <tr>
+                                    <td colspan="5" class="empty-state">
+                                        No bookings to display. Data will appear here when added.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
-                <!-- Table -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <table class="w-full">
-                        <thead class="bg-gray-50 border-b border-gray-200">
-                            <tr>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                                    <div class="flex items-center space-x-1">
-                                        <span>Id</span>
-                                        <i class="fas fa-chevron-down text-xs"></i>
-                                    </div>
-                                </th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Date</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Name</th>
-                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-                                <th class="px-6 py-4"></th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            <!-- ROW TEMPLATE -->
-                            <!-- Copy-paste siap semua row -->
-
-                            <!-- C001 -->
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">C001</td>
-                                <td class="px-6 py-4">14-03-2025</td>
-                                <td class="px-6 py-4">Ali Bin Abu</td>
-                                <td class="px-6 py-4 text-green-500 font-semibold">Approved</td>
-                                <td class="px-6 py-4 relative">
-                                    <div class="flex items-center gap-2">
-                                        <a href="#" class="text-blue-500">View</a>
-                                        <div class="relative">
-                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
-                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- C002 -->
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">C002</td>
-                                <td class="px-6 py-4">20-03-2025</td>
-                                <td class="px-6 py-4">Clarence Wilson</td>
-                                <td class="px-6 py-4 text-green-500 font-semibold">Approved</td>
-                                <td class="px-6 py-4 relative">
-                                    <div class="flex items-center gap-2">
-                                        <a href="#" class="text-blue-500">View</a>
-                                        <div class="relative">
-                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
-                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- C003 -->
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">C003</td>
-                                <td class="px-6 py-4">24-06-2025</td>
-                                <td class="px-6 py-4">Alex Rose</td>
-                                <td class="px-6 py-4 text-red-500 font-semibold">Rejected</td>
-                                <td class="px-6 py-4 relative">
-                                    <div class="flex items-center gap-2">
-                                        <a href="#" class="text-blue-500">View</a>
-                                        <div class="relative">
-                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
-                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- C004 -->
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">C004</td>
-                                <td class="px-6 py-4">20-07-2025</td>
-                                <td class="px-6 py-4">Yang Jungwon</td>
-                                <td class="px-6 py-4 text-green-500 font-semibold">Approved</td>
-                                <td class="px-6 py-4 relative">
-                                    <div class="flex items-center gap-2">
-                                        <a href="#" class="text-blue-500">View</a>
-                                        <div class="relative">
-                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
-                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- C005 -->
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">C005</td>
-                                <td class="px-6 py-4">25-08-2025</td>
-                                <td class="px-6 py-4">Iman Nadhirah</td>
-                                <td class="px-6 py-4 text-yellow-500 font-semibold">Pending</td>
-                                <td class="px-6 py-4 relative">
-                                    <div class="flex items-center gap-2">
-                                        <a href="#" class="text-blue-500">View</a>
-                                        <div class="relative">
-                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
-                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- C006 -->
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">C006</td>
-                                <td class="px-6 py-4">01-09-2025</td>
-                                <td class="px-6 py-4">Muhammad Omar</td>
-                                <td class="px-6 py-4 text-yellow-500 font-semibold">Pending</td>
-                                <td class="px-6 py-4 relative">
-                                    <div class="flex items-center gap-2">
-                                        <a href="#" class="text-blue-500">View</a>
-                                        <div class="relative">
-                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
-                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- C007 -->
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">C007</td>
-                                <td class="px-6 py-4">03-09-2025</td>
-                                <td class="px-6 py-4">Lee Heeseung</td>
-                                <td class="px-6 py-4 text-yellow-500 font-semibold">Pending</td>
-                                <td class="px-6 py-4 relative">
-                                    <div class="flex items-center gap-2">
-                                        <a href="#" class="text-blue-500">View</a>
-                                        <div class="relative">
-                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
-                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- C008 -->
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">C008</td>
-                                <td class="px-6 py-4">24-09-2025</td>
-                                <td class="px-6 py-4">Jennifer Anniston</td>
-                                <td class="px-6 py-4 text-yellow-500 font-semibold">Pending</td>
-                                <td class="px-6 py-4 relative">
-                                    <div class="flex items-center gap-2">
-                                        <a href="#" class="text-blue-500">View</a>
-                                        <div class="relative">
-                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
-                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- C009 -->
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4">C009</td>
-                                <td class="px-6 py-4">25-10-2025</td>
-                                <td class="px-6 py-4">Ben Thomas</td>
-                                <td class="px-6 py-4 text-red-500 font-semibold">Rejected</td>
-                                <td class="px-6 py-4 relative">
-                                    <div class="flex items-center gap-2">
-                                        <a href="#" class="text-blue-500">View</a>
-                                        <div class="relative">
-                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
-                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
-                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </main>
+            </div>
         </div>
     </div>
+
     <script>
-    function toggleDropdown(btn) {
-        const menu = btn.nextElementSibling;
-        document.querySelectorAll('td .absolute').forEach(m => {
-            if (m !== menu) m.classList.add('hidden');
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // You can add AJAX call here to filter data based on tab
+                const tabType = this.dataset.tab;
+                console.log('Tab clicked:', tabType);
+            });
         });
-        menu.classList.toggle('hidden');
-    }
+
+        // Filter button functionality
+        document.querySelector('.filter-btn').addEventListener('click', function() {
+            console.log('Filter clicked');
+            // Add your filter modal/dropdown logic here
+        });
+
+        // Navigation items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (!this.classList.contains('active')) {
+                    console.log('Navigate to:', this.querySelector('span').textContent);
+                }
+            });
+        });
     </script>
 </body>
 </html>
