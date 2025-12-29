@@ -4,7 +4,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void
+    public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
         if (!Schema::hasColumn('users', 'ic')) {
@@ -15,13 +15,6 @@ return new class extends Migration {
         }
     // ...repeat for other fields
     });
-    }
-
-    public function down(): void
-    {
-        Schema::table('cars', function (Blueprint $table) {
-            $table->dropColumn('deleted_at');
-        });
     }
 }
 ?>
