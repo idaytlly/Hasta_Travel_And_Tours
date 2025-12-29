@@ -13,20 +13,14 @@ use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
-    /**
-     * Show booking form
-     */
     public function create($carId): View
     {
         $car = Car::findOrFail($carId);
-        $vouchers = Voucher::active()->get();
+        $vouchers = Voucher::all(); 
         
         return view('bookings.create', compact('car', 'vouchers'));
     }
 
-    /**
-     * Store booking
-     */
     public function store(BookingRequest $request)
     {
         try {
@@ -34,56 +28,64 @@ class BookingController extends Controller
 
             $car = Car::findOrFail($request->car_id);
 
-            // Check availability
-            if (!$car->isAvailableForDates($request->pickup_date, $request->return_date)) {
-                return back()->with('error', 'Car is not available for selected dates')->withInput();
+            // 1. Format dates for SQL (Fixes the "Unknown column" issue in the check)
+            $pickupDateStr = Carbon::parse($request->pickup_date)->toDateString();
+            $returnDateStr = Carbon::parse($request->return_date)->toDateString();
+
+            // 2. Check availability using actual DB column names via the Model scope
+            if (!$car->isAvailableForDates($pickupDateStr, $returnDateStr)) {
+                return back()->with('error', 'Sorry, this car is already booked for the selected dates.')->withInput();
             }
 
-            $pickupDate = Carbon::parse($request->pickup_date);
-            $returnDate = Carbon::parse($request->return_date);
-            $duration = max(1, $pickupDate->diffInDays($returnDate));
+            // 3. Calculate Duration (Ensures at least 1 day for same-day rental)
+            $pickup = Carbon::parse($request->pickup_date);
+            $return = Carbon::parse($request->return_date);
+            $duration = $pickup->diffInDays($return);
+            if ($duration < 1) $duration = 1; 
 
-            $basePrice = $car->calculatePrice($duration);
+            // 4. Calculate Pricing
+            $basePrice = $car->daily_rate * $duration;
             $discountAmount = 0;
             $totalPrice = $basePrice;
 
-            if ($request->voucher) {
+            // 5. Voucher Logic
+            if ($request->filled('voucher')) {
                 $voucher = Voucher::where('code', $request->voucher)->first();
-                if ($voucher && $voucher->isValid()) {
+                if ($voucher && method_exists($voucher, 'isValid') && $voucher->isValid()) {
                     $discountAmount = $voucher->calculateDiscount($basePrice);
                     $totalPrice = $basePrice - $discountAmount;
                     $voucher->incrementUsage();
                 }
             }
 
+            // Deposit is usually 10% in Malaysia rentals
             $depositAmount = round($totalPrice * 0.1, 2);
 
+            // 6. Create Booking
             $booking = Booking::create([
-                'car_id' => $car->id,
-                'user_id' => auth()->id(),
+                'car_id'            => $car->id,
+                'user_id'           => auth()->id(),
                 'booking_reference' => Booking::generateBookingReference(),
-                'customer_name' => $request->customer_name ?? auth()->user()->name,
-                'customer_email' => $request->customer_email ?? auth()->user()->email,
-                'customer_phone' => $request->customer_ic?? auth()->user()->ic,
-                'customer_phone' => $request->customer_phone?? auth()->user()->phone,
-                'pickup_location' => $request->pickup_location,
-                'dropoff_location' => $request->dropoff_location,
-                'destination' => $request->destination,
-                'pickup_date' => $request->pickup_date,
-                'pickup_time' => $request->pickup_time,
-                'return_date' => $request->return_date,
-                'return_time' => $request->return_time,
-                'duration' => $duration,
-                'voucher' => $request->voucher,
-                'base_price' => $basePrice,
-                'discount_amount' => $discountAmount,
-                'total_price' => $totalPrice,
-                'deposit_amount' => $depositAmount,
-                'remarks' => $request->remarks,
-                'status' => 'pending',
-                'payment_status' => 'unpaid',
-                'customer_ic' => auth()->user()->ic, 
-                'customer_phone' => auth()->user()->phone,
+                'customer_name'     => $request->customer_name ?? auth()->user()->name,
+                'customer_email'    => $request->customer_email ?? auth()->user()->email,
+                'customer_ic'       => $request->customer_ic ?? auth()->user()->ic,
+                'customer_phone'    => $request->customer_phone ?? auth()->user()->phone,
+                'pickup_location'   => $request->pickup_location,
+                'dropoff_location'  => $request->dropoff_location,
+                'destination'       => $request->destination,
+                'pickup_date'       => $pickupDateStr,
+                'pickup_time'       => $request->pickup_time,
+                'return_date'       => $returnDateStr,
+                'return_time'       => $request->return_time,
+                'duration'          => $duration,
+                'voucher'           => $request->voucher,
+                'base_price'        => $basePrice,
+                'discount_amount'   => $discountAmount,
+                'total_price'       => $totalPrice,
+                'deposit_amount'    => $depositAmount,
+                'remarks'           => $request->remarks,
+                'status'            => 'pending',
+                'payment_status'    => 'unpaid',
             ]);
 
             DB::commit();
@@ -93,27 +95,22 @@ class BookingController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to create booking: ' . $e->getMessage())->withInput();
+            // This will now catch the SQLSTATE errors and display them cleanly
+            return back()->with('error', 'Booking failed: ' . $e->getMessage())->withInput();
         }
     }
 
-    /**
-     * Show pending booking status
-     */
     public function pending($reference)
     {
         $booking = Booking::with('car')->where('booking_reference', $reference)->firstOrFail();
         
         if (auth()->id() !== $booking->user_id) {
-            abort(403, 'Unauthorized');
+            abort(403, 'Unauthorized access to this booking.');
         }
         
         return view('bookings.pending', compact('booking'));
     }
 
-    /**
-     * Consolidated Booking list (Soft Delete aware)
-     */
     public function myBookings()
     {
         $activeBookings = Booking::with('car')
@@ -130,9 +127,6 @@ class BookingController extends Controller
         return view('bookings.my-bookings', compact('activeBookings', 'historyBookings'));
     }
 
-    /**
-     * Cancel/Soft Delete Booking
-     */
     public function cancel($reference)
     {
         $booking = Booking::where('booking_reference', $reference)
@@ -152,13 +146,8 @@ class BookingController extends Controller
         return view('bookings.confirmation', compact('booking'));
     }
 
-    /**
-     * Show detailed booking view (Matches your new design)
-     */
     public function show($reference): View
     {
-        // Eager load 'car' to display the image and model details correctly
-        // This also works for trashed items if you want to view cancelled booking details
         $booking = Booking::withTrashed()
             ->with('car')
             ->where('booking_reference', $reference)

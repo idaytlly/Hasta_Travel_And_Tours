@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 
 class Booking extends Model
@@ -12,31 +13,12 @@ class Booking extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'car_id',
-        'user_id',
-        'booking_reference',
-        'customer_name',
-        'customer_email',
-        'customer_ic',
-        'customer_phone',
-        'pickup_location',
-        'dropoff_location',
-        'destination',
-        'pickup_date',
-        'pickup_time',
-        'return_date',
-        'return_time',
-        'duration',
-        'voucher',
-        'base_price',
-        'discount_amount',
-        'total_price',
-        'deposit_amount',
-        'paid_amount',
-        'status',
-        'payment_status',
-        'remarks',
-        'cancellation_reason',
+        'car_id', 'user_id', 'booking_reference', 'customer_name', 
+        'customer_email', 'customer_ic', 'customer_phone', 'pickup_location', 
+        'dropoff_location', 'destination', 'pickup_date', 'pickup_time', 
+        'return_date', 'return_time', 'duration', 'voucher', 'base_price', 
+        'discount_amount', 'total_price', 'deposit_amount', 'paid_amount', 
+        'status', 'payment_status', 'remarks', 'cancellation_reason',
     ];
 
     protected $casts = [
@@ -49,7 +31,8 @@ class Booking extends Model
         'paid_amount' => 'decimal:2',
     ];
 
-    // Relationships
+    // --- RELATIONSHIPS ---
+
     public function car()
     {
         return $this->belongsTo(Car::class);
@@ -60,9 +43,10 @@ class Booking extends Model
         return $this->belongsTo(User::class);
     }
 
-    // --- FIXED ACCESSOR ---
+    // --- ACCESSORS ---
+
     /**
-     * Accessing address from the User table as requested
+     * Formatting the user address
      */
     public function getFullAddressAttribute()
     {
@@ -72,18 +56,44 @@ class Booking extends Model
         return 'No Address Provided';
     }
 
-    // Static Methods
+    // --- BUSINESS LOGIC ---
+
     public static function generateBookingReference(): string
     {
         return 'BK' . date('Ymd') . strtoupper(substr(uniqid(), -6));
     }
 
-    // Business Logic
+    /**
+     * Logic for date overlap check
+     */
+    /**
+ * Logic for date overlap check [Fixed column names]
+ */
+    public function scopeForCarInRange(Builder $query, $carId, $startDate, $endDate)
+    {
+        return $query->where('car_id', $carId)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->where(function ($q) use ($startDate, $endDate) {
+                // Changed start_date -> pickup_date and end_date -> return_date
+                $q->whereBetween('pickup_date', [$startDate, $endDate])
+                ->orWhereBetween('return_date', [$startDate, $endDate])
+                ->orWhere(function ($inner) use ($startDate, $endDate) {
+                    $inner->where('pickup_date', '<=', $startDate)
+                            ->where('return_date', '>=', $endDate);
+                });
+            });
+    }
+
     public function calculateDuration(): int
     {
+        // Parsing dates to Carbon for accurate Malaysian holiday/weekend calculation
         $pickup = Carbon::parse($this->pickup_date);
         $return = Carbon::parse($this->return_date);
-        return max(1, $pickup->diffInDays($return));
+        
+        $days = $pickup->diffInDays($return);
+        
+        // Return minimum 1 day even for short rentals
+        return $days < 1 ? 1 : (int) $days;
     }
 
     public function calculateDeposit(float $totalPrice): float
@@ -93,10 +103,11 @@ class Booking extends Model
 
     public function getRemainingBalance(): float
     {
-        return $this->total_price - $this->paid_amount;
+        return (float) $this->total_price - (float) $this->paid_amount;
     }
 
-    // Scopes
+    // --- SCOPES ---
+
     public function scopePending($query)
     {
         return $query->where('status', 'pending');

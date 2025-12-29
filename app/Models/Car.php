@@ -36,4 +36,30 @@ class Car extends Model
     {
         return $query->where('transmission', $transmission);
     }
+
+    // Add this inside class Car extends Model
+    public function isAvailableForDates($startDate, $endDate)
+    {
+        // Check if there are any bookings that overlap with the requested dates
+        return !$this->bookings()
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate])
+                    ->orWhere(function ($q) use ($startDate, $endDate) {
+                        $q->where('start_date', '<=', $startDate)
+                            ->where('end_date', '>=', $endDate);
+                    });
+            })
+            // Only count 'confirmed' or 'pending' bookings, ignore 'cancelled'
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->exists();
+    }
+
+        /**
+         * Define the relationship to Bookings
+         */
+        public function bookings()
+        {
+            return $this->hasMany(Booking::class);
+        }
 }
