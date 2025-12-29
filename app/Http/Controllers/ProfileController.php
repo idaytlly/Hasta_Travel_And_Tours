@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 class ProfileController extends Controller
 {
     public function edit(){
-    return view('setting', [
+    return view('profile.edit', [
         'user' => auth()->user(),
     ]);
     }
