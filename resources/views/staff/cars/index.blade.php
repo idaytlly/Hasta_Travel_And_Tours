@@ -144,7 +144,7 @@
                 <!-- Car Image -->
                 <div class="relative h-56 bg-gray-100">
                     @if($car->image)
-                        <img src="{{ asset('car_images/' . $car->image) }}" 
+                        <img src="{{ asset('storage/' . $car->image) }}"
                              alt="{{ $car->brand }} {{ $car->model }}" 
                              class="w-full h-full object-contain p-4">
                     @else

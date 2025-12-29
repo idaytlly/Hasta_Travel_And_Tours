@@ -83,7 +83,7 @@
         <div class="bg-white rounded-3xl shadow-lg p-8">
             <div class="bg-gray-50 rounded-2xl p-8 mb-6 flex items-center justify-center" style="min-height: 350px;">
                 @if($car->image)
-                    <img src="{{ asset('car_images/' . $car->image) }}" 
+                    <img src="{{ asset('storage/' . $car->image) }}" 
                          alt="{{ $car->brand }} {{ $car->model }}" 
                          class="max-w-full max-h-80 object-contain"
                          id="carImagePreview">
