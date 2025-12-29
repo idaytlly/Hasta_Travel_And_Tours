@@ -54,11 +54,19 @@ class CarController extends Controller
     }
 
     // Staff car management
-    public function staffIndex()
-    {
-        $cars = Car::all();
-        return view('staff.cars.index', compact('cars'));
+public function staffIndex(Request $request)
+{
+    $query = Car::query();
+
+    // Filter by carType if provided
+    if ($request->has('type') && $request->type != '') {
+        $query->where('carType', $request->type);
     }
+
+    $cars = $query->latest()->get();
+    
+    return view('staff.cars.index', compact('cars'));
+}
 
     public function create() 
     { 
