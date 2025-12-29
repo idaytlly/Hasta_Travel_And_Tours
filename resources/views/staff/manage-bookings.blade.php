@@ -110,120 +110,186 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
-                            <!-- Row 1 -->
+                            <!-- ROW TEMPLATE -->
+                            <!-- Copy-paste siap semua row -->
+
+                            <!-- C001 -->
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-800">C001</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">14-03-2025</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">Ali Bin Abu</td>
-                                <td class="px-6 py-4 text-sm">
-                                    <span class="text-green-500 font-semibold">Approved</span>
-                                </td>
-                                <td class="px-6 py-4 text-sm">
-                                    <a href="#" class="text-blue-500 hover:text-blue-600 font-medium">View</a>
+                                <td class="px-6 py-4">C001</td>
+                                <td class="px-6 py-4">14-03-2025</td>
+                                <td class="px-6 py-4">Ali Bin Abu</td>
+                                <td class="px-6 py-4 text-green-500 font-semibold">Approved</td>
+                                <td class="px-6 py-4 relative">
+                                    <div class="flex items-center gap-2">
+                                        <a href="#" class="text-blue-500">View</a>
+                                        <div class="relative">
+                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
+                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
-                            <!-- Row 2 -->
+                            <!-- C002 -->
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-800">C002</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">20-03-2025</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">Clarence Wilson</td>
-                                <td class="px-6 py-4 text-sm">
-                                    <span class="text-green-500 font-semibold">Approved</span>
-                                </td>
-                                <td class="px-6 py-4 text-sm">
-                                    <a href="#" class="text-blue-500 hover:text-blue-600 font-medium">View</a>
+                                <td class="px-6 py-4">C002</td>
+                                <td class="px-6 py-4">20-03-2025</td>
+                                <td class="px-6 py-4">Clarence Wilson</td>
+                                <td class="px-6 py-4 text-green-500 font-semibold">Approved</td>
+                                <td class="px-6 py-4 relative">
+                                    <div class="flex items-center gap-2">
+                                        <a href="#" class="text-blue-500">View</a>
+                                        <div class="relative">
+                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
+                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
-                            <!-- Row 3 -->
+                            <!-- C003 -->
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-800">C003</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">24-06-2025</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">Alex Rose</td>
-                                <td class="px-6 py-4 text-sm">
-                                    <span class="text-red-500 font-semibold">Rejected</span>
-                                </td>
-                                <td class="px-6 py-4 text-sm">
-                                    <a href="#" class="text-blue-500 hover:text-blue-600 font-medium">View</a>
+                                <td class="px-6 py-4">C003</td>
+                                <td class="px-6 py-4">24-06-2025</td>
+                                <td class="px-6 py-4">Alex Rose</td>
+                                <td class="px-6 py-4 text-red-500 font-semibold">Rejected</td>
+                                <td class="px-6 py-4 relative">
+                                    <div class="flex items-center gap-2">
+                                        <a href="#" class="text-blue-500">View</a>
+                                        <div class="relative">
+                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
+                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
-                            <!-- Row 4 -->
+                            <!-- C004 -->
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-800">C004</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">20-07-2025</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">Yang Jungwon</td>
-                                <td class="px-6 py-4 text-sm">
-                                    <span class="text-green-500 font-semibold">Approved</span>
-                                </td>
-                                <td class="px-6 py-4 text-sm">
-                                    <a href="#" class="text-blue-500 hover:text-blue-600 font-medium">View</a>
+                                <td class="px-6 py-4">C004</td>
+                                <td class="px-6 py-4">20-07-2025</td>
+                                <td class="px-6 py-4">Yang Jungwon</td>
+                                <td class="px-6 py-4 text-green-500 font-semibold">Approved</td>
+                                <td class="px-6 py-4 relative">
+                                    <div class="flex items-center gap-2">
+                                        <a href="#" class="text-blue-500">View</a>
+                                        <div class="relative">
+                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
+                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
-                            <!-- Row 5 -->
+                            <!-- C005 -->
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-800">C005</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">25-08-2025</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">Iman Nadhirah</td>
-                                <td class="px-6 py-4 text-sm">
-                                    <span class="text-yellow-500 font-semibold">Pending</span>
-                                </td>
-                                <td class="px-6 py-4 text-sm">
-                                    <a href="#" class="text-blue-500 hover:text-blue-600 font-medium">View</a>
+                                <td class="px-6 py-4">C005</td>
+                                <td class="px-6 py-4">25-08-2025</td>
+                                <td class="px-6 py-4">Iman Nadhirah</td>
+                                <td class="px-6 py-4 text-yellow-500 font-semibold">Pending</td>
+                                <td class="px-6 py-4 relative">
+                                    <div class="flex items-center gap-2">
+                                        <a href="#" class="text-blue-500">View</a>
+                                        <div class="relative">
+                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
+                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
-                            <!-- Row 6 -->
+                            <!-- C006 -->
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-800">C006</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">01-09-2025</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">Muhammad Omar</td>
-                                <td class="px-6 py-4 text-sm">
-                                    <span class="text-yellow-500 font-semibold">Pending</span>
-                                </td>
-                                <td class="px-6 py-4 text-sm">
-                                    <a href="#" class="text-blue-500 hover:text-blue-600 font-medium">View</a>
+                                <td class="px-6 py-4">C006</td>
+                                <td class="px-6 py-4">01-09-2025</td>
+                                <td class="px-6 py-4">Muhammad Omar</td>
+                                <td class="px-6 py-4 text-yellow-500 font-semibold">Pending</td>
+                                <td class="px-6 py-4 relative">
+                                    <div class="flex items-center gap-2">
+                                        <a href="#" class="text-blue-500">View</a>
+                                        <div class="relative">
+                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
+                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
-                            <!-- Row 7 -->
+                            <!-- C007 -->
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-800">C007</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">03-09-2025</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">Lee Heeseung</td>
-                                <td class="px-6 py-4 text-sm">
-                                    <span class="text-yellow-500 font-semibold">Pending</span>
-                                </td>
-                                <td class="px-6 py-4 text-sm">
-                                    <a href="#" class="text-blue-500 hover:text-blue-600 font-medium">View</a>
+                                <td class="px-6 py-4">C007</td>
+                                <td class="px-6 py-4">03-09-2025</td>
+                                <td class="px-6 py-4">Lee Heeseung</td>
+                                <td class="px-6 py-4 text-yellow-500 font-semibold">Pending</td>
+                                <td class="px-6 py-4 relative">
+                                    <div class="flex items-center gap-2">
+                                        <a href="#" class="text-blue-500">View</a>
+                                        <div class="relative">
+                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
+                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
-                            <!-- Row 8 -->
+                            <!-- C008 -->
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-800">C008</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">24-09-2025</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">Jennifer Anniston</td>
-                                <td class="px-6 py-4 text-sm">
-                                    <span class="text-yellow-500 font-semibold">Pending</span>
-                                </td>
-                                <td class="px-6 py-4 text-sm">
-                                    <a href="#" class="text-blue-500 hover:text-blue-600 font-medium">View</a>
+                                <td class="px-6 py-4">C008</td>
+                                <td class="px-6 py-4">24-09-2025</td>
+                                <td class="px-6 py-4">Jennifer Anniston</td>
+                                <td class="px-6 py-4 text-yellow-500 font-semibold">Pending</td>
+                                <td class="px-6 py-4 relative">
+                                    <div class="flex items-center gap-2">
+                                        <a href="#" class="text-blue-500">View</a>
+                                        <div class="relative">
+                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
+                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
-                            <!-- Row 9 -->
+                            <!-- C009 -->
                             <tr class="hover:bg-gray-50 transition">
-                                <td class="px-6 py-4 text-sm text-gray-800">C009</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">25-10-2025</td>
-                                <td class="px-6 py-4 text-sm text-gray-800">Ben Thomas</td>
-                                <td class="px-6 py-4 text-sm">
-                                    <span class="text-red-500 font-semibold">Rejected</span>
-                                </td>
-                                <td class="px-6 py-4 text-sm">
-                                    <a href="#" class="text-blue-500 hover:text-blue-600 font-medium">View</a>
+                                <td class="px-6 py-4">C009</td>
+                                <td class="px-6 py-4">25-10-2025</td>
+                                <td class="px-6 py-4">Ben Thomas</td>
+                                <td class="px-6 py-4 text-red-500 font-semibold">Rejected</td>
+                                <td class="px-6 py-4 relative">
+                                    <div class="flex items-center gap-2">
+                                        <a href="#" class="text-blue-500">View</a>
+                                        <div class="relative">
+                                            <button onclick="toggleDropdown(this)" class="font-bold px-2">:</button>
+                                            <div class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Update Status</a>
+                                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Request Reupload</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -232,5 +298,14 @@
             </main>
         </div>
     </div>
+    <script>
+    function toggleDropdown(btn) {
+        const menu = btn.nextElementSibling;
+        document.querySelectorAll('td .absolute').forEach(m => {
+            if (m !== menu) m.classList.add('hidden');
+        });
+        menu.classList.toggle('hidden');
+    }
+    </script>
 </body>
 </html>
