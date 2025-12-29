@@ -71,9 +71,9 @@
         <div class="collapse navbar-collapse" id="navbarMain">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item"><a class="nav-link nav-link-hasta" href="{{ route('home') }}">Home</a></li>
-                <li class="nav-item"><a class="nav-link nav-link-hasta" href="{{ route('cars.index') }}">Notifications</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-hasta" >Notifications</a></li>
                 <li class="nav-item"><a class="nav-link nav-link-hasta" href="#">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link nav-link-hasta" href="#">Vehicle Listing</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-hasta" href="{{ route('cars.index') }}">Vehicle Listing</a></li>
                 <li class="nav-item"><a class="nav-link nav-link-hasta active">Settings</a></li>
             </ul>
             <div class="d-flex align-items-center gap-3">
