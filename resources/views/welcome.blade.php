@@ -736,7 +736,7 @@
                         <i class="fas fa-user me-2"></i>Login
                     </a>
                 @else
-                    <a href="{{ route('settings') }}" class="btn btn-login">
+                    <a href="{{ route('profile.edit') }}" class="btn btn-login">
                         <i class="fas fa-user me-2"></i>Login
                     </a>
                 @endguest
