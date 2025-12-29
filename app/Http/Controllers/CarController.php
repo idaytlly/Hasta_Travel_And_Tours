@@ -50,6 +50,7 @@ class CarController extends Controller
     {
         $car = Car::findOrFail($id);
         return view('cars.show', compact('car'));
+        
     }
 
     // Staff car management

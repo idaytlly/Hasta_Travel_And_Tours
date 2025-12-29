@@ -22,6 +22,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Public car listing
 Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 
+Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
+
 Route::get('/admin/dashboard', function () {
     return view('admin.dashboard'); // dashboard.blade.php
 });
@@ -64,7 +66,28 @@ Route::middleware('auth')->group(function () {
     // Staff and Admin routes...
 });
 
-    /*
+// Staff routes - NO AUTHENTICATION (for testing)
+Route::prefix('staff')->name('staff.')->group(function () {
+    Route::get('/cars', [CarController::class, 'staffIndex'])->name('cars');
+    Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
+    Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
+    Route::get('/cars/{id}/edit', [CarController::class, 'edit'])->name('cars.edit');
+    Route::put('/cars/{id}', [CarController::class, 'update'])->name('cars.update');
+    Route::delete('/cars/{id}', [CarController::class, 'destroy'])->name('cars.destroy');
+});
+
+  /*
+// Staff Routes (add middleware for protection)
+Route::middleware(['auth'])->group(function() {
+    Route::get('/staff/cars', [CarController::class, 'staffIndex'])->name('staff.cars');
+    Route::get('/staff/cars/create', [CarController::class, 'create'])->name('staff.cars.create');
+    Route::post('/staff/cars', [CarController::class, 'store'])->name('staff.cars.store');
+    Route::get('/staff/cars/{id}/edit', [CarController::class, 'edit'])->name('staff.cars.edit');
+    Route::put('/staff/cars/{id}', [CarController::class, 'update'])->name('staff.cars.update');
+    Route::delete('/staff/cars/{id}', [CarController::class, 'destroy'])->name('staff.cars.destroy');
+});
+
+  
     |--------------------------------------------------------------------------
     | Staff Routes
     |--------------------------------------------------------------------------
