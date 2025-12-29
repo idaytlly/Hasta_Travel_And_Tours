@@ -40,13 +40,6 @@ class RegisteredUserController extends Controller
         // Auto-login after registration
         Auth::login($user);
 
-        // Redirect based on user type
-        if ($user->usertype === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->usertype === 'staff') {
-            return redirect()->route('staff.dashboard');
-        } else {
-            return redirect()->route('home'); // regular user
-        }
+        return redirect()->route('Home');
     }
 }

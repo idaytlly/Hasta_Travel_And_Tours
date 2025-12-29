@@ -125,7 +125,7 @@
                                  class="rounded-circle" width="45" height="45">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
