@@ -76,6 +76,10 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::delete('/cars/{id}', [CarController::class, 'destroy'])->name('cars.destroy');
 });
 
+Route::get('/staff/bookings', function () {
+    return view('staff.manage-bookings'); 
+});
+
   /*
 // Staff Routes (add middleware for protection)
 Route::middleware(['auth'])->group(function() {
