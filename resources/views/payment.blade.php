@@ -66,84 +66,27 @@
 
         <!-- Payment Card -->
         <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-12">
-            <form method="POST" action="/receipt" enctype="multipart/form-data">
+        <form 
+            method="POST" 
+            action="/receipt" 
+            enctype="multipart/form-data"
+            onsubmit="handleSubmit(event)"
+        >
                 @csrf
             <!-- Company Name -->
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">HASTA TRAVEL & TOURS SDN BHD</h2>
 
-        <div class="flex justify-center mb-8">
+            <div class="flex justify-center mb-8">
                 <div class="bg-gradient-to-br from-pink-500 to-pink-600 p-6 rounded-3xl shadow-xl">
                     <div class="bg-white p-4 rounded-2xl">
-                        <!-- QR Code Placeholder -->
-                        <svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="300" height="300" fill="white"/>
-                            <!-- QR Code Pattern -->
-                            <g fill="#E91E63">
-                                <!-- Top-left corner -->
-                                <rect x="20" y="20" width="70" height="70" rx="8"/>
-                                <rect x="35" y="35" width="40" height="40" fill="white" rx="4"/>
-                                <rect x="45" y="45" width="20" height="20" fill="#E91E63"/>
-                                
-                                <!-- Top-right corner -->
-                                <rect x="210" y="20" width="70" height="70" rx="8"/>
-                                <rect x="225" y="35" width="40" height="40" fill="white" rx="4"/>
-                                <rect x="235" y="45" width="20" height="20" fill="#E91E63"/>
-                                
-                                <!-- Bottom-left corner -->
-                                <rect x="20" y="210" width="70" height="70" rx="8"/>
-                                <rect x="35" y="225" width="40" height="40" fill="white" rx="4"/>
-                                <rect x="45" y="235" width="20" height="20" fill="#E91E63"/>
-                                
-                                <!-- Random QR pattern -->
-                                <rect x="110" y="30" width="15" height="15"/>
-                                <rect x="130" y="30" width="15" height="15"/>
-                                <rect x="155" y="30" width="15" height="15"/>
-                                <rect x="175" y="30" width="15" height="15"/>
-                                
-                                <rect x="30" y="110" width="15" height="15"/>
-                                <rect x="50" y="110" width="15" height="15"/>
-                                <rect x="110" y="110" width="15" height="15"/>
-                                <rect x="140" y="110" width="15" height="15"/>
-                                <rect x="170" y="110" width="15" height="15"/>
-                                <rect x="200" y="110" width="15" height="15"/>
-                                <rect x="240" y="110" width="15" height="15"/>
-                                <rect x="260" y="110" width="15" height="15"/>
-                                
-                                <rect x="110" y="140" width="15" height="15"/>
-                                <rect x="130" y="140" width="15" height="15"/>
-                                <rect x="155" y="140" width="15" height="15"/>
-                                <rect x="200" y="140" width="15" height="15"/>
-                                <rect x="240" y="140" width="15" height="15"/>
-                                
-                                <rect x="30" y="170" width="15" height="15"/>
-                                <rect x="110" y="170" width="15" height="15"/>
-                                <rect x="155" y="170" width="15" height="15"/>
-                                <rect x="175" y="170" width="15" height="15"/>
-                                <rect x="200" y="170" width="15" height="15"/>
-                                <rect x="260" y="170" width="15" height="15"/>
-                                
-                                <rect x="110" y="210" width="15" height="15"/>
-                                <rect x="140" y="210" width="15" height="15"/>
-                                <rect x="170" y="210" width="15" height="15"/>
-                                <rect x="200" y="210" width="15" height="15"/>
-                                <rect x="240" y="210" width="15" height="15"/>
-                                
-                                <rect x="110" y="240" width="15" height="15"/>
-                                <rect x="130" y="240" width="15" height="15"/>
-                                <rect x="155" y="240" width="15" height="15"/>
-                                <rect x="200" y="240" width="15" height="15"/>
-                                <rect x="260" y="240" width="15" height="15"/>
-                                
-                                <rect x="110" y="270" width="15" height="15"/>
-                                <rect x="155" y="270" width="15" height="15"/>
-                                <rect x="175" y="270" width="15" height="15"/>
-                                <rect x="200" y="270" width="15" height="15"/>
-                                <rect x="240" y="270" width="15" height="15"/>
-                            </g>
-                        </svg>
+                        <img 
+                            src="/images/hasta-qr.png" 
+                            alt="HASTA Payment QR Code"
+                            class="w-[300px] h-[300px] object-contain"
+                        />
                     </div>
                     <div class="text-center mt-4">
-                        <span class="text-white font-bold text-sm">MALAYSIA NATIONAL QR</span>
+                        <span class="text-white font-bold text-sm">DuitNow QR</span>
                     </div>
                 </div>
             </div>            
@@ -153,22 +96,33 @@
             </div>
 
             <!-- File Upload -->
-            <div class="flex justify-center items-center space-x-3 mb-8">
-                <label class="relative">
-                    <input type="file" name="payment_proof" id="fileInput" class="hidden" accept="image/*" required>
-                    <button type="button"
-                        onclick="document.getElementById('fileInput').click()"
-                        class="px-6 py-3 bg-gray-100 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-200 transition cursor-pointer">
-                        Choose File
-                    </button>
-                </label>
+            <div class="flex flex-col items-center mb-6">
+            <label class="relative">
+                <input 
+                    type="file" 
+                    name="payment_proof" 
+                    id="fileInput" 
+                    class="hidden" 
+                    accept="image/*,.pdf"
+                    required
+                >
 
-                <button type="button"
+                <button 
+                    type="button"
+                    id="uploadBtn"
                     onclick="document.getElementById('fileInput').click()"
-                    class="w-12 h-12 bg-gray-100 border-2 border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-200 transition">
-                    <i class="fas fa-upload text-gray-700"></i>
+                    class="px-6 py-3 bg-gray-100 border-2 border-gray-300 rounded-lg 
+                        text-gray-700 font-medium hover:bg-gray-200 transition
+                        flex items-center gap-2"
+                >
+                    <i class="fas fa-upload"></i>
+                    <span id="uploadText">Choose File</span>
                 </button>
-            </div>
+            </label>
+
+            <p class="text-xs text-gray-400 mt-1" id="fileHelpText">
+                Accepted formats: JPG, PNG, and PDF. Max size: 5MB *
+            </p>
 
             <p id="fileName" class="text-center text-sm text-gray-500 mb-8">
                 No File Chosen
@@ -275,11 +229,111 @@
     </footer>
 
     <script>
-        // File upload handler
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const fileName = e.target.files[0]?.name || 'No File Chosen';
-            document.querySelector('.text-gray-500.mb-8').textContent = fileName;
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileNameText = document.getElementById('fileName');
+        const helpText = document.getElementById('fileHelpText');
+        const form = document.querySelector('form');
+        const modal = document.getElementById('successModal');
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        fileInput.addEventListener('change', function () {
+            // Reset first
+            uploadBtn.classList.remove('bg-green-500', 'border-green-600', 'text-white', 'border-red-500');
+            uploadBtn.classList.add('bg-gray-100', 'border-gray-300', 'text-gray-700');
+            helpText.classList.remove('text-red-500');
+            helpText.classList.add('text-gray-400');
+
+            if (fileInput.files.length === 0) {
+                fileNameText.textContent = 'No File Chosen';
+                helpText.textContent = 'Accepted formats: JPG, PNG, and PDF. Max size: 5MB *';
+                return;
+            }
+
+            const file = fileInput.files[0];
+
+            // Validate type
+            if (!allowedTypes.includes(file.type)) {
+                helpText.textContent = 'Invalid file type! Only JPG, PNG, or PDF allowed *';
+                helpText.classList.remove('text-gray-400');
+                helpText.classList.add('text-red-500');
+                fileInput.value = '';
+                fileNameText.textContent = 'No File Chosen';
+                return;
+            }
+
+            // Validate size
+            if (file.size > maxSize) {
+                helpText.textContent = 'File too large! Maximum size is 5MB *';
+                helpText.classList.remove('text-gray-400');
+                helpText.classList.add('text-red-500');
+                fileInput.value = '';
+                fileNameText.textContent = 'No File Chosen';
+                uploadBtn.classList.add('border-red-500'); 
+                return;
+            }
+
+            // If valid
+            fileNameText.textContent = file.name;
+            helpText.textContent = 'File ready to submit.';
+            helpText.classList.remove('text-red-500');
+            helpText.classList.add('text-gray-400');
+
+            uploadBtn.classList.remove('bg-gray-100', 'border-gray-300', 'text-gray-700', 'border-red-500');
+            uploadBtn.classList.add('bg-green-500', 'border-green-600', 'text-white');
+            uploadBtn.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>Uploaded</span>
+            `;
         });
+
+        // Handle form submit
+        function handleSubmit(e) {
+            const fileInput = document.getElementById('fileInput');
+            const modal = document.getElementById('successModal');
+            const helpText = document.getElementById('fileHelpText');
+
+            // File required check
+            if (!fileInput.files.length) {
+                helpText.textContent = 'Please upload a file *';
+                helpText.classList.remove('text-gray-400');
+                helpText.classList.add('text-red-500');
+                e.preventDefault();
+                return;
+            }
+
+            // Prevent default submit for modal
+            e.preventDefault();
+
+            // Show success modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            // Delay submit 2s
+            setTimeout(() => {
+                e.target.submit();
+            }, 2000);
+        }
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
     </script>
+    <!-- Success Modal -->
+    <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-sm text-center shadow-lg flex flex-col items-center">
+            <!-- Green Tick -->
+            <div class="w-20 h-20 flex items-center justify-center bg-green-100 rounded-full mb-4">
+                <i class="fas fa-check text-green-600 text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h2>
+            <p class="text-gray-500 mb-6">Your payment has been uploaded successfully.</p>
+            <button onclick="closeModal()" class="px-6 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition">
+                Close
+            </button>
+        </div>
+    </div>
 </body>
 </html>

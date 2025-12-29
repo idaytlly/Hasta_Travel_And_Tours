@@ -103,5 +103,53 @@ Route::middleware(['auth', 'can:admin-access'])->prefix('admin')->name('admin.')
 Route::prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', function () { return view('staff.dashboard'); })->name('dashboard');
     Route::get('/cars', [CarController::class, 'staffIndex'])->name('cars');
+<<<<<<< HEAD
     Route::get('/bookings', [BookingController::class, 'staffIndex'])->name('bookings');
 });
+=======
+    Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
+    Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
+    Route::get('/cars/{id}/edit', [CarController::class, 'edit'])->name('cars.edit');
+    Route::put('/cars/{id}', [CarController::class, 'update'])->name('cars.update');
+    Route::delete('/cars/{id}', [CarController::class, 'destroy'])->name('cars.destroy');
+});
+
+Route::get('/staff/bookings', function () {
+    return view('staff.manage-bookings'); 
+});
+
+  /*
+// Staff Routes (add middleware for protection)
+Route::middleware(['auth'])->group(function() {
+    Route::get('/staff/cars', [CarController::class, 'staffIndex'])->name('staff.cars');
+    Route::get('/staff/cars/create', [CarController::class, 'create'])->name('staff.cars.create');
+    Route::post('/staff/cars', [CarController::class, 'store'])->name('staff.cars.store');
+    Route::get('/staff/cars/{id}/edit', [CarController::class, 'edit'])->name('staff.cars.edit');
+    Route::put('/staff/cars/{id}', [CarController::class, 'update'])->name('staff.cars.update');
+    Route::delete('/staff/cars/{id}', [CarController::class, 'destroy'])->name('staff.cars.destroy');
+});
+
+  
+    |--------------------------------------------------------------------------
+    | Staff Routes
+    |--------------------------------------------------------------------------
+    
+    Route::middleware('staff')->prefix('staff')->name('staff.')->group(function () {
+        Route::get('/dashboard', [StaffController::class, 'index'])->name('dashboard');
+        Route::get('/cars', [CarController::class, 'staffIndex'])->name('cars');
+        Route::get('/bookings', [StaffController::class, 'bookings'])->name('bookings');
+         Add car management routes (create, edit, delete) here
+    });
+
+    
+    |--------------------------------------------------------------------------
+    | Admin Routes
+    |--------------------------------------------------------------------------
+    
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/home', [AdminController::class, 'index'])->name('home');
+         Add admin management routes here
+    });
+    */
+
+>>>>>>> 224da8c17cf9994db51d002af56fec17bf104c09
