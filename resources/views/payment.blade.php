@@ -66,7 +66,12 @@
 
         <!-- Payment Card -->
         <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-12">
-            <form method="POST" action="/receipt" enctype="multipart/form-data">
+        <form 
+            method="POST" 
+            action="/receipt" 
+            enctype="multipart/form-data"
+            onsubmit="handleSubmit(event)"
+        >
                 @csrf
             <!-- Company Name -->
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">HASTA TRAVEL & TOURS SDN BHD</h2>
@@ -92,35 +97,32 @@
 
             <!-- File Upload -->
             <div class="flex flex-col items-center mb-6">
-                <label class="relative">
-                    <input 
-                        type="file" 
-                        name="payment_proof" 
-                        id="fileInput" 
-                        class="hidden" 
-                        accept="image/*,.pdf"
-                        required
-                    >
+            <label class="relative">
+                <input 
+                    type="file" 
+                    name="payment_proof" 
+                    id="fileInput" 
+                    class="hidden" 
+                    accept="image/*,.pdf"
+                    required
+                >
 
-                    <button 
-                        type="button"
-                        id="uploadBtn"
-                        onclick="document.getElementById('fileInput').click()"
-                        class="px-6 py-3 bg-gray-100 border-2 border-gray-300 rounded-lg 
-                            text-gray-700 font-medium hover:bg-gray-200 transition
-                            flex items-center gap-2"
-                    >
-                        <i class="fas fa-upload"></i>
-                        <span>Choose File</span>
-                    </button>
-                </label>
+                <button 
+                    type="button"
+                    id="uploadBtn"
+                    onclick="document.getElementById('fileInput').click()"
+                    class="px-6 py-3 bg-gray-100 border-2 border-gray-300 rounded-lg 
+                        text-gray-700 font-medium hover:bg-gray-200 transition
+                        flex items-center gap-2"
+                >
+                    <i class="fas fa-upload"></i>
+                    <span id="uploadText">Choose File</span>
+                </button>
+            </label>
 
-                
-                <p class="text-xs italic text-red-400 mt-1">
-                    Accepted formats: JPG, PNG, and PDF
-                </p>
-            </div>
-
+            <p class="text-xs text-gray-400 mt-1" id="fileHelpText">
+                Accepted formats: JPG, PNG, and PDF. Max size: 5MB *
+            </p>
 
             <p id="fileName" class="text-center text-sm text-gray-500 mb-8">
                 No File Chosen
@@ -229,26 +231,109 @@
     <script>
         const fileInput = document.getElementById('fileInput');
         const uploadBtn = document.getElementById('uploadBtn');
-        const uploadText = document.getElementById('uploadText');
         const fileNameText = document.getElementById('fileName');
+        const helpText = document.getElementById('fileHelpText');
+        const form = document.querySelector('form');
+        const modal = document.getElementById('successModal');
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
 
         fileInput.addEventListener('change', function () {
-            if (fileInput.files.length > 0) {
-                const fileName = fileInput.files[0].name;
+            // Reset first
+            uploadBtn.classList.remove('bg-green-500', 'border-green-600', 'text-white', 'border-red-500');
+            uploadBtn.classList.add('bg-gray-100', 'border-gray-300', 'text-gray-700');
+            helpText.classList.remove('text-red-500');
+            helpText.classList.add('text-gray-400');
 
-                // Update file name
-                fileNameText.textContent = fileName;
-
-                // Change button to Uploaded
-                uploadBtn.classList.remove('bg-gray-100', 'border-gray-300', 'text-gray-700');
-                uploadBtn.classList.add('bg-green-500', 'border-green-600', 'text-white');
-
-                uploadBtn.innerHTML = `
-                    <i class="fas fa-check-circle"></i>
-                    <span>Uploaded</span>
-                `;
+            if (fileInput.files.length === 0) {
+                fileNameText.textContent = 'No File Chosen';
+                helpText.textContent = 'Accepted formats: JPG, PNG, and PDF. Max size: 5MB *';
+                return;
             }
+
+            const file = fileInput.files[0];
+
+            // Validate type
+            if (!allowedTypes.includes(file.type)) {
+                helpText.textContent = 'Invalid file type! Only JPG, PNG, or PDF allowed *';
+                helpText.classList.remove('text-gray-400');
+                helpText.classList.add('text-red-500');
+                fileInput.value = '';
+                fileNameText.textContent = 'No File Chosen';
+                return;
+            }
+
+            // Validate size
+            if (file.size > maxSize) {
+                helpText.textContent = 'File too large! Maximum size is 5MB *';
+                helpText.classList.remove('text-gray-400');
+                helpText.classList.add('text-red-500');
+                fileInput.value = '';
+                fileNameText.textContent = 'No File Chosen';
+                uploadBtn.classList.add('border-red-500'); 
+                return;
+            }
+
+            // If valid
+            fileNameText.textContent = file.name;
+            helpText.textContent = 'File ready to submit.';
+            helpText.classList.remove('text-red-500');
+            helpText.classList.add('text-gray-400');
+
+            uploadBtn.classList.remove('bg-gray-100', 'border-gray-300', 'text-gray-700', 'border-red-500');
+            uploadBtn.classList.add('bg-green-500', 'border-green-600', 'text-white');
+            uploadBtn.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>Uploaded</span>
+            `;
         });
+
+        // Handle form submit
+        function handleSubmit(e) {
+            const fileInput = document.getElementById('fileInput');
+            const modal = document.getElementById('successModal');
+            const helpText = document.getElementById('fileHelpText');
+
+            // File required check
+            if (!fileInput.files.length) {
+                helpText.textContent = 'Please upload a file *';
+                helpText.classList.remove('text-gray-400');
+                helpText.classList.add('text-red-500');
+                e.preventDefault();
+                return;
+            }
+
+            // Prevent default submit for modal
+            e.preventDefault();
+
+            // Show success modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            // Delay submit 2s
+            setTimeout(() => {
+                e.target.submit();
+            }, 2000);
+        }
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
     </script>
+    <!-- Success Modal -->
+    <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-sm text-center shadow-lg flex flex-col items-center">
+            <!-- Green Tick -->
+            <div class="w-20 h-20 flex items-center justify-center bg-green-100 rounded-full mb-4">
+                <i class="fas fa-check text-green-600 text-4xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h2>
+            <p class="text-gray-500 mb-6">Your payment has been uploaded successfully.</p>
+            <button onclick="closeModal()" class="px-6 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition">
+                Close
+            </button>
+        </div>
+    </div>
 </body>
 </html>
