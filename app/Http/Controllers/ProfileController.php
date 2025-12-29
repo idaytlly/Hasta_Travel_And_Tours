@@ -7,34 +7,30 @@ use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
-    public function edit()
-    {
-        $user = Auth::user();
-        return view('profile.edit', compact('user'));
+    public function edit(){
+    return view('setting', [
+        'user' => auth()->user(),
+    ]);
     }
 
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = auth()->user();
 
-        // Validate and store the result in $validated
-        $validated = $request->validate([
-            'name'       => 'required|string|max:255',
-            'email'      => 'required|email|max:255|unique:users,email,' . $user->id,
-            'phone'      => 'nullable|string|max:15',
-            'ic'         => 'nullable|digits:12|unique:users,ic,' . $user->id,
-            'street'     => 'nullable|string|max:255',
-            'city'       => 'nullable|string|max:100',
-            'state'      => 'nullable|string|max:100',
-            'postcode'   => 'nullable|string|max:10',
-            'license_no' => 'nullable|string|max:50',
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'nullable|string',
+            'ic' => 'nullable|string',
+            'street' => 'nullable|string',
+            'city' => 'nullable|string',
+            'state' => 'nullable|string',
+            'postcode' => 'nullable|string',
+            'license_no' => 'nullable|string',
         ]);
 
-        // Update user with only validated data
-        //$user->update($validated);
         $user->update($request->all());
 
-        return redirect()->back()->with('success', 'Profile updated successfully!');
+        return back()->with('success', 'Profile updated successfully');
     }
 }
-?>
