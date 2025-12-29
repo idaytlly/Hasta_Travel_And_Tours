@@ -2,52 +2,38 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 class Car extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    protected $table = 'cars';
 
     protected $fillable = [
-        'plateNo',
-        'brand',
-        'model',
-        'year',
-        'carType',
-        'transmission',
-        'daily_rate',
-        'image',
-        'is_available'
+        'brand', 'model', 'year', 'transmission', 'daily_rate', 
+        'image', 'is_available', 'air_conditioner', 'passengers', 
+        'fuel_type', 'license_plate', 'description'
     ];
 
-    protected $casts = [
-        'is_available' => 'boolean',
-        'daily_rate' => 'decimal:2'
-    ];
-
-    public function scopeAvailable($query)
+    // This fixes the "available()" error
+    public function scopeAvailable(Builder $query): Builder
     {
         return $query->where('is_available', true);
     }
 
-    public function scopeOfType($query, $type)
-    {
-        return $query->where('carType', $type);
-    }
-
-    public function scopeOfBrand($query, $brand)
+    // This fixes the "byBrand()" error
+    public function scopeByBrand(Builder $query, $brand): Builder
     {
         return $query->where('brand', $brand);
     }
 
-    public function getFormattedPriceAttribute()
+    // This fixes the "byTransmission()" error
+    public function scopeByTransmission(Builder $query, $transmission): Builder
     {
-        return 'RM' . number_format($this->daily_rate, 0);
-    }
-
-    public function getFullNameAttribute()
-    {
-        return trim("{$this->brand} {$this->model} {$this->year}");
+        return $query->where('transmission', $transmission);
     }
 }

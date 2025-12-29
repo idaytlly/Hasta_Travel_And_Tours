@@ -27,7 +27,6 @@ class User extends Authenticatable
         'license_no',
         'password',
         'usertype',
-        'profile_photo_path',
     ];
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -19,7 +20,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle login request.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -28,16 +29,18 @@ class AuthenticatedSessionController extends Controller
 
         // Attempt to login
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        $request->session()->regenerate();
 
-            // Redirect based on user role
-            $user = Auth::user();
-            return match($user->usertype) {
-                'admin' => redirect()->route('admin.home'),
-                'staff' => redirect()->route('staff.dashboard'),
-                default => redirect()->route('dashboard'),
-            };
-        }
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Log the user in and immediately check the 'usertype' column
+        return match($user->usertype) {
+            'admin' => redirect()->intended(route('admin.dashboard')), 
+            'staff' => redirect()->intended(route('staff.dashboard')),
+            default => redirect()->intended(route('dashboard')),
+        };
+    }
 
         // If login fails
         return back()->withErrors([
@@ -48,12 +51,13 @@ class AuthenticatedSessionController extends Controller
     /**
      * Logout the authenticated user.
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request): RedirectResponse
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home');
+        // Redirect to the login page or home page
+        return redirect()->route('login');
     }
 }

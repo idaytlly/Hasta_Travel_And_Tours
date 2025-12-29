@@ -911,7 +911,7 @@
                                     <i class="fas fa-calendar-check me-2"></i>Book Now
                                 </a>
                             @else
-                                <a href="{{ route('booking.create', $car->id) }}" class="btn btn-book">
+                                <a href="{{ route('bookings.create', $car->id) }}" class="btn btn-book">
                                     <i class="fas fa-calendar-check me-2"></i>Book Now
                                 </a>
                             @endguest

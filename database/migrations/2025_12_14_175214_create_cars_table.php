@@ -1,7 +1,5 @@
 <?php
 
-// database/migrations/..._create_cars_table.php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,8 +16,17 @@ return new class extends Migration
             $table->string('transmission')->default('Automatic');
             $table->decimal('daily_rate', 8, 2); // Price per day
             $table->string('image')->nullable();
-            $table->boolean('is_available')->default(true); // Matches the query condition
+            $table->boolean('is_available')->default(true);
+            
+            // Additional features
+            $table->boolean('air_conditioner')->default(true);
+            $table->integer('passengers')->default(5);
+            $table->string('fuel_type')->default('Petrol');
+            $table->string('license_plate')->unique()->nullable();
+            $table->text('description')->nullable();
+            
             $table->timestamps();
+            $table->softDeletes(); // Soft delete support
         });
     }
 
