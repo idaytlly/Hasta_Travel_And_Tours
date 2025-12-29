@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
         return match($user->usertype) {
             'admin' => redirect()->intended(route('admin.dashboard')), 
             'staff' => redirect()->intended(route('staff.dashboard')),
-            default => redirect()->intended(route('dashboard')),
+            default => redirect()->intended(route('')),
         };
     }
 
