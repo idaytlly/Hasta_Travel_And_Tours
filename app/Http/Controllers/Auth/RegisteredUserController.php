@@ -40,6 +40,6 @@ class RegisteredUserController extends Controller
         // Auto-login after registration
         Auth::login($user);
 
-        return redirect()->route('Home');
+        return redirect()->route('home');
     }
 }

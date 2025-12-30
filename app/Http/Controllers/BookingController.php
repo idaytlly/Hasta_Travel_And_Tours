@@ -111,8 +111,6 @@ class BookingController extends Controller
                     }
                     
                     $voucherCode = $voucher->code;
-                    
-                    
                 }
             }
 
@@ -151,10 +149,9 @@ class BookingController extends Controller
 
             DB::commit();
 
-
-        // Redirect to payment page instead of pending
-        return redirect()->route('payment.page', $booking->booking_reference)
-            ->with('success', 'Booking created! Please complete payment to confirm.');
+            // Redirect to payment page
+            return redirect()->route('payment.page', $booking->booking_reference)
+                ->with('success', 'Booking created! Please complete payment to confirm.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -309,53 +306,54 @@ class BookingController extends Controller
     }
 
     /**
- * Show payment page
- */
-public function paymentPage($reference)
-{
-    $booking = Booking::where('booking_reference', $reference)
-        ->where('user_id', auth()->id())
-        ->firstOrFail();
-    
-    if ($booking->status !== 'pending') {
-        return redirect()->route('bookings.show', $reference)
-            ->with('error', 'This booking cannot be paid.');
+     * Show payment page
+     */
+    public function paymentPage($reference)
+    {
+        $booking = Booking::where('booking_reference', $reference)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+        
+        if ($booking->status !== 'pending') {
+            return redirect()->route('bookings.show', $reference)
+                ->with('error', 'This booking cannot be paid.');
+        }
+        
+        return view('payment', compact('booking'));
     }
-    
-    return view('payment', compact('booking'));  // ← Changed from 'bookings.payment'
-}
 
     /**
- * Process payment
- */
-public function processPayment(Request $request, $reference)
-{
-    $request->validate([
-        'payment_proof' => 'required|file|mimes:jpeg,png,jpg,pdf|max:5120', // 5MB max
-    ]);
-    
-    $booking = Booking::where('booking_reference', $reference)
-        ->where('user_id', auth()->id())
-        ->firstOrFail();
-    
-    // Store payment proof
-    $paymentProofPath = null;
-    if ($request->hasFile('payment_proof')) {
-        $paymentProofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
+     * Process payment
+     */
+    public function processPayment(Request $request, $reference)
+    {
+        $request->validate([
+            'payment_proof' => 'required|file|mimes:jpeg,png,jpg,pdf|max:5120', // 5MB max
+        ]);
+        
+        $booking = Booking::where('booking_reference', $reference)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+        
+        // Store payment proof
+        $paymentProofPath = null;
+        if ($request->hasFile('payment_proof')) {
+            $paymentProofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
+        }
+        
+        // Update booking status to paid
+        $booking->update([
+            'status' => 'confirmed',
+            'payment_status' => 'paid',
+            'payment_method' => 'duitnow_qr',
+            'payment_proof' => $paymentProofPath,
+            'paid_at' => now(),
+        ]);
+        
+        return redirect()->route('payment.receipt', $reference)
+            ->with('success', 'Payment successful!');
     }
-    
-    // Update booking status to paid
-    $booking->update([
-        'status' => 'confirmed',
-        'payment_status' => 'paid',
-        'payment_method' => 'duitnow_qr',
-        'payment_proof' => $paymentProofPath,
-        'paid_at' => now(),
-    ]);
-    
-    return redirect()->route('payment.receipt', $reference)
-        ->with('success', 'Payment successful!');
-}
+
     /**
      * Show receipt
      */
@@ -365,6 +363,6 @@ public function processPayment(Request $request, $reference)
             ->where('user_id', auth()->id())
             ->firstOrFail();
         
-        return view('bookings.receipt', compact('booking'));
+        return view('receipt', compact('booking'));
     }
 }

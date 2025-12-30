@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
         return match($user->usertype) {
             'admin' => redirect()->intended(route('admin.dashboard')), 
             'staff' => redirect()->intended(route('staff.dashboard')),
-            default => redirect()->intended(route('profile.edit')),
+            default => redirect()->intended(route('dashboard')),
         };
     }
 
@@ -53,11 +53,12 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Redirect to the login page or home page
-        return redirect()->route('login');
+        // Change 'dashboard' or '/home' to 'home' (your welcome page route)
+        return redirect()->route('home'); 
     }
-}
+    }

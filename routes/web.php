@@ -18,6 +18,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 
+Route::get('/payment', function () { return view('payment'); })->name('payment');
+Route::post('/receipt', function () { return view('receipt'); })->name('receipt');
+
 /*
 |--------------------------------------------------------------------------
 | Guest Routes (Only for non-authenticated users)
@@ -61,6 +64,11 @@ Route::middleware('auth')->group(function () {
     // Booking Routes
     Route::prefix('bookings')->name('bookings.')->group(function () {
         Route::get('/cars/{id}/book', [BookingController::class, 'create'])->name('create');
+        
+        // --- ADDED THIS LINE ---
+        // This handles the "Pay Now" button by receiving the form data and showing the payment page
+        Route::post('/payment-summary', [BookingController::class, 'processToPayment'])->name('payment-summary');
+        
         Route::post('/', [BookingController::class, 'store'])->name('store');
         Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my-bookings');
         Route::get('/{reference}', [BookingController::class, 'show'])->name('show');

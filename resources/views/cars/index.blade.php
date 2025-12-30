@@ -20,7 +20,6 @@
             <a href="{{ route('cars.index') }}" class="p-2 bg-white/20 rounded-lg text-white"><i class="fas fa-car"></i></a>
             <a href="{{ route('bookings.my-bookings') }}" class="p-2 bg-white/20 rounded-lg text-white"><i class="fas fa-history"></i></a>
             <a href="#" class="p-2 bg-white/20 rounded-lg text-white"><i class="fas fa-cog"></i></a>
-            <span class="text-white font-bold ml-4 uppercase">ID</span>
         </div>
     </header>
 
