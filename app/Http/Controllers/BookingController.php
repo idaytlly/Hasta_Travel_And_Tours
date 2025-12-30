@@ -230,6 +230,7 @@ class BookingController extends Controller
         return view('bookings.show', compact('booking'));
     }
 
+<<<<<<< Updated upstream
     /**
      * Admin: View all bookings
      */
@@ -365,4 +366,28 @@ class BookingController extends Controller
         
         return view('receipt', compact('booking'));
     }
+=======
+    public function processToPayment(Request $request)
+    {
+        // 1. Validate the incoming request
+        $validated = $request->validate([
+            'car_id' => 'required|exists:cars,id',
+            'pickup_location' => 'required|string',
+            'dropoff_location' => 'required|string',
+            'pickup_date' => 'required|date',
+            'return_date' => 'required|date|after_or_equal:pickup_date',
+            'total_price' => 'required',
+            'duration' => 'required',
+        ]);
+
+        // 2. Fetch the car details
+        $car = Car::findOrFail($request->car_id);
+
+        // 3. Pass data to the payment summary view
+        return view('bookings.payment_summary', [
+            'bookingData' => $request->all(),
+            'car' => $car
+        ]);
+    }
+>>>>>>> Stashed changes
 }

@@ -18,6 +18,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 
+// Keep these for general access or remove if moving strictly into the booking flow
 Route::get('/payment', function () { return view('payment'); })->name('payment');
 Route::post('/receipt', function () { return view('receipt'); })->name('receipt');
 
@@ -64,6 +65,15 @@ Route::middleware('auth')->group(function () {
     // Booking Routes
     Route::prefix('bookings')->name('bookings.')->group(function () {
         Route::get('/cars/{id}/book', [BookingController::class, 'create'])->name('create');
+<<<<<<< Updated upstream
+=======
+        
+        // --- ADDED THIS LINE ---
+        // This handles the "Pay Now" button by receiving the form data and showing the payment page
+        Route::post('/payment-summary', [BookingController::class, 'processToPayment'])->name('payment-summary');
+        
+        Route::post('/', [BookingController::class, 'store'])->name('store');
+>>>>>>> Stashed changes
         
         // --- ADDED THIS LINE ---
         // This handles the "Pay Now" button by receiving the form data and showing the payment page

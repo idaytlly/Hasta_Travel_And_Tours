@@ -8,6 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+<<<<<<< Updated upstream
         body { font-family: Arial, sans-serif; background: #f5f5f5; }
         .header { background: #d84444; padding: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .header-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -482,5 +483,355 @@
             </div>
         </div>
     </div>
+=======
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
+        
+        /* Header */
+        .header { background: #d84444; padding: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { background: white; color: #d84444; padding: 8px 20px; font-weight: 700; font-size: 1.5rem; border-radius: 4px; letter-spacing: 2px; }
+        .nav-icons { display: flex; gap: 8px; align-items: center; }
+        .nav-icon { background: rgba(255,255,255,0.15); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .nav-icon.active { background: rgba(255,255,255,0.3); }
+        .nav-icon i { color: white; font-size: 18px; }
+        
+        /* Main Content */
+        .main-container { max-width: 1400px; margin: 20px auto; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); min-height: calc(100vh - 200px); }
+        .page-header { display: flex; align-items: center; padding-bottom: 30px; gap: 20px; border-bottom: 1px solid #eee; margin-bottom: 30px; }
+        .back-btn { width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.3s; }
+        .back-btn:hover { background: #d84444; transform: translateX(-3px); }
+        .back-btn i { color: white; }
+        .page-title { font-size: 28px; font-weight: 700; }
+
+        /* Form Layout */
+        .form-layout { display: grid; grid-template-columns: 450px 1fr; gap: 60px; }
+        .car-info { position: sticky; top: 20px; }
+        .car-image { width: 100%; border-radius: 12px; margin-bottom: 25px; object-fit: cover; }
+        .car-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .spec-item { display: flex; align-items: center; gap: 10px; font-size: 14px; background: #f9f9f9; padding: 12px; border-radius: 8px; }
+        
+        /* Form Styling */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #555; }
+        .form-control { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .form-control:focus { outline: none; border-color: #d84444; box-shadow: 0 0 0 3px rgba(216, 68, 68, 0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        
+        .deposit-box { background: #fff4f4; border: 1px dashed #d84444; border-radius: 8px; padding: 15px; margin: 25px 0; color: #d84444; font-weight: 600; }
+
+        /* Final section */
+        .final-section { margin-top: 30px; padding-top: 30px; border-top: 2px solid #f5f5f5; }
+        .final-price-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .price-label { font-size: 16px; color: #777; }
+        .final-price { font-size: 40px; font-weight: 800; color: #d84444; }
+        .btn-pay { background: #ff6b3d; color: white; border: none; padding: 18px 60px; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-pay:hover:not(:disabled) { background: #e65a2b; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,107,61,0.3); }
+        .btn-pay:disabled { background: #ccc; cursor: not-allowed; }
+
+        @media (max-width: 1024px) {
+            .form-layout { grid-template-columns: 1fr; }
+            .car-info { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">HASTA</div>
+            <div class="nav-icons">
+                <div class="nav-icon"><i class="fas fa-home"></i></div>
+                <div class="nav-icon"><i class="fas fa-bell"></i></div>
+                <div class="nav-icon active"><i class="fas fa-car"></i></div>
+                <div class="nav-icon"><i class="fas fa-history"></i></div>
+                <div class="nav-icon"><i class="fas fa-cog"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="page-header">
+            <a href="{{ route('cars.show', $car->id) }}" class="back-btn">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <h1 class="page-title">{{ $car->full_name }}</h1>
+        </div>
+
+        <form action="{{ route('bookings.payment-summary') }}" method="POST" id="bookingForm">
+            @csrf
+            <input type="hidden" name="car_id" value="{{ $car->id }}">
+            <input type="hidden" name="total_price" id="hiddenTotalPrice" value="0">
+            <input type="hidden" name="duration" id="hiddenDuration" value="0">
+
+            <div class="form-layout">
+                <div class="car-info">
+                    <img src="{{ asset($car->image) }}" alt="{{ $car->full_name }}" class="car-image">
+                    <div class="car-specs">
+                        <div class="spec-item"><i class="fas fa-snowflake" style="color: #00bcd4;"></i> <span>A/C</span></div>
+                        <div class="spec-item"><i class="fas fa-users" style="color: #4caf50;"></i> <span>{{ $car->passengers }} Seats</span></div>
+                        <div class="spec-item"><i class="fas fa-gas-pump" style="color: #ff9800;"></i> <span>{{ $car->fuel_type }}</span></div>
+                        <div class="spec-item"><i class="fas fa-cog" style="color: #607d8b;"></i> <span>{{ $car->transmission }}</span></div>
+                    </div>
+                    
+                    <div class="deposit-box">
+                        <i class="fas fa-info-circle"></i> Security Deposit: RM 100 (Refundable)
+                    </div>
+                </div>
+
+                <div class="booking-form">
+                    <div class="form-group">
+                        <label class="form-label">Pick-Up Location</label>
+                        <input type="text" name="pickup_location" class="form-control" placeholder="Enter location" value="{{ old('pickup_location') }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Drop-Off Location</label>
+                        <input type="text" name="dropoff_location" class="form-control" placeholder="Enter location" value="{{ old('dropoff_location') }}" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Pickup Date</label>
+                            <input type="date" name="pickup_date" id="pickup_date" class="form-control" min="{{ date('Y-m-d') }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Pickup Time</label>
+                            <input type="time" name="pickup_time" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Return Date</label>
+                            <input type="date" name="return_date" id="return_date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Return Time</label>
+                            <input type="time" name="return_time" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Duration (Days)</label>
+                            <input type="text" id="duration" class="form-control" placeholder="---" readonly style="background: #eee;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Voucher Code</label>
+                            <select name="voucher" class="form-control">
+                                <option value="">No Voucher</option>
+                                @foreach($vouchers as $voucher)
+                                    <option value="{{ $voucher->code }}">{{ $voucher->code }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="final-section">
+                        <div class="final-price-wrapper">
+                            <span class="price-label">Total Estimated Price:</span>
+                            <div class="final-price" id="totalPrice">RM 0</div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 25px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="terms" required style="width: 18px; height: 18px;">
+                                <span style="font-size: 14px;">I accept the <a href="#" style="color: #d84444;">Terms and Conditions</a></span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-pay" id="payBtn" disabled>Proceed to Payment</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const dailyRate = {{ $car->daily_rate }};
+        const pickupInput = document.getElementById('pickup_date');
+        const returnInput = document.getElementById('return_date');
+        const durationDisplay = document.getElementById('duration');
+        const priceDisplay = document.getElementById('totalPrice');
+        const payBtn = document.getElementById('payBtn');
+        
+        const hiddenTotal = document.getElementById('hiddenTotalPrice');
+        const hiddenDur = document.getElementById('hiddenDuration');
+
+        function updateSummary() {
+            if (pickupInput.value && returnInput.value) {
+                const start = new Date(pickupInput.value);
+                const end = new Date(returnInput.value);
+                
+                // Set min for return date to be at least pickup date
+                returnInput.min = pickupInput.value;
+
+                const diffTime = end - start;
+                const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (days > 0) {
+                    const total = days * dailyRate;
+                    durationDisplay.value = days;
+                    priceDisplay.textContent = 'RM ' + total.toLocaleString();
+                    
+                    // Update hidden inputs
+                    hiddenTotal.value = total;
+                    hiddenDur.value = days;
+                    payBtn.disabled = false;
+                } else {
+                    resetFields();
+                }
+            } else {
+                resetFields();
+            }
+        }
+
+        function resetFields() {
+            durationDisplay.value = '---';
+            priceDisplay.textContent = 'RM 0';
+            hiddenTotal.value = 0;
+            hiddenDur.value = 0;
+            payBtn.disabled = true;
+        }
+
+        pickupInput.addEventListener('change', updateSummary);
+        returnInput.addEventListener('change', updateSummary);
+    </script>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-item">
+                    <div class="footer-icon"><i class="fas fa-phone"></i></div>
+                    <div>
+                        <div class="footer-title">Call Us</div>
+                        <div class="footer-text">+60 12-345 6789</div>
+                    </div>
+                </div>
+                <div class="footer-item">
+                    <div class="footer-icon"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <div class="footer-title">Email Us</div>
+                        <div class="footer-text">support@hasta.com</div>
+                    </div>
+                </div>
+                <div class="footer-item">
+                    <div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div>
+                        <div class="footer-title">Visit Us</div>
+                        <div class="footer-text">Kuala Lumpur, Malaysia</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div>
+                    <div class="footer-logo">HASTA</div>
+                    <div class="social-icons">
+                        <div class="social-icon"><i class="fab fa-facebook-f"></i></div>
+                        <div class="social-icon"><i class="fab fa-instagram"></i></div>
+                        <div class="social-icon"><i class="fab fa-twitter"></i></div>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-section-title">Quick Links</div>
+                    <a href="#" class="footer-link">How it Works</a>
+                    <a href="#" class="footer-link">Our Fleet</a>
+                    <a href="#" class="footer-link">Insurance Policy</a>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-section-title">Support</div>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms & Conditions</a>
+                    <a href="#" class="footer-link">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        /* Footer Styles */
+        .footer {
+            background: #d84444;
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 60px;
+        }
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .footer-top {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .footer-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .footer-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .footer-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+        .footer-text { font-size: 14px; color: rgba(255,255,255,0.8); }
+
+        .footer-bottom {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 60px;
+        }
+        .footer-logo {
+            display: inline-block;
+            background: white;
+            color: #d84444;
+            padding: 8px 25px;
+            font-weight: 800;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .social-icons { display: flex; gap: 10px; }
+        .social-icon {
+            width: 35px;
+            height: 35px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .social-icon:hover { background: white; color: #d84444; }
+
+        .footer-section-title { font-weight: 700; margin-bottom: 20px; }
+        .footer-links { display: flex; flex-direction: column; gap: 10px; }
+        .footer-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .footer-link:hover { color: white; transform: translateX(5px); }
+
+        @media (max-width: 768px) {
+            .footer-top, .footer-bottom { grid-template-columns: 1fr; gap: 30px; }
+        }
+    </style>
+>>>>>>> Stashed changes
 </body>
 </html>

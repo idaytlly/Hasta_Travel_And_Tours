@@ -731,15 +731,24 @@
             </ul>
 
             <div class="d-flex align-items-center gap-3">
-                @guest
-                    <a href="{{ route('login') }}" class="btn btn-login">
-                        <i class="fas fa-user me-2"></i>Login
-                    </a>
-                @else
-                    <a href="{{ route('dashboard') }}" class="btn btn-login">
-                        <i class="fas fa-user me-2"></i>Login
-                    </a>
-                @endguest
+            @guest
+                <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px; border: 2px solid #e53935; color: #e53935;">
+                    Login
+                </a>
+                <a href="{{ route('register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
+                    Register
+                </a>
+            @else
+                <span class="me-2">Welcome, <strong>{{ Auth::user()->name }}</strong></span>
+                
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </button>
+                </form>
+            @endguest
+                </div>
             </div>
         </div>
     </div>
