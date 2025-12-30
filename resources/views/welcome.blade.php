@@ -1114,7 +1114,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
-                <div class="footer-brand">HA<span class="star">★</span>TA</div>
+                <div class="footer-brand">HASTA</div>
                 <p class="footer-text">
                     Your trusted partner for car rental services in Malaysia. Quality vehicles, affordable prices.
                 </p>
@@ -1126,7 +1126,7 @@
                     </div>
                     <div class="footer-contact-item">
                         <i class="fas fa-envelope"></i>
-                        <span>hastatravel@gmail.com</span>
+                        <span>hastatravelandtours@gmail.com</span>
                     </div>
                     <div class="footer-contact-item">
                         <i class="fas fa-phone"></i>
@@ -1135,11 +1135,10 @@
                 </div>
 
                 <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    <a href="http://wasap.my/601110900700/nakkeretasewa"><i class="fab fa-whatsapp"></i></a>
+                    <a href="http://t.me/infoHastaCarRentalUTM"><i class="fab fa-telegram"></i></a>
+                    <a href="http://youtube.com/watch?v=41Vedbjxn_s"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/hastatraveltours?igsh=MXR0ZjYyM3c3Znpsdg=="><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
 
