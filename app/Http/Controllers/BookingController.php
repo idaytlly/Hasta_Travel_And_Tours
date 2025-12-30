@@ -231,6 +231,7 @@ class BookingController extends Controller
     }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     /**
      * Admin: View all bookings
      */
@@ -367,6 +368,8 @@ class BookingController extends Controller
         return view('receipt', compact('booking'));
     }
 =======
+=======
+>>>>>>> Stashed changes
     public function processToPayment(Request $request)
     {
         // 1. Validate the incoming request
@@ -389,5 +392,8 @@ class BookingController extends Controller
             'car' => $car
         ]);
     }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }
