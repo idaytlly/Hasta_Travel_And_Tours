@@ -48,6 +48,8 @@ Route::middleware('auth')->group(function () {
         return view('payment', ['bookingData' => $request->all()]);
     })->name('payment.show');
     
+    // ⭐ ADD THIS - Voucher validation (AJAX)
+    Route::post('/validate-voucher', [BookingController::class, 'validateVoucher'])->name('voucher.validate');
     
     // Profile management
     Route::prefix('profile')->name('profile.')->group(function () {
@@ -160,51 +162,37 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
 | Admin Routes (Requires usertype: admin only)
 |--------------------------------------------------------------------------
 */
+use App\Http\Controllers\Admin\AdminController;
+
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        if (auth()->user()->usertype !== 'admin') {
-            abort(403, 'Unauthorized');
-        }
-        return view('admin.dashboard');
-    })->name('dashboard');
+    // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
     // Bookings Management
     Route::prefix('bookings')->name('bookings.')->group(function () {
-        Route::get('/', function () {
-            if (auth()->user()->usertype !== 'admin') {
-                abort(403, 'Unauthorized');
-            }
-            return view('admin.bookings.index');
-        })->name('index');
+        Route::get('/', [AdminController::class, 'bookings'])->name('index');
+        Route::get('/{id}', [AdminController::class, 'showBooking'])->name('show');
+        Route::patch('/{id}/status', [AdminController::class, 'updateStatus'])->name('updateStatus');  // ← Changed to PATCH
+        Route::delete('/{id}', [AdminController::class, 'deleteBooking'])->name('delete');
     });
     
     // Cars Management
     Route::prefix('cars')->name('cars.')->group(function () {
-        Route::get('/', function () {
-            if (auth()->user()->usertype !== 'admin') {
-                abort(403, 'Unauthorized');
-            }
-            return view('admin.cars.index');
-        })->name('index');
+        Route::get('/', [AdminController::class, 'cars'])->name('index');
+        Route::get('/create', [AdminController::class, 'createCar'])->name('create');
+        Route::post('/', [AdminController::class, 'storeCar'])->name('store');
+        Route::get('/{id}/edit', [AdminController::class, 'editCar'])->name('edit');
+        Route::put('/{id}', [AdminController::class, 'updateCar'])->name('update');
+        Route::delete('/{id}', [AdminController::class, 'destroyCar'])->name('destroy');
     });
     
     // User Management
     Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/', function () {
-            if (auth()->user()->usertype !== 'admin') {
-                abort(403, 'Unauthorized');
-            }
-            return view('admin.users.index');
-        })->name('index');
+        Route::get('/', [AdminController::class, 'users'])->name('index');
+        Route::get('/{id}', [AdminController::class, 'showUser'])->name('show');
+        Route::delete('/{id}', [AdminController::class, 'deleteUser'])->name('delete');
     });
     
-    // Settings
-    Route::prefix('settings')->name('settings.')->group(function () {
-        Route::get('/', function () {
-            if (auth()->user()->usertype !== 'admin') {
-                abort(403, 'Unauthorized');
-            }
-            return view('admin.settings.index');
-        })->name('index');
-    });
+    // Reports
+    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
 });

@@ -168,7 +168,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Destination (Optional)</label>
+                        <label class="form-label">Destination *</label>
                         <input type="text" name="destination" class="form-control" 
                                placeholder="Where are you traveling to?" 
                                value="{{ old('destination') }}">

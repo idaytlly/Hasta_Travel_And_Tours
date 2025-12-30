@@ -49,9 +49,5 @@ class Voucher extends Model
         return true;
     }
 
-    // Increment usage
-    public function incrementUsage()
-    {
-        $this->increment('times_used');
-    }
+    
 }

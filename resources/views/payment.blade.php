@@ -54,17 +54,11 @@
         <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-12">
         <form 
             method="POST" 
-            action="{{ route('receipt.show') }}" 
+            action="{{ route('payment.process', $booking->booking_reference) }}" 
             enctype="multipart/form-data"
             onsubmit="handleSubmit(event)"
         >
             @csrf
-
-            @if(isset($bookingData))
-                @foreach($bookingData as $key => $value)
-                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                @endforeach
-            @endif
 
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">HASTA TRAVEL & TOURS SDN BHD</h2>
 
@@ -83,7 +77,7 @@
                 </div>
             </div>            
             <div class="text-center mb-6">
-                <h3 class="text-xl font-bold text-gray-800"> Total Payment : RM {{ number_format($bookingData['total_price'], 2) }}</span></h3>
+                <h3 class="text-xl font-bold text-gray-800"> Total Payment : RM {{ number_format($booking->total_price, 2) }}</h3>
             </div>
 
             <div class="flex flex-col items-center mb-6">

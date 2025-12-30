@@ -112,10 +112,7 @@ class BookingController extends Controller
                     
                     $voucherCode = $voucher->code;
                     
-                    // Increment usage
-                    if (method_exists($voucher, 'incrementUsage')) {
-                        $voucher->incrementUsage();
-                    }
+                    
                 }
             }
 
@@ -154,8 +151,10 @@ class BookingController extends Controller
 
             DB::commit();
 
-            return redirect()->route('bookings.pending', $booking->booking_reference)
-                ->with('success', 'Booking submitted successfully!');
+
+        // Redirect to payment page instead of pending
+        return redirect()->route('payment.page', $booking->booking_reference)
+            ->with('success', 'Booking created! Please complete payment to confirm.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -235,6 +234,18 @@ class BookingController extends Controller
     }
 
     /**
+     * Admin: View all bookings
+     */
+    public function index()
+    {
+        $bookings = Booking::with('car', 'user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.bookings.index', compact('bookings'));
+    }
+
+    /**
      * Staff: Manage all bookings
      */
     public function staffIndex()
@@ -298,51 +309,53 @@ class BookingController extends Controller
     }
 
     /**
-     * Show payment page
-     */
-    public function paymentPage($reference)
-    {
-        $booking = Booking::where('booking_reference', $reference)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
-        
-        if ($booking->status !== 'pending') {
-            return redirect()->route('bookings.show', $reference)
-                ->with('error', 'This booking cannot be paid.');
-        }
-        
-        return view('bookings.payment', compact('booking'));
+ * Show payment page
+ */
+public function paymentPage($reference)
+{
+    $booking = Booking::where('booking_reference', $reference)
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
+    
+    if ($booking->status !== 'pending') {
+        return redirect()->route('bookings.show', $reference)
+            ->with('error', 'This booking cannot be paid.');
     }
+    
+    return view('payment', compact('booking'));  // ← Changed from 'bookings.payment'
+}
 
     /**
-     * Process payment
-     */
-    public function processPayment(Request $request, $reference)
-    {
-        $request->validate([
-            'payment_method' => 'required|in:credit_card,debit_card,online_banking,ewallet',
-            'cardholder_name' => 'required_if:payment_method,credit_card,debit_card',
-            'card_number' => 'required_if:payment_method,credit_card,debit_card',
-            'expiry_date' => 'required_if:payment_method,credit_card,debit_card',
-            'cvv' => 'required_if:payment_method,credit_card,debit_card',
-        ]);
-        
-        $booking = Booking::where('booking_reference', $reference)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
-        
-        // Update booking status to paid
-        $booking->update([
-            'status' => 'confirmed',
-            'payment_status' => 'paid',
-            'payment_method' => $request->payment_method,
-            'paid_at' => now(),
-        ]);
-        
-        return redirect()->route('bookings.receipt', $reference)
-            ->with('success', 'Payment successful!');
+ * Process payment
+ */
+public function processPayment(Request $request, $reference)
+{
+    $request->validate([
+        'payment_proof' => 'required|file|mimes:jpeg,png,jpg,pdf|max:5120', // 5MB max
+    ]);
+    
+    $booking = Booking::where('booking_reference', $reference)
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
+    
+    // Store payment proof
+    $paymentProofPath = null;
+    if ($request->hasFile('payment_proof')) {
+        $paymentProofPath = $request->file('payment_proof')->store('payment_proofs', 'public');
     }
-
+    
+    // Update booking status to paid
+    $booking->update([
+        'status' => 'confirmed',
+        'payment_status' => 'paid',
+        'payment_method' => 'duitnow_qr',
+        'payment_proof' => $paymentProofPath,
+        'paid_at' => now(),
+    ]);
+    
+    return redirect()->route('payment.receipt', $reference)
+        ->with('success', 'Payment successful!');
+}
     /**
      * Show receipt
      */

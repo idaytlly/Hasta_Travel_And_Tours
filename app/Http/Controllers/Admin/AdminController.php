@@ -46,16 +46,21 @@ class AdminController extends Controller
      * Booking Management - Process Approval/Rejection
      */
     public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:Approved,Rejected,Pending'
-        ]);
+{
+    $request->validate([
+        'status' => 'required|in:approved,rejected,pending,confirmed,cancelled'
+    ]);
 
-        $booking = Booking::findOrFail($id);
-        $booking->update(['status' => $request->status]);
+    $booking = Booking::findOrFail($id);
+    
+    $booking->update([
+        'status' => $request->status
+    ]);
 
-        return redirect()->route('admin.bookings.index')->with('success', 'Booking status updated!');
-    }
+    // Redirect to the same booking detail page
+    return redirect()->route('admin.bookings.show', $id)
+        ->with('success', 'Booking status updated to ' . strtoupper($request->status) . ' successfully!');
+}
     /**
      * Vehicle Management - List all cars
      */

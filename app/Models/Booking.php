@@ -13,8 +13,8 @@ class Booking extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'car_id', 'user_id', 'booking_reference', 'customer_name', 
-        'customer_email', 'customer_ic', 'customer_phone', 'pickup_location', 
+        'car_id', 'user_id', 'booking_reference', 'name', 
+        'email', 'ic', 'phone', 'pickup_location', 
         'dropoff_location', 'destination', 'pickup_date', 'pickup_time', 
         'return_date', 'return_time', 'duration', 'voucher', 'base_price', 
         'discount_amount', 'total_price', 'deposit_amount', 'paid_amount', 

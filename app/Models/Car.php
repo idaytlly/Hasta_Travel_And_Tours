@@ -38,19 +38,18 @@ class Car extends Model
     }
 
     // Add this inside class Car extends Model
-    public function isAvailableForDates($startDate, $endDate)
+    public function isAvailableForDates($pickupDate, $returnDate)
     {
         // Check if there are any bookings that overlap with the requested dates
         return !$this->bookings()
-            ->where(function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate])
-                    ->orWhere(function ($q) use ($startDate, $endDate) {
-                        $q->where('start_date', '<=', $startDate)
-                            ->where('end_date', '>=', $endDate);
-                    });
+            ->where(function ($query) use ($pickupDate, $returnDate) {
+                $query->whereBetween('pickup_date', [$pickupDate, $returnDate])
+                      ->orWhereBetween('return_date', [$pickupDate, $returnDate])
+                      ->orWhere(function ($q) use ($pickupDate, $returnDate) {
+                          $q->where('pickup_date', '<=', $pickupDate)
+                            ->where('return_date', '>=', $returnDate);
+                      });
             })
-            // Only count 'confirmed' or 'pending' bookings, ignore 'cancelled'
             ->whereIn('status', ['pending', 'confirmed'])
             ->exists();
     }
