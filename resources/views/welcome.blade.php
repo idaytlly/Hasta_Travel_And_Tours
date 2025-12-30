@@ -1114,7 +1114,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
-                <div class="footer-brand">HA<span class="star">★</span>TA</div>
+                <div class="footer-brand">HASTA</div>
                 <p class="footer-text">
                     Your trusted partner for car rental services in Malaysia. Quality vehicles, affordable prices.
                 </p>
