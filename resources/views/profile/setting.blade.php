@@ -72,7 +72,7 @@
                 <li class="nav-item"><a class="nav-link nav-link-hasta" href="#">Notifications</a></li>
                 <li class="nav-item"><a class="nav-link nav-link-hasta" href="#">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link nav-link-hasta" href="{{ route('cars.index') }}">Vehicle Listing</a></li>
-                <li class="nav-item"><a class="nav-link nav-link-hasta active" href="{{ route('profile.settings') }}">Settings</a></li>
+                <li class="nav-item"><a class="nav-link nav-link-hasta active" href="{{ route('profile.edit') }}">Settings</a></li>
             </ul>
             <div class="d-flex align-items-center gap-3">
                 @guest

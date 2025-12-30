@@ -3,414 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Book {{ $car->full_name }} - HASTA</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .header { background: #d84444; padding: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { background: white; color: #d84444; padding: 8px 20px; font-weight: 700; font-size: 1.5rem; border-radius: 4px; letter-spacing: 2px; }
+        .main-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; background: white; min-height: calc(100vh - 180px); }
+        .page-header { display: flex; align-items: center; padding: 30px 0 20px; gap: 15px; }
+        .back-btn { width: 50px; height: 50px; background: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; }
+        .back-btn i { color: white; font-size: 20px; }
+        .page-title { font-size: 32px; font-weight: 700; }
+        .form-layout { display: grid; grid-template-columns: 400px 1fr; gap: 40px; padding: 20px 0; }
+        .car-image { width: 100%; height: auto; margin-bottom: 30px; border-radius: 10px; }
+        .car-specs { display: flex; flex-direction: column; gap: 15px; }
+        .spec-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #333; }
+        .form-control { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; }
+        .form-control:focus { outline: none; border-color: #d84444; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         
-        /* Header */
-        .header {
-            background: #d84444;
-            padding: 15px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            background: white;
-            color: #d84444;
-            padding: 8px 20px;
-            font-weight: 700;
-            font-size: 1.5rem;
-            border-radius: 4px;
-            letter-spacing: 2px;
-        }
-        .nav-icons {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .nav-icon {
-            background: rgba(255,255,255,0.15);
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-        .nav-icon.active {
-            background: rgba(255,255,255,0.3);
-        }
-        .nav-icon i {
-            color: white;
-            font-size: 20px;
-        }
-        .nav-icon-label {
-            position: absolute;
-            bottom: -20px;
-            font-size: 10px;
-            color: white;
-            white-space: nowrap;
-        }
-        .btn-login {
-            background: #c73030;
-            color: white;
-            border: none;
-            padding: 10px 30px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-left: 10px;
-        }
+        /* Voucher Section */
+        .voucher-section { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .voucher-section h3 { margin-bottom: 15px; color: #333; }
+        .voucher-input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        .voucher-input-group input { flex: 1; }
+        .btn-apply-voucher { padding: 12px 24px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .btn-apply-voucher:hover { background: #218838; }
+        .btn-apply-voucher:disabled { background: #6c757d; cursor: not-allowed; }
+        .voucher-message { margin-top: 10px; padding: 12px; border-radius: 8px; display: none; font-size: 14px; }
+        .voucher-message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .voucher-message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         
-        /* Main Content */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-            background: white;
-            min-height: calc(100vh - 180px);
-        }
+        /* Price Summary */
+        .price-summary { background: #fff9e6; border: 2px solid #ffeeba; border-radius: 10px; padding: 20px; margin: 20px 0; }
+        .price-summary h3 { margin-bottom: 15px; color: #856404; }
+        .price-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ffeeba; font-size: 16px; }
+        .price-row:last-child { border-bottom: none; }
+        .price-row.discount { color: #28a745; font-weight: 600; }
+        .price-row.total { font-size: 24px; font-weight: 700; color: #d84444; margin-top: 10px; padding-top: 15px; border-top: 2px solid #856404; }
         
-        /* Back Button & Title */
-        .page-header {
-            display: flex;
-            align-items: center;
-            padding: 30px 0 20px;
-            gap: 15px;
-        }
-        .back-btn {
-            width: 50px;
-            height: 50px;
-            background: black;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .back-btn:hover {
-            transform: scale(1.1);
-        }
-        .back-btn i {
-            color: white;
-            font-size: 20px;
-        }
-        .page-title {
-            font-size: 32px;
-            font-weight: 700;
-        }
+        .deposit-box { background: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 8px; padding: 15px 20px; margin: 20px 0; font-size: 14px; color: #004085; }
         
-        /* Form Layout */
-        .form-layout {
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 40px;
-            padding: 20px 0;
-        }
+        .final-section { margin-top: 30px; padding-top: 20px; border-top: 2px solid #f0f0f0; }
+        .terms-checkbox { display: flex; align-items: center; gap: 10px; margin: 20px 0; }
+        .terms-checkbox input { width: 20px; height: 20px; cursor: pointer; }
+        .terms-link { color: #d84444; text-decoration: none; }
+        .terms-link:hover { text-decoration: underline; }
         
-        /* Left: Car Info */
-        .car-info {
-            position: sticky;
-            top: 20px;
-            align-self: start;
-        }
-        .car-image {
-            width: 100%;
-            height: auto;
-            margin-bottom: 30px;
-        }
-        .car-specs {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .spec-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
-        }
-        .spec-item i {
-            font-size: 24px;
-            width: 30px;
-        }
+        .btn-submit { width: 100%; background: #d84444; color: white; border: none; padding: 18px; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .btn-submit:hover { background: #c13838; transform: translateY(-2px); }
+        .btn-submit:disabled { background: #ccc; cursor: not-allowed; transform: none; }
         
-        /* Right: Form */
-        .booking-form {
-            padding-right: 20px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: #d84444;
-            box-shadow: 0 0 0 3px rgba(216, 68, 68, 0.1);
-        }
-        .form-control::placeholder {
-            color: #999;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        textarea.form-control {
-            resize: none;
-            height: 100px;
-        }
-        .form-note {
-            font-size: 12px;
-            color: #888;
-            margin-top: 5px;
-        }
+        .alert { padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         
-        /* Deposit Box */
-        .deposit-box {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 12px 20px;
-            margin: 20px 0;
-            font-size: 14px;
-        }
-        
-        /* Final Calculations */
-        .final-section {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 2px solid #f0f0f0;
-        }
-        .final-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 25px;
-        }
-        .final-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        .final-price {
-            font-size: 48px;
-            font-weight: 700;
-            color: #d84444;
-        }
-        .btn-pay {
-            background: #ff6b3d;
-            color: white;
-            border: none;
-            padding: 18px 80px;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-pay:hover {
-            background: #ff5722;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255,107,61,0.3);
-        }
-        .terms-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-        }
-        .terms-checkbox input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        .terms-link {
-            color: #007bff;
-            text-decoration: none;
-        }
-        
-        /* Footer */
-        .footer {
-            background: #d84444;
-            color: white;
-            padding: 40px 0 20px;
-            margin-top: 60px;
-        }
-        .footer-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .footer-top {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        .footer-item {
-            display: flex;
-            align-items: start;
-            gap: 15px;
-        }
-        .footer-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .footer-icon i {
-            font-size: 18px;
-        }
-        .footer-title {
-            font-weight: 700;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-        .footer-text {
-            font-size: 14px;
-            line-height: 1.6;
-            color: rgba(255,255,255,0.9);
-        }
-        .footer-bottom {
-            display: grid;
-            grid-template-columns: auto 1fr 1fr;
-            gap: 60px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-        }
-        .footer-logo {
-            background: white;
-            color: #d84444;
-            padding: 8px 20px;
-            font-weight: 700;
-            font-size: 1.3rem;
-            border-radius: 4px;
-            letter-spacing: 2px;
-            align-self: start;
-        }
-        .social-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .social-icon {
-            width: 35px;
-            height: 35px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .social-icon:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-3px);
-        }
-        .footer-links {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .footer-section-title {
-            font-weight: 700;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        .footer-link {
-            color: rgba(255,255,255,0.9);
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        .footer-link:hover {
-            color: white;
-            padding-left: 5px;
-        }
-        
-        @media (max-width: 1024px) {
-            .form-layout {
-                grid-template-columns: 1fr;
-            }
-            .car-info {
-                position: relative;
-            }
-        }
+        .footer { background: #d84444; color: white; padding: 40px 0; margin-top: 60px; }
+        .footer-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        .footer-top { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 40px; }
+        .footer-item { display: flex; gap: 15px; }
+        .footer-icon { width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .footer-title { font-weight: 700; margin-bottom: 8px; }
+        .footer-text { font-size: 14px; line-height: 1.6; }
+        .footer-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.2); }
+        .footer-logo { font-size: 32px; font-weight: 700; margin-bottom: 20px; }
+        .social-icons { display: flex; gap: 15px; }
+        .social-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
+        .social-icon:hover { background: rgba(255,255,255,0.2); }
+        .footer-section-title { font-weight: 700; margin-bottom: 15px; font-size: 18px; }
+        .footer-links { display: flex; flex-direction: column; gap: 10px; }
+        .footer-link { color: white; text-decoration: none; font-size: 14px; transition: all 0.3s; }
+        .footer-link:hover { padding-left: 5px; }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="header">
         <div class="header-container">
             <div class="logo">HASTA</div>
-            <div class="nav-icons">
-                <div class="nav-icon">
-                    <i class="fas fa-home"></i>
-                </div>
-                <div class="nav-icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <div class="nav-icon">
-                    <i class="fas fa-th"></i>
-                </div>
-                <div class="nav-icon active">
-                    <i class="fas fa-car"></i>
-                </div>
-                <div class="nav-icon">
-                    <i class="fas fa-history"></i>
-                </div>
-                <div class="nav-icon">
-                    <i class="fas fa-cog"></i>
-                </div>
-                <button class="btn-login">Login</button>
-                <img src="https://ui-avatars.com/api/?name=User&background=d84444&color=fff" 
-                     style="width: 50px; height: 50px; border-radius: 50%; margin-left: 10px;" alt="Profile">
-            </div>
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-container">
-        <!-- Page Header -->
         <div class="page-header">
             <a href="{{ route('cars.show', $car->id) }}" class="back-btn">
                 <i class="fas fa-chevron-left"></i>
@@ -418,144 +96,326 @@
             <h1 class="page-title">{{ $car->full_name }}</h1>
         </div>
 
-        <!-- Form Layout -->
-        <form action="{{ route('bookings.store') }}" method="POST">
-            @csrf
-            <input type="hidden" name="car_id" value="{{ $car->id }}">
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
+        @if(session('error'))
+            <div class="alert alert-error">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-error">
+                <ul style="margin-left: 20px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('bookings.store') }}" method="POST" id="bookingForm">
+            @csrf
+            
+            <!-- Hidden Fields -->
+            <input type="hidden" name="car_id" value="{{ $car->id }}">
+            <input type="hidden" id="hidden_duration" name="duration" value="">
+            <input type="hidden" id="hidden_base_price" name="base_price" value="">
+            <input type="hidden" id="hidden_discount_amount" name="discount_amount" value="0">
+            
             <div class="form-layout">
-                <!-- Left: Car Info -->
+                <!-- Car Info Sidebar -->
                 <div class="car-info">
                     <img src="{{ $car->image }}" alt="{{ $car->full_name }}" class="car-image">
-                    
                     <div class="car-specs">
                         <div class="spec-item">
                             <i class="fas fa-snowflake" style="color: #00bcd4;"></i>
-                            <span><strong>Air Conditioner</strong></span>
+                            <strong>AC Included</strong>
                         </div>
                         <div class="spec-item">
                             <i class="fas fa-users" style="color: #4caf50;"></i>
-                            <span><strong>{{ $car->passengers }} Passengers</strong></span>
+                            <strong>{{ $car->passengers }} Passengers</strong>
                         </div>
                         <div class="spec-item">
                             <i class="fas fa-gas-pump" style="color: #ff9800;"></i>
-                            <span><strong>{{ $car->fuel_type }}</strong></span>
+                            <strong>{{ $car->fuel_type }}</strong>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-dollar-sign" style="color: #d84444;"></i>
+                            <strong>RM {{ number_format($car->daily_rate, 2) }}/day</strong>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right: Booking Form -->
+                <!-- Booking Form -->
                 <div class="booking-form">
-                    <!-- Pick-Up Location -->
                     <div class="form-group">
-                        <label class="form-label">Pick-Up Location</label>
+                        <label class="form-label">Pick-Up Location *</label>
                         <input type="text" name="pickup_location" class="form-control" 
-                               placeholder="Pick-Up Location" value="{{ old('pickup_location') }}" required>
-                        @error('pickup_location')
-                            <small style="color: #f44336;">{{ $message }}</small>
-                        @enderror
+                               placeholder="Where are you picking up the car?" 
+                               value="{{ old('pickup_location') }}" required>
                     </div>
 
-                    <!-- Drop-Off Location -->
                     <div class="form-group">
-                        <label class="form-label">Drop-Off Location</label>
+                        <label class="form-label">Drop-Off Location *</label>
                         <input type="text" name="dropoff_location" class="form-control" 
-                               placeholder="Drop-Off Location" value="{{ old('dropoff_location') }}">
+                               placeholder="Where will you return the car?" 
+                               value="{{ old('dropoff_location') }}" required>
                     </div>
-
-                    <!-- Destination -->
+                    
                     <div class="form-group">
-                        <label class="form-label">Destination</label>
+                        <label class="form-label">Destination (Optional)</label>
                         <input type="text" name="destination" class="form-control" 
-                               placeholder="Destination" value="{{ old('destination') }}">
+                               placeholder="Where are you traveling to?" 
+                               value="{{ old('destination') }}">
                     </div>
 
-                    <!-- Pickup Date & Time -->
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Pickup Date</label>
-                            <input type="text" name="pickup_date" class="form-control" 
-                                   placeholder="DD/MM/YY" value="{{ old('pickup_date') }}" 
-                                   onfocus="(this.type='date')" required>
+                            <label class="form-label">Pickup Date *</label>
+                            <input type="date" name="pickup_date" id="pickup_date" 
+                                   class="form-control" value="{{ old('pickup_date') }}" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Pickup Time</label>
-                            <input type="text" name="pickup_time" class="form-control" 
-                                   placeholder="---" value="{{ old('pickup_time') }}"
-                                   onfocus="(this.type='time')">
+                            <label class="form-label">Pickup Time *</label>
+                            <input type="time" name="pickup_time" class="form-control" 
+                                   value="{{ old('pickup_time') }}" required>
                         </div>
                     </div>
 
-                    <!-- Return Date & Time -->
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Return Date</label>
-                            <input type="text" name="return_date" class="form-control" 
-                                   placeholder="DD/MM/YY" value="{{ old('return_date') }}"
-                                   onfocus="(this.type='date')" required>
+                            <label class="form-label">Return Date *</label>
+                            <input type="date" name="return_date" id="return_date" 
+                                   class="form-control" value="{{ old('return_date') }}" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Return Time</label>
-                            <input type="text" name="return_time" class="form-control" 
-                                   placeholder="---" value="{{ old('return_time') }}"
-                                   onfocus="(this.type='time')">
+                            <label class="form-label">Return Time *</label>
+                            <input type="time" name="return_time" class="form-control" 
+                                   value="{{ old('return_time') }}" required>
                         </div>
                     </div>
 
-                    <!-- Duration & Voucher -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Duration (Days)</label>
-                            <input type="text" id="duration" class="form-control" 
-                                   placeholder="---" readonly>
+                    <!-- Voucher Section -->
+                    <div class="voucher-section">
+                        <h3>🎟️ Have a Voucher Code?</h3>
+                        <div class="voucher-input-group">
+                            <input type="text" id="voucher_input" name="voucher" 
+                                   class="form-control" placeholder="Enter voucher code" 
+                                   value="{{ old('voucher') }}">
+                            <button type="button" class="btn-apply-voucher" id="apply_voucher_btn">
+                                Apply
+                            </button>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Voucher</label>
-                            <select name="voucher" class="form-control">
-                                <option value="">---</option>
-                                @foreach($vouchers as $voucher)
-                                    <option value="{{ $voucher->code }}">{{ $voucher->code }} - {{ $voucher->description }}</option>
-                                @endforeach
-                            </select>
+                        <div class="voucher-message" id="voucher_message"></div>
+                    </div>
+
+                    <!-- Price Summary -->
+                    <div class="price-summary">
+                        <h3>💰 Price Breakdown</h3>
+                        <div class="price-row">
+                            <span>Duration:</span>
+                            <span id="duration_display">-- days</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Base Price ({{ $car->daily_rate }}/day):</span>
+                            <span>RM <span id="base_price_display">0.00</span></span>
+                        </div>
+                        <div class="price-row discount" id="discount_row" style="display: none;">
+                            <span>Discount:</span>
+                            <span>- RM <span id="discount_display">0.00</span></span>
+                        </div>
+                        <div class="price-row total">
+                            <span>Total:</span>
+                            <span>RM <span id="total_price_display">0.00</span></span>
                         </div>
                     </div>
 
-                    <!-- Remarks -->
-                    <div class="form-group">
-                        <label class="form-label">Remarks</label>
-                        <textarea name="remarks" class="form-control" 
-                                  placeholder="for additional request">{{ old('remarks') }}</textarea>
-                        <div class="form-note">100 characters remaining</div>
-                    </div>
-
-                    <!-- Deposit -->
                     <div class="deposit-box">
-                        <strong>Deposit (RM): 100</strong>
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Note:</strong> A 10% deposit (RM <span id="deposit_display">0.00</span>) will be calculated and must be paid during pickup.
                     </div>
 
-                    <!-- Final Calculations -->
+                    <!-- Terms & Submit -->
                     <div class="final-section">
-                        <h2 class="final-title">Final Calculations</h2>
-                        <div class="final-content">
-                            <div class="final-price" id="totalPrice">RM340</div>
-                            <button type="submit" class="btn-pay">Pay Now</button>
-                        </div>
                         <div class="terms-checkbox">
                             <input type="checkbox" id="terms" required>
                             <label for="terms">
-                                I've read and accept the <a href="#" class="terms-link">Terms and Conditions</a>
+                                I accept the <a href="#" class="terms-link">Terms and Conditions</a>
                             </label>
                         </div>
+                        
+                        <button type="submit" class="btn-submit" id="submit_btn">
+                            <i class="fas fa-check-circle"></i> Confirm Booking
+                        </button>
                     </div>
                 </div>
             </div>
         </form>
     </div>
 
+    <script>
+        const dailyRate = {{ $car->daily_rate }};
+        let currentDiscount = 0;
+        let discountPercentage = 0;
+        let voucherApplied = false;
+
+        // Get form elements
+        const pickupDateInput = document.getElementById('pickup_date');
+        const returnDateInput = document.getElementById('return_date');
+        const voucherInput = document.getElementById('voucher_input');
+        const applyVoucherBtn = document.getElementById('apply_voucher_btn');
+        const voucherMessage = document.getElementById('voucher_message');
+        const submitBtn = document.getElementById('submit_btn');
+        
+        // Display elements
+        const durationDisplay = document.getElementById('duration_display');
+        const basePriceDisplay = document.getElementById('base_price_display');
+        const discountDisplay = document.getElementById('discount_display');
+        const totalPriceDisplay = document.getElementById('total_price_display');
+        const depositDisplay = document.getElementById('deposit_display');
+        const discountRow = document.getElementById('discount_row');
+        
+        // Hidden fields
+        const hiddenDuration = document.getElementById('hidden_duration');
+        const hiddenBasePrice = document.getElementById('hidden_base_price');
+        const hiddenDiscountAmount = document.getElementById('hidden_discount_amount');
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        pickupDateInput.setAttribute('min', today);
+        returnDateInput.setAttribute('min', today);
+
+        // Calculate prices
+        function calculatePrices() {
+            const pickupDate = pickupDateInput.value;
+            const returnDate = returnDateInput.value;
+
+            if (!pickupDate || !returnDate) {
+                return;
+            }
+
+            const pickup = new Date(pickupDate);
+            const returnD = new Date(returnDate);
+            const diffTime = returnD - pickup;
+            const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (days < 1) {
+                durationDisplay.textContent = '-- days';
+                basePriceDisplay.textContent = '0.00';
+                totalPriceDisplay.textContent = '0.00';
+                depositDisplay.textContent = '0.00';
+                return;
+            }
+
+            const basePrice = days * dailyRate;
+            const discountAmount = (basePrice * discountPercentage) / 100;
+            const totalPrice = basePrice - discountAmount;
+            const depositAmount = totalPrice * 0.1;
+
+            // Update displays
+            durationDisplay.textContent = `${days} day${days > 1 ? 's' : ''}`;
+            basePriceDisplay.textContent = basePrice.toFixed(2);
+            discountDisplay.textContent = discountAmount.toFixed(2);
+            totalPriceDisplay.textContent = totalPrice.toFixed(2);
+            depositDisplay.textContent = depositAmount.toFixed(2);
+
+            // Update hidden fields
+            hiddenDuration.value = days;
+            hiddenBasePrice.value = basePrice.toFixed(2);
+            hiddenDiscountAmount.value = discountAmount.toFixed(2);
+
+            // Show/hide discount row
+            if (discountAmount > 0) {
+                discountRow.style.display = 'flex';
+            } else {
+                discountRow.style.display = 'none';
+            }
+        }
+
+        // Apply voucher
+        applyVoucherBtn.addEventListener('click', async function() {
+            const voucherCode = voucherInput.value.trim();
+            const basePrice = parseFloat(hiddenBasePrice.value);
+
+            if (!voucherCode) {
+                showVoucherMessage('Please enter a voucher code', 'error');
+                return;
+            }
+
+            if (!basePrice || basePrice === 0) {
+                showVoucherMessage('Please select pickup and return dates first', 'error');
+                return;
+            }
+
+            // Show loading
+            applyVoucherBtn.textContent = 'Checking...';
+            applyVoucherBtn.disabled = true;
+
+            try {
+                const response = await fetch('{{ route('voucher.validate') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        code: voucherCode,
+                        base_price: basePrice
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.valid) {
+                    discountPercentage = data.discount_percentage;
+                    voucherApplied = true;
+                    calculatePrices();
+                    showVoucherMessage(data.message, 'success');
+                    applyVoucherBtn.textContent = 'Applied ✓';
+                    applyVoucherBtn.style.background = '#28a745';
+                    voucherInput.disabled = true;
+                } else {
+                    showVoucherMessage(data.message || 'Invalid voucher code', 'error');
+                    applyVoucherBtn.textContent = 'Apply';
+                    applyVoucherBtn.disabled = false;
+                    discountPercentage = 0;
+                    calculatePrices();
+                }
+            } catch (error) {
+                showVoucherMessage('Error validating voucher. Please try again.', 'error');
+                applyVoucherBtn.textContent = 'Apply';
+                applyVoucherBtn.disabled = false;
+            }
+        });
+
+        function showVoucherMessage(message, type) {
+            voucherMessage.textContent = message;
+            voucherMessage.className = `voucher-message ${type}`;
+            voucherMessage.style.display = 'block';
+        }
+
+        // Event listeners
+        pickupDateInput.addEventListener('change', calculatePrices);
+        returnDateInput.addEventListener('change', calculatePrices);
+
+        // Form submission
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        });
+
+        // Initial calculation
+        calculatePrices();
+    </script>
+
     <!-- Footer -->
     <div class="footer">
         <div class="footer-container">
-            <!-- Top Section -->
             <div class="footer-top">
                 <div class="footer-item">
                     <div class="footer-icon">
@@ -589,7 +449,6 @@
                 </div>
             </div>
 
-            <!-- Bottom Section -->
             <div class="footer-bottom">
                 <div>
                     <div class="footer-logo">HASTA</div>
@@ -623,34 +482,5 @@
             </div>
         </div>
     </div>
-
-    <!-- Auto Calculate Duration & Price -->
-    <script>
-        const dailyRate = {{ $car->daily_rate }};
-        const pickupDateInput = document.querySelector('[name="pickup_date"]');
-        const returnDateInput = document.querySelector('[name="return_date"]');
-        const durationField = document.getElementById('duration');
-        const totalPriceField = document.getElementById('totalPrice');
-
-        function calculateDuration() {
-            if (pickupDateInput.value && returnDateInput.value) {
-                const pickup = new Date(pickupDateInput.value);
-                const returnD = new Date(returnDateInput.value);
-                const days = Math.ceil((returnD - pickup) / (1000 * 60 * 60 * 24));
-                
-                if (days > 0) {
-                    durationField.value = days;
-                    const total = days * dailyRate;
-                    totalPriceField.textContent = 'RM' + total;
-                } else {
-                    durationField.value = '---';
-                    totalPriceField.textContent = 'RM0';
-                }
-            }
-        }
-
-        pickupDateInput.addEventListener('change', calculateDuration);
-        returnDateInput.addEventListener('change', calculateDuration);
-    </script>
 </body>
 </html>

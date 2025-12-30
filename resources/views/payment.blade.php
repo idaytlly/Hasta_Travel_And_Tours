@@ -8,72 +8,64 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
-    <!-- Top Navigation -->
     <nav class="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4">
-        <div class="flex items-center justify-between">
-            <!-- Logo -->
-            <div class="bg-white px-4 py-2 rounded-md">
-                <span class="text-red-500 font-bold text-lg">HASTA</span>
-            </div>
-
-            <!-- Navigation Icons -->
-            <div class="flex items-center space-x-8">
-                <a href="#" class="text-white text-center hover:opacity-80 transition">
-                    <i class="fas fa-home text-xl block mb-1"></i>
-                    <span class="text-xs">Home</span>
-                </a>
-                <a href="#" class="text-white text-center hover:opacity-80 transition">
-                    <i class="fas fa-bell text-xl block mb-1"></i>
-                    <span class="text-xs">Notifications</span>
-                </a>
-                <a href="#" class="text-white text-center hover:opacity-80 transition">
-                    <i class="fas fa-th text-xl block mb-1"></i>
-                    <span class="text-xs">Dashboard</span>
-                </a>
-                <a href="#" class="bg-red-400 bg-opacity-40 text-white text-center px-6 py-2 rounded-lg">
-                    <i class="fas fa-car text-xl block mb-1"></i>
-                    <span class="text-xs">Vehicle Listing</span>
-                </a>
-                <a href="#" class="text-white text-center hover:opacity-80 transition">
-                    <i class="fas fa-history text-xl block mb-1"></i>
-                    <span class="text-xs">History</span>
-                </a>
-                <a href="#" class="text-white text-center hover:opacity-80 transition">
-                    <i class="fas fa-cog text-xl block mb-1"></i>
-                    <span class="text-xs">Settings</span>
-                </a>
-            </div>
-
-            <!-- Login and Profile -->
-            <div class="flex items-center space-x-4">
-                <button class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-lg transition">
-                    Login
-                </button>
-                <img src="https://ui-avatars.com/api/?name=Profile&background=3b82f6&color=fff" alt="Profile" class="w-12 h-12 rounded-full border-2 border-white">
-            </div>
+    <div class="flex items-center"> <div class="flex-none bg-white px-4 py-2 rounded-md">
+            <span class="text-red-500 font-bold text-lg">HASTA</span>
         </div>
-    </nav>
 
-    <!-- Main Content -->
+        <div class="flex-1 flex justify-center items-center space-x-8">
+            <a href="#" class="text-white text-center hover:opacity-80 transition">
+                <i class="fas fa-home text-xl block mb-1"></i>
+                <span class="text-xs">Home</span>
+            </a>
+            <a href="#" class="text-white text-center hover:opacity-80 transition">
+                <i class="fas fa-bell text-xl block mb-1"></i>
+                <span class="text-xs">Notifications</span>
+            </a>
+            <a href="#" class="text-white text-center hover:opacity-80 transition">
+                <i class="fas fa-th text-xl block mb-1"></i>
+                <span class="text-xs">Dashboard</span>
+            </a>
+            <a href="#" class="bg-red-400 bg-opacity-40 text-white text-center px-6 py-2 rounded-lg">
+                <i class="fas fa-car text-xl block mb-1"></i>
+                <span class="text-xs">Vehicle Listing</span>
+            </a>
+            <a href="#" class="text-white text-center hover:opacity-80 transition">
+                <i class="fas fa-history text-xl block mb-1"></i>
+                <span class="text-xs">History</span>
+            </a>
+            <a href="#" class="text-white text-center hover:opacity-80 transition">
+                <i class="fas fa-cog text-xl block mb-1"></i>
+                <span class="text-xs">Settings</span>
+            </a>
+        </div>
+
+    </div>
+</nav>
+
     <main class="flex-1 px-6 py-8">
-        <!-- Back Button and Title -->
         <div class="flex items-center space-x-3 mb-8">
-            <button class="w-12 h-12 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition">
+            <button onclick="window.history.back()" class="w-12 h-12 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition">
                 <i class="fas fa-chevron-left text-white text-lg"></i>
             </button>
             <h1 class="text-3xl font-bold text-gray-800">Payment</h1>
         </div>
 
-        <!-- Payment Card -->
         <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-12">
         <form 
             method="POST" 
-            action="/receipt" 
+            action="{{ route('receipt.show') }}" 
             enctype="multipart/form-data"
             onsubmit="handleSubmit(event)"
         >
-                @csrf
-            <!-- Company Name -->
+            @csrf
+
+            @if(isset($bookingData))
+                @foreach($bookingData as $key => $value)
+                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                @endforeach
+            @endif
+
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">HASTA TRAVEL & TOURS SDN BHD</h2>
 
             <div class="flex justify-center mb-8">
@@ -90,12 +82,10 @@
                     </div>
                 </div>
             </div>            
-            <!-- Total Payment -->
             <div class="text-center mb-6">
-                <h3 class="text-xl font-bold text-gray-800">Total Payment : <span class="text-red-500">RM340</span></h3>
+                <h3 class="text-xl font-bold text-gray-800"> Total Payment : RM {{ number_format($bookingData['total_price'], 2) }}</span></h3>
             </div>
 
-            <!-- File Upload -->
             <div class="flex flex-col items-center mb-6">
             <label class="relative">
                 <input 
@@ -128,8 +118,7 @@
                 No File Chosen
             </p>
 
-            <!-- Submit Button -->
-             <div class="flex justify-center">
+            <div class="flex justify-center">
                 <button type="submit"
                     class="px-16 py-4 bg-gradient-to-r from-red-500 to-orange-500 text-white font-bold text-lg rounded-xl hover:from-red-600 hover:to-orange-600 transition shadow-lg">
                     Submit
@@ -139,16 +128,13 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-gradient-to-r from-red-500 to-red-600 text-white py-12 mt-auto">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <!-- Logo -->
                 <div>
                     <div class="bg-white px-4 py-2 rounded-md inline-block mb-6">
                         <span class="text-red-500 font-bold text-xl">HASTA</span>
                     </div>
-                    <!-- Social Media Icons -->
                     <div class="flex space-x-4">
                         <a href="#" class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
                             <i class="fab fa-facebook-f"></i>
@@ -165,7 +151,6 @@
                     </div>
                 </div>
 
-                <!-- Address -->
                 <div>
                     <div class="flex items-start space-x-3 mb-3">
                         <div class="w-10 h-10 bg-orange-400 rounded-full flex items-center justify-center flex-shrink-0">
@@ -179,7 +164,6 @@
                     </div>
                 </div>
 
-                <!-- Useful Links -->
                 <div>
                     <h4 class="font-bold mb-4">Useful links</h4>
                     <ul class="space-y-2 text-sm">
@@ -191,7 +175,6 @@
                     </ul>
                 </div>
 
-                <!-- Vehicles -->
                 <div>
                     <h4 class="font-bold mb-4">Vehicles</h4>
                     <ul class="space-y-2 text-sm">
@@ -204,7 +187,6 @@
                 </div>
             </div>
 
-            <!-- Contact Info -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-white border-opacity-20 pt-8">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 bg-orange-400 rounded-full flex items-center justify-center">
@@ -228,103 +210,8 @@
         </div>
     </footer>
 
-    <script>
-        const fileInput = document.getElementById('fileInput');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const fileNameText = document.getElementById('fileName');
-        const helpText = document.getElementById('fileHelpText');
-        const form = document.querySelector('form');
-        const modal = document.getElementById('successModal');
-
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
-        const maxSize = 5 * 1024 * 1024; // 5MB
-
-        fileInput.addEventListener('change', function () {
-            // Reset first
-            uploadBtn.classList.remove('bg-green-500', 'border-green-600', 'text-white', 'border-red-500');
-            uploadBtn.classList.add('bg-gray-100', 'border-gray-300', 'text-gray-700');
-            helpText.classList.remove('text-red-500');
-            helpText.classList.add('text-gray-400');
-
-            if (fileInput.files.length === 0) {
-                fileNameText.textContent = 'No File Chosen';
-                helpText.textContent = 'Accepted formats: JPG, PNG, and PDF. Max size: 5MB *';
-                return;
-            }
-
-            const file = fileInput.files[0];
-
-            // Validate type
-            if (!allowedTypes.includes(file.type)) {
-                helpText.textContent = 'Invalid file type! Only JPG, PNG, or PDF allowed *';
-                helpText.classList.remove('text-gray-400');
-                helpText.classList.add('text-red-500');
-                fileInput.value = '';
-                fileNameText.textContent = 'No File Chosen';
-                return;
-            }
-
-            // Validate size
-            if (file.size > maxSize) {
-                helpText.textContent = 'File too large! Maximum size is 5MB *';
-                helpText.classList.remove('text-gray-400');
-                helpText.classList.add('text-red-500');
-                fileInput.value = '';
-                fileNameText.textContent = 'No File Chosen';
-                uploadBtn.classList.add('border-red-500'); 
-                return;
-            }
-
-            // If valid
-            fileNameText.textContent = file.name;
-            helpText.textContent = 'File ready to submit.';
-            helpText.classList.remove('text-red-500');
-            helpText.classList.add('text-gray-400');
-
-            uploadBtn.classList.remove('bg-gray-100', 'border-gray-300', 'text-gray-700', 'border-red-500');
-            uploadBtn.classList.add('bg-green-500', 'border-green-600', 'text-white');
-            uploadBtn.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                <span>Uploaded</span>
-            `;
-        });
-
-        // Handle form submit
-        function handleSubmit(e) {
-            const fileInput = document.getElementById('fileInput');
-            const modal = document.getElementById('successModal');
-            const helpText = document.getElementById('fileHelpText');
-
-            // File required check
-            if (!fileInput.files.length) {
-                helpText.textContent = 'Please upload a file *';
-                helpText.classList.remove('text-gray-400');
-                helpText.classList.add('text-red-500');
-                e.preventDefault();
-                return;
-            }
-
-            // Prevent default submit for modal
-            e.preventDefault();
-
-            // Show success modal
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-
-            // Delay submit 2s
-            setTimeout(() => {
-                e.target.submit();
-            }, 2000);
-        }
-        function closeModal() {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-    </script>
-    <!-- Success Modal -->
     <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
         <div class="bg-white rounded-2xl p-8 max-w-sm text-center shadow-lg flex flex-col items-center">
-            <!-- Green Tick -->
             <div class="w-20 h-20 flex items-center justify-center bg-green-100 rounded-full mb-4">
                 <i class="fas fa-check text-green-600 text-4xl"></i>
             </div>
@@ -335,5 +222,69 @@
             </button>
         </div>
     </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileNameText = document.getElementById('fileName');
+        const helpText = document.getElementById('fileHelpText');
+        const modal = document.getElementById('successModal');
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        fileInput.addEventListener('change', function () {
+            uploadBtn.classList.remove('bg-green-500', 'border-green-600', 'text-white', 'border-red-500');
+            uploadBtn.classList.add('bg-gray-100', 'border-gray-300', 'text-gray-700');
+            helpText.classList.remove('text-red-500');
+            helpText.classList.add('text-gray-400');
+
+            if (fileInput.files.length === 0) {
+                fileNameText.textContent = 'No File Chosen';
+                return;
+            }
+
+            const file = fileInput.files[0];
+
+            if (!allowedTypes.includes(file.type)) {
+                helpText.textContent = 'Invalid file type! *';
+                helpText.classList.add('text-red-500');
+                fileInput.value = '';
+                return;
+            }
+
+            if (file.size > maxSize) {
+                helpText.textContent = 'File too large! *';
+                helpText.classList.add('text-red-500');
+                fileInput.value = '';
+                return;
+            }
+
+            fileNameText.textContent = file.name;
+            uploadBtn.classList.add('bg-green-500', 'text-white');
+        });
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            if (!fileInput.files.length) {
+                alert('Please upload proof.');
+                return;
+            }
+
+            // Show success modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            // Wait 2 seconds then submit the actual form
+            setTimeout(() => {
+                e.target.submit();
+            }, 2000);
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    </script>
 </body>
 </html>

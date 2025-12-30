@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Voucher extends Model
 {
@@ -12,30 +11,28 @@ class Voucher extends Model
 
     protected $fillable = [
         'code',
-        'description',
-        'type',
-        'value',
+        'discount_percentage',
+        'is_active',
         'valid_from',
         'valid_until',
-        'usage_limit',
-        'used_count',
-        'is_active',
+        'max_uses',
+        'times_used',
     ];
 
     protected $casts = [
-        'valid_from' => 'date',
-        'valid_until' => 'date',
-        'value' => 'decimal:2',
         'is_active' => 'boolean',
+        'valid_from' => 'datetime',
+        'valid_until' => 'datetime',
     ];
 
-    public function isValid(): bool
+    // Check if voucher is valid
+    public function isValid()
     {
         if (!$this->is_active) {
             return false;
         }
 
-        $now = Carbon::now();
+        $now = now();
 
         if ($this->valid_from && $now->lt($this->valid_from)) {
             return false;
@@ -45,37 +42,16 @@ class Voucher extends Model
             return false;
         }
 
-        if ($this->usage_limit && $this->used_count >= $this->usage_limit) {
+        if ($this->max_uses && $this->times_used >= $this->max_uses) {
             return false;
         }
 
         return true;
     }
 
-    public function calculateDiscount(float $amount): float
+    // Increment usage
+    public function incrementUsage()
     {
-        if ($this->type === 'percentage') {
-            return round($amount * ($this->value / 100), 2);
-        }
-
-        return min($this->value, $amount);
-    }
-
-    public function incrementUsage(): void
-    {
-        $this->increment('used_count');
-    }
-
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true)
-                     ->where(function ($q) {
-                         $q->whereNull('valid_from')
-                           ->orWhere('valid_from', '<=', now());
-                     })
-                     ->where(function ($q) {
-                         $q->whereNull('valid_until')
-                           ->orWhere('valid_until', '>=', now());
-                     });
+        $this->increment('times_used');
     }
 }

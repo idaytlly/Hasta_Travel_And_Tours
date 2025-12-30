@@ -1,6 +1,3 @@
-// ============================================================================
-// FILE: resources/views/cars/show.blade.php
-// ============================================================================
 
 <!DOCTYPE html>
 <html lang="en">
@@ -495,10 +492,7 @@
                 <div class="nav-icon">
                     <i class="fas fa-cog"></i>
                 </div>
-                <button class="btn-login">Login</button>
-                <img src="https://ui-avatars.com/api/?name=User&background=d84444&color=fff" 
-                     style="width: 50px; height: 50px; border-radius: 50%; margin-left: 10px;" alt="Profile">
-            </div>
+                </div>
         </div>
     </div>
 

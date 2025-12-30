@@ -54,18 +54,19 @@
             </a>
 
             <div class="text-center mb-10">
-                <h1 class="text-4xl font-black text-gray-900 mb-6">{{ $booking->car->model_name }}</h1>
+                <h1 class="text-4xl font-black text-gray-900 mb-6">{{ $booking->car->full_name ?? $booking->car->model_name }}</h1>
                 <div class="bg-white rounded-[30px] shadow-lg p-4 inline-block border border-gray-100">
-    @if($booking->car && $booking->car->image)
-        <img src="{{ asset('images/cars/' . $booking->car->image) }}" 
-             alt="{{ $booking->car->model_name }}" 
-             class="w-[500px] object-contain">
-    @else
-        <div class="w-[500px] h-[250px] bg-gray-200 flex items-center justify-center rounded-xl">
-            <span class="text-gray-500">No Image Found</span>
-        </div>
-    @endif
-</div>
+                    @if($booking->car && $booking->car->image)
+                        <img src="{{ $booking->car->image }}" 
+                             alt="{{ $booking->car->full_name ?? $booking->car->model_name }}" 
+                             class="w-[500px] h-[300px] object-contain"
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-[500px] h-[250px] bg-gray-200 flex items-center justify-center rounded-xl\'><span class=\'text-gray-500\'>Image not found</span></div>'">
+                    @else
+                        <div class="w-[500px] h-[250px] bg-gray-200 flex items-center justify-center rounded-xl">
+                            <span class="text-gray-500">No Image Available</span>
+                        </div>
+                    @endif
+                </div>
             </div>
 
             <h2 class="text-3xl font-black text-gray-900 text-center mb-12">Booking Details</h2>
@@ -73,27 +74,23 @@
             <div class="space-y-4 px-10">
                 <div class="flex items-center">
                     <span class="label-text">Full Name</span>
-                    <div class="detail-box">{{ $booking->user->name ?? $booking->customer_name }}</div>
+                    <div class="detail-box">{{ $booking->user->name ?? 'N/A' }}</div>
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Identity Card Number</span>
-                    <div class="detail-box">{{ $booking->customer_ic }}</div>
+                    <div class="detail-box">{{ $booking->user->ic ?? 'N/A' }}</div>
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Phone Number</span>
-                    <div class="detail-box">{{ $booking->customer_phone }}</div>
+                    <div class="detail-box">{{ $booking->user->phone ?? 'N/A' }}</div>
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Email Address</span>
-                    <div class="detail-box">{{ $booking->user->email ?? $booking->customer_email }}</div>
-                </div>
-                <div class="flex items-center">
-                    <span class="label-text">Address</span>
-                    <div class="detail-box">{{ $booking->full_address }}</div>
+                    <div class="detail-box">{{ $booking->user->email ?? 'N/A' }}</div>
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Destination</span>
-                    <div class="detail-box">{{ $booking->destination }}</div>
+                    <div class="detail-box">{{ $booking->destination ?? 'N/A' }}</div>
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Pickup Location</span>
@@ -105,11 +102,11 @@
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Pickup Date & Time</span>
-                    <div class="detail-box">{{ $booking->pickup_date->format('d M Y') }}, {{ $booking->pickup_time }}</div>
+                    <div class="detail-box">{{ \Carbon\Carbon::parse($booking->pickup_date)->format('d M Y') }}, {{ $booking->pickup_time }}</div>
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Return Date & Time</span>
-                    <div class="detail-box">{{ $booking->return_date->format('d M Y') }}, {{ $booking->return_time }}</div>
+                    <div class="detail-box">{{ \Carbon\Carbon::parse($booking->return_date)->format('d M Y') }}, {{ $booking->return_time }}</div>
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Rental Duration (Days)</span>
@@ -117,11 +114,11 @@
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Deposit (RM)</span>
-                    <div class="detail-box">RM {{ number_format($booking->deposit_amount, 2) }}</div>
+                    <div class="detail-box">RM {{ number_format($booking->deposit_amount ?? 0, 2) }}</div>
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Price (RM)</span>
-                    <div class="detail-box">RM {{ number_format($booking->base_price, 2) }}</div>
+                    <div class="detail-box">RM {{ number_format($booking->base_price ?? 0, 2) }}</div>
                 </div>
                 <div class="flex items-center">
                     <span class="label-text">Total Payment (RM)</span>
@@ -134,7 +131,7 @@
                 <form action="{{ route('admin.bookings.updateStatus', $booking->id) }}" method="POST">
                     @csrf 
                     @method('PATCH')
-                    <input type="hidden" name="status" value="Rejected">
+                    <input type="hidden" name="status" value="cancelled">
                     <button type="submit" class="border-2 border-[#f27041] text-[#f27041] px-16 py-3 rounded-2xl font-black text-xl hover:bg-orange-50 transition-all">
                         Reject
                     </button>
@@ -143,7 +140,7 @@
                 <form action="{{ route('admin.bookings.updateStatus', $booking->id) }}" method="POST">
                     @csrf 
                     @method('PATCH')
-                    <input type="hidden" name="status" value="Approved">
+                    <input type="hidden" name="status" value="confirmed">
                     <button type="submit" class="bg-[#f27041] text-white px-16 py-3 rounded-2xl font-black text-xl hover:bg-[#e66030] shadow-xl shadow-orange-200 transition-all">
                         Approve
                     </button>
@@ -151,8 +148,16 @@
             </div>
             @else
             <div class="text-center mt-12">
-                <span class="text-2xl font-black uppercase {{ $booking->status == 'Approved' ? 'text-green-500' : 'text-red-500' }}">
-                    STATUS: {{ $booking->status }}
+                @php
+                    $statusColors = [
+                        'confirmed' => 'text-green-500',
+                        'cancelled' => 'text-red-500',
+                        'completed' => 'text-blue-500',
+                    ];
+                    $statusColor = $statusColors[strtolower($booking->status)] ?? 'text-gray-500';
+                @endphp
+                <span class="text-2xl font-black uppercase {{ $statusColor }}">
+                    STATUS: {{ strtoupper($booking->status) }}
                 </span>
             </div>
             @endif

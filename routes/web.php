@@ -6,29 +6,23 @@ use App\Http\Controllers\CarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
-use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\AdminController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes
+| Public Routes (No Authentication Required)
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 
-Route::get('/payment', function () { return view('payment'); })->name('payment');
-Route::post('/receipt', function () { return view('receipt'); })->name('receipt');
-
 /*
 |--------------------------------------------------------------------------
-| Guest Routes (Login & Register)
+| Guest Routes (Only for non-authenticated users)
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -39,74 +33,178 @@ Route::middleware('guest')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated User Routes
+| Authenticated Routes (Only for logged in users)
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('auth')->group(function () {
-
+    // Dashboard - redirects based on usertype
+    Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
+    
     // Logout
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-
-    // Booking Group
+    
+    // Payment and Receipt Routes
+    Route::post('/payment', function (Request $request) {
+        return view('payment', ['bookingData' => $request->all()]);
+    })->name('payment.show');
+    
+    
+    // Profile management
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+        Route::patch('/update', [ProfileController::class, 'update'])->name('update');
+        Route::delete('/delete', [ProfileController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Booking Routes
     Route::prefix('bookings')->name('bookings.')->group(function () {
-        Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my-bookings');
         Route::get('/cars/{id}/book', [BookingController::class, 'create'])->name('create');
         Route::post('/', [BookingController::class, 'store'])->name('store');
-        
+        Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my-bookings');
         Route::get('/{reference}', [BookingController::class, 'show'])->name('show');
         Route::get('/{reference}/pending', [BookingController::class, 'pending'])->name('pending');
-        Route::get('/{reference}/confirmation', [BookingController::class, 'confirmation'])->name('confirmation');
-        
-        Route::put('/{reference}', [BookingController::class, 'update'])->name('update');
         Route::patch('/{reference}/cancel', [BookingController::class, 'cancel'])->name('cancel');
+        Route::post('/payment-summary', [BookingController::class, 'processToPayment'])->name('payment-summary');
     });
-
-    Route::post('/vouchers/validate', [VoucherController::class, 'validate'])->name('vouchers.validate');
+    
+    // Payment Routes
+    Route::prefix('payment')->name('payment.')->group(function () {
+        Route::get('/{reference}/summary', [BookingController::class, 'paymentSummary'])->name('summary');
+        Route::get('/{reference}/pay', [BookingController::class, 'paymentPage'])->name('page');
+        Route::post('/{reference}/process', [BookingController::class, 'processPayment'])->name('process');
+        Route::get('/{reference}/receipt', [BookingController::class, 'receipt'])->name('receipt');
+    });
 });
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes (Management)
+| Staff Routes (Requires usertype: staff or admin)
 |--------------------------------------------------------------------------
 */
-
-Route::middleware(['auth', 'can:admin-access'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+            abort(403, 'Unauthorized');
+        }
+        return view('staff.dashboard');
+    })->name('dashboard');
     
-    // Admin Booking Management
-    Route::get('/bookings', [AdminController::class, 'bookings'])->name('bookings.index');
-    Route::get('/bookings/{id}', [AdminController::class, 'showBooking'])->name('bookings.show');
-    Route::patch('/bookings/{id}/status', [AdminController::class, 'updateStatus'])->name('bookings.updateStatus');
-
-    // Admin Vehicle Management
-    Route::get('/cars', [AdminController::class, 'cars'])->name('cars.index');
-    Route::get('/cars/create', [AdminController::class, 'createCar'])->name('cars.create');
-    Route::post('/cars', [AdminController::class, 'storeCar'])->name('cars.store');
-    Route::delete('/cars/{id}', [AdminController::class, 'destroyCar'])->name('cars.destroy');
+    // Car management
+    Route::prefix('cars')->name('cars.')->group(function () {
+        Route::get('/', function() {
+            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+                abort(403, 'Unauthorized');
+            }
+            return app(CarController::class)->staffIndex();
+        })->name('index');
+        
+        Route::get('/create', function() {
+            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+                abort(403, 'Unauthorized');
+            }
+            return app(CarController::class)->create();
+        })->name('create');
+        
+        Route::post('/', function() {
+            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+                abort(403, 'Unauthorized');
+            }
+            return app(CarController::class)->store(request());
+        })->name('store');
+        
+        Route::get('/{id}/edit', function($id) {
+            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+                abort(403, 'Unauthorized');
+            }
+            return app(CarController::class)->edit($id);
+        })->name('edit');
+        
+        Route::patch('/{id}', function($id) {
+            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+                abort(403, 'Unauthorized');
+            }
+            return app(CarController::class)->update(request(), $id);
+        })->name('update');
+        
+        Route::delete('/{id}', function($id) {
+            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+                abort(403, 'Unauthorized');
+            }
+            return app(CarController::class)->destroy($id);
+        })->name('destroy');
+    });
+    
+    // Booking Management
+    Route::prefix('bookings')->name('bookings.')->group(function () {
+        Route::get('/', function() {
+            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+                abort(403, 'Unauthorized');
+            }
+            return app(BookingController::class)->staffIndex();
+        })->name('index');
+    });
+    
+    // Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', function () {
+            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+                abort(403, 'Unauthorized');
+            }
+            return view('staff.reports.index');
+        })->name('index');
+    });
 });
 
 /*
 |--------------------------------------------------------------------------
-| Staff Routes
+| Admin Routes (Requires usertype: admin only)
 |--------------------------------------------------------------------------
 */
-
-Route::middleware(['auth'])->prefix('staff')->name('staff.')->group(function () {
-    Route::get('/dashboard', function () { return view('staff.dashboard'); })->name('dashboard');
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        if (auth()->user()->usertype !== 'admin') {
+            abort(403, 'Unauthorized');
+        }
+        return view('admin.dashboard');
+    })->name('dashboard');
     
-    // Staff Car Management
-    Route::get('/cars', [CarController::class, 'staffIndex'])->name('cars');
-    Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
-    Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
-
-    Route::get('/cars/{id}/edit', [CarController::class, 'edit'])->name('cars.edit');
-    Route::put('/cars/{id}', [CarController::class, 'update'])->name('cars.update');
-    Route::delete('/cars/{id}', [CarController::class, 'destroy'])->name('cars.destroy');
+    // Bookings Management
+    Route::prefix('bookings')->name('bookings.')->group(function () {
+        Route::get('/', function () {
+            if (auth()->user()->usertype !== 'admin') {
+                abort(403, 'Unauthorized');
+            }
+            return view('admin.bookings.index');
+        })->name('index');
+    });
     
-    // Staff Booking Management
-    Route::get('/bookings', [BookingController::class, 'staffIndex'])->name('bookings');
+    // Cars Management
+    Route::prefix('cars')->name('cars.')->group(function () {
+        Route::get('/', function () {
+            if (auth()->user()->usertype !== 'admin') {
+                abort(403, 'Unauthorized');
+            }
+            return view('admin.cars.index');
+        })->name('index');
+    });
+    
+    // User Management
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', function () {
+            if (auth()->user()->usertype !== 'admin') {
+                abort(403, 'Unauthorized');
+            }
+            return view('admin.users.index');
+        })->name('index');
+    });
+    
+    // Settings
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', function () {
+            if (auth()->user()->usertype !== 'admin') {
+                abort(403, 'Unauthorized');
+            }
+            return view('admin.settings.index');
+        })->name('index');
+    });
 });
