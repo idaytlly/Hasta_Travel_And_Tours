@@ -720,9 +720,6 @@
                     <a class="nav-link nav-link-hasta" href="{{ route('cars.index') }}">Vehicles</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-hasta" href="#">Pricing</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link nav-link-hasta" href="#">About Us</a>
                 </li>
                 <li class="nav-item">
