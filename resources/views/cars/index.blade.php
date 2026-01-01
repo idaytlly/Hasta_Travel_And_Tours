@@ -135,27 +135,57 @@
 
 
         .brand-card { 
-            transition: all 0.3s; 
-            border-radius: 1rem; 
-            border: 1px solid #ddd;
-            padding: 20px;
-            background: #fff;
-            text-align: center;
+            width: 120px;      
+            height: 80px;      
+            background: #fff;  
+            border-radius: 15px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin: auto; 
+            overflow:hidden;
         }
+        
+        .brand-card img{
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            display:block;
+        }
+
         .brand-card:hover { 
-            border-color: #db3c39; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
+        
         .car-card { 
             border-radius: 1.5rem; 
             border: 1px solid #eee; 
             box-shadow: 0 5px 20px rgba(0,0,0,0.05);
         }
         .car-card img { max-height: 200px; object-fit: contain; }
-        .btn-category { border-radius: 50px; font-weight: bold; }
-        .btn-category.active, .btn-category:hover { background-color: #f27041; color: #fff; border-color: #f27041; }
+        .btn-category { 
+            border: 2px solid #c62828;
+            background :  #fff;
+            color: #c62828;
+            border-radius: 50px; 
+            padding: 10px 20px;
+            font-weight: bold; 
+            transition: all 0.3s ease;
+            
+        }
 
-                .footer-hasta {
+        .btn-category.active, .btn-category:hover { 
+            background-color: #c62828; 
+            color: #fff; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #c62828; 
+        }
+
+        .footer-hasta {
             background: var(--dark);
             color: var(--white);
             padding: 80px 0 30px;
@@ -335,9 +365,11 @@
     <!-- CATEGORY FILTERS -->
     <div class="container mb-4 text-center">
         <div class="btn-group" role="group">
-            <a href="{{ route('cars.index') }}" class="btn btn-category">All Vehicles <i class="fas fa-car"></i></a>
-            <a href="{{ route('cars.index', ['category' => 'Sedan']) }}" class="btn btn-category">Sedan <i class="fas fa-car-side"></i></a>
-            <a href="{{ route('cars.index', ['category' => 'Hatchback']) }}" class="btn btn-category">Hatchback <i class="fas fa-truck-pickup"></i></a>
+            <a href="{{ route('cars.index') }}" class="btn btn-category active">All Vehicles <i class="fas fa-car"></i></a>
+            <a href="{{ route('cars.index', ['category' => 'Sedan']) }}" class="btn btn-category">Sedan </a>
+            <a href="{{ route('cars.index', ['category' => 'Hatchback']) }}" class="btn btn-category">Hatchback </i></a>
+            <a href="{{ route('cars.index', ['category' => 'MPV']) }}" class="btn btn-category">MPV </i></a>
+            <a href="{{ route('cars.index', ['category' => 'SUV']) }}" class="btn btn-category">SUV </i></a>
         </div>
     </div>
 
