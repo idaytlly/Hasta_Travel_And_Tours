@@ -21,7 +21,7 @@ class ProfileController extends Controller
         'name' => 'required|string|max:255',
         'email' => 'required|email',
         'phone' => 'nullable|string',
-        'ic_number' => 'nullable|string',
+        'ic' => 'nullable|string',
         'street' => 'nullable|string',
         'city' => 'nullable|string',
         'state' => 'nullable|string',
@@ -31,7 +31,7 @@ class ProfileController extends Controller
     ]);
 
     $data = $request->only([
-        'name', 'email', 'phone', 'ic_number', 
+        'name', 'email', 'phone', 'ic', 
         'street', 'city', 'state', 'postcode', 'license_no'
     ]);
 

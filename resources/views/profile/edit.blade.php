@@ -381,8 +381,6 @@
     
 </script>
 
-</body>
-</html>
 <div class="container mt-5 pt-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
@@ -395,10 +393,11 @@
                 </div>
             @endif
 
-
+            {{-- EDIT FORM --}}
+            @if(!session('success'))
             <div class="card shadow-lg border-0 rounded-4">
                 <div class="card-header bg-white text-center border-0 py-4">
-                    <h3 class="fw-bold" style="color:#e53935;">Edit Profile</h3> <!-- Hasta red -->
+                    <h3 class="fw-bold" style="color:#e53935;">Edit Profile</h3>
                     <p class="text-muted mb-0">Update your account information</p>
                 </div>
                 <div class="card-body p-5">
@@ -406,95 +405,80 @@
                         @csrf
                         @method('PATCH')
 
+                        <h5 class="mt-4 mb-3" style="color:#e53935;">Personal Information</h5>
                         <div class="row g-3">
                             {{-- Full Name --}}
                             <div class="col-md-6">
                                 <label for="name" class="form-label fw-semibold">Full Name</label>
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', auth()->user()->name) }}" required>
-                                @error('name')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                                <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $user->name) }}" required>
+                                @error('name')<span class="invalid-feedback">{{ $message }}</span>@enderror
                             </div>
 
-                            {{-- IC Number --}}
+                            {{-- Identification Card --}}
                             <div class="col-md-6">
-                                <label for="ic_number" class="form-label fw-semibold">IC Number</label>
-                                <input type="text" class="form-control @error('ic') is-invalid @enderror" id="ic" name="ic" value="{{ old('ic', auth()->user()->ic) }}">
-                                @error('ic')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                                <label for="ic" class="form-label fw-semibold">Identification Card</label>
+                                <input type="text" class="form-control @error('ic') is-invalid @enderror" id="ic" name="ic" value="{{ old('ic', $user->ic) }}">
+                                @error('ic')<span class="invalid-feedback">{{ $message }}</span>@enderror
                             </div>
 
                             {{-- Email --}}
                             <div class="col-md-6">
                                 <label for="email" class="form-label fw-semibold">Email Address</label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', auth()->user()->email) }}" required>
-                                @error('email')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+                                @error('email')<span class="invalid-feedback">{{ $message }}</span>@enderror
                             </div>
 
                             {{-- Phone --}}
                             <div class="col-md-6">
                                 <label for="phone" class="form-label fw-semibold">Phone Number</label>
-                                <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', auth()->user()->phone) }}">
-                                @error('phone')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                                <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $user->phone) }}">
+                                @error('phone')<span class="invalid-feedback">{{ $message }}</span>@enderror
                             </div>
 
                             {{-- Driver License --}}
                             <div class="col-md-6">
-                                <label for="license" class="form-label fw-semibold">Driver License</label>
-                                <input type="text" class="form-control @error('license_no') is-invalid @enderror" id="license_no" name="license_no" value="{{ old('license_no', auth()->user()->license_no) }}">
-                                @error('license_no')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                                <label for="license_no" class="form-label fw-semibold">Driver License</label>
+                                <input type="text" class="form-control @error('license_no') is-invalid @enderror" id="license_no" name="license_no" value="{{ old('license_no', $user->license_no) }}">
+                                @error('license_no')<span class="invalid-feedback">{{ $message }}</span>@enderror
                             </div>
 
-                            {{-- Street Address --}}
-                            <div class="col-md-6">
-                                <label for="street" class="form-label fw-semibold">Street Address</label>
-                                <input type="text" class="form-control @error('street') is-invalid @enderror" id="street" name="street" value="{{ old('street', auth()->user()->street) }}">
-                                @error('street')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                            <h5 class="mt-4 mb-2" style="color:#e53935;">Address Information</h5>
+                                {{-- Street Address --}}
+                                <div class="col-md-6">
+                                    <label for="street" class="form-label fw-semibold">Street Address</label>
+                                    <input type="text" class="form-control @error('street') is-invalid @enderror" id="street" name="street" value="{{ old('street', $user->street) }}">
+                                    @error('street')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                </div>
+
+                                {{-- City --}}
+                                <div class="col-md-6">
+                                    <label for="city" class="form-label fw-semibold">City</label>
+                                    <input type="text" class="form-control @error('city') is-invalid @enderror" id="city" name="city" value="{{ old('city', $user->city) }}">
+                                    @error('city')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                </div>
+
+                                {{-- State --}}
+                                <div class="col-md-6">
+                                    <label for="state" class="form-label fw-semibold">State</label>
+                                    <input type="text" class="form-control @error('state') is-invalid @enderror" id="state" name="state" value="{{ old('state', $user->state) }}">
+                                    @error('state')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                </div>
+
+                                {{-- Postcode --}}
+                                <div class="col-md-6">
+                                    <label for="postcode" class="form-label fw-semibold">Postcode</label>
+                                    <input type="text" class="form-control @error('postcode') is-invalid @enderror" id="postcode" name="postcode" value="{{ old('postcode', $user->postcode) }}">
+                                    @error('postcode')<span class="invalid-feedback">{{ $message }}</span>@enderror
+                                </div>
                             </div>
 
-                            {{-- Postcode --}}
-                            <div class="col-md-4">
-                                <label for="postcode" class="form-label fw-semibold">Postcode</label>
-                                <input type="text" class="form-control @error('postcode') is-invalid @enderror" id="postcode" name="postcode" value="{{ old('postcode', auth()->user()->postcode) }}">
-                                @error('postcode')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            {{-- City --}}
-                            <div class="col-md-4">
-                                <label for="city" class="form-label fw-semibold">City</label>
-                                <input type="text" class="form-control @error('city') is-invalid @enderror" id="city" name="city" value="{{ old('city', auth()->user()->city) }}">
-                                @error('city')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            {{-- State --}}
-                            <div class="col-md-4">
-                                <label for="state" class="form-label fw-semibold">State</label>
-                                <input type="text" class="form-control @error('state') is-invalid @enderror" id="state" name="state" value="{{ old('state', auth()->user()->state) }}">
-                                @error('state')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-
+                            <h5 class="mt-4 mb-3" style="color:#e53935;">Change Password</h5>
+                            <div class="row g-3">
                             {{-- Password --}}
                             <div class="col-md-6">
                                 <label for="password" class="form-label fw-semibold">New Password <small class="text-muted">(leave blank to keep current)</small></label>
                                 <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
-                                @error('password')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
+                                @error('password')<span class="invalid-feedback">{{ $message }}</span>@enderror
                             </div>
 
                             {{-- Confirm Password --}}
@@ -512,7 +496,85 @@
                     </form>
                 </div>
             </div>
+            @endif
+
+            {{-- PROFILE CARD AFTER UPDATE --}}
+            @if(session('success'))
+            <div class="card shadow-lg border-0 rounded-4 mt-4">
+                <div class="card-header bg-white text-center border-0 py-4">
+                    <h3 class="fw-bold" style="color:#e53935;">Profile Updated</h3>
+                    <p class="text-muted mb-0">Here is your current information</p>
+                </div>
+                <div class="card-body p-4">
+
+                    <div class="row g-3">
+                        {{-- Personal Info --}}
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted">Name</small>
+                                <p class="mb-0 fw-semibold">{{ $user->name }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted">Email</small>
+                                <p class="mb-0 fw-semibold">{{ $user->email }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted">Phone</small>
+                                <p class="mb-0 fw-semibold">{{ $user->phone ?? '-' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted">IC Number</small>
+                                <p class="mb-0 fw-semibold">{{ $user->ic ?? '-' }}</p>
+                            </div>
+                        </div>
+
+                        {{-- Driver License --}}
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted">Driver License</small>
+                                <p class="mb-0 fw-semibold">{{ $user->license_no ?? '-' }}</p>
+                            </div>
+                        </div>
+
+                        {{-- Address Info --}}
+                        <div class="col-md-12">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted">Street</small>
+                                <p class="mb-0 fw-semibold">{{ $user->street ?? '-' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted">Postcode</small>
+                                <p class="mb-0 fw-semibold">{{ $user->postcode ?? '-' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted">City</small>
+                                <p class="mb-0 fw-semibold">{{ $user->city ?? '-' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3">
+                                <small class="text-muted">State</small>
+                                <p class="mb-0 fw-semibold">{{ $user->state ?? '-' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+
         </div>
     </div>
 </div>
-
+</body>
+</html>
