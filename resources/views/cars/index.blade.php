@@ -320,13 +320,10 @@
                         <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#">Notifications</a>
+                        <a class="nav-link nav-link-hasta" href="#footer-hasta">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#">History</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#">Settings</a>
+                        <a class="nav-link nav-link-hasta" href="#footer-hasta">Contact</a>
                     </li>
                 </ul>
 
@@ -418,7 +415,7 @@
         </div>
     </div>
     <!-- FOOTER -->
-    <footer class="footer-hasta">
+    <footer id="footer-hasta" class="footer-hasta">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">

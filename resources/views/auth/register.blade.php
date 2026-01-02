@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - HASTA</title>
-
+    <title>Login - Hasta Car Rental</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
         * {
             margin: 0;
@@ -13,8 +15,8 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: linear-gradient(135deg, #ffb3ba 0%, #ffcccc 50%, #ffd9d9 100%);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fe0f0bff 0%, #fd9898ff 50%, #ffecd2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -31,85 +33,83 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 25px;
+        .logo-wrapper {
+            margin-bottom: 10px;  
+            text-align: center; 
         }
 
-        .logo h1 {
-            color: #ff6347;
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            border: 3px solid #ff6347;
-            padding: 8px 20px;
-            display: inline-block;
-            border-radius: 8px;
+        .logo {
+            width: 80px;
+            height: auto;
         }
 
         .welcome-text {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 8px;
         }
 
-        .welcome-text h2 {
-            font-size: 30px;
+        .welcome-text h1 {
+            font-size: 2rem;
             font-weight: 600;
-            margin-bottom: 6px;
             color: #000;
+            margin-bottom: 5px;
         }
 
         .welcome-text p {
             color: #666;
-            font-size: 14px;
+            font-size: 0.9rem;
+            font-weight: 400;
         }
-
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
+            font-weight: 600;
             color: #000;
+            margin-bottom: 8px;
             font-size: 14px;
         }
 
-        .form-group input {
+        .form-group input{
             width: 100%;
             padding: 12px 16px;
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 14px;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            outline: none;
         }
 
         .form-group input:focus {
-            outline: none;
-            border-color: #ff6347;
+            border-color: #e53935;
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
         }
 
+
         .form-group input::placeholder {
-            color: #999;
+            color: #aaa;
         }
 
         .auth-button {
             width: 100%;
-            padding: 14px;
-            background: #ff6347;
+            background: linear-gradient(135deg, #e53935 0%, #d32f2f 100%);
             color: white;
+            padding: 18px 40px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(229, 57, 53, 0.3);
         }
 
         .auth-button:hover {
-            background: #ff4500;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(229, 57, 53, 0.4);
         }
 
         .login-text {
@@ -152,9 +152,9 @@
 <body>
 
 <div class="auth-container">
-    <div class="logo">
-        <h1>HASTA</h1>
-    </div>
+        <div class="logo-wrapper">
+            <img src="{{ asset('images/hasta logo.png') }}" alt="HASTA Logo" class="logo">
+        </div>
 
     <div class="welcome-text">
         <h2>Create Account</h2>
