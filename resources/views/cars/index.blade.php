@@ -320,13 +320,10 @@
                         <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#">Notifications</a>
+                        <a class="nav-link nav-link-hasta" href="#">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#">History</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#">Settings</a>
+                        <a class="nav-link nav-link-hasta" href="#">Contact</a>
                     </li>
                 </ul>
 
