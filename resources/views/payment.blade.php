@@ -1,48 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HASTA Payment</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
-    <nav class="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4">
-    <div class="flex items-center"> <div class="flex-none bg-white px-4 py-2 rounded-md">
-            <span class="text-red-500 font-bold text-lg">HASTA</span>
-        </div>
+@extends('layouts.guest')
 
-        <div class="flex-1 flex justify-center items-center space-x-8">
-            <a href="#" class="text-white text-center hover:opacity-80 transition">
-                <i class="fas fa-home text-xl block mb-1"></i>
-                <span class="text-xs">Home</span>
-            </a>
-            <a href="#" class="text-white text-center hover:opacity-80 transition">
-                <i class="fas fa-bell text-xl block mb-1"></i>
-                <span class="text-xs">Notifications</span>
-            </a>
-            <a href="#" class="text-white text-center hover:opacity-80 transition">
-                <i class="fas fa-th text-xl block mb-1"></i>
-                <span class="text-xs">Dashboard</span>
-            </a>
-            <a href="#" class="bg-red-400 bg-opacity-40 text-white text-center px-6 py-2 rounded-lg">
-                <i class="fas fa-car text-xl block mb-1"></i>
-                <span class="text-xs">Vehicle Listing</span>
-            </a>
-            <a href="#" class="text-white text-center hover:opacity-80 transition">
-                <i class="fas fa-history text-xl block mb-1"></i>
-                <span class="text-xs">History</span>
-            </a>
-            <a href="#" class="text-white text-center hover:opacity-80 transition">
-                <i class="fas fa-cog text-xl block mb-1"></i>
-                <span class="text-xs">Settings</span>
-            </a>
-        </div>
-
-    </div>
-</nav>
-
+@section('content')
     <main class="flex-1 px-6 py-8">
         <div class="flex items-center space-x-3 mb-8">
             <button onclick="window.history.back()" class="w-12 h-12 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition">
@@ -122,95 +80,13 @@
         </div>
     </main>
 
-    <footer class="bg-gradient-to-r from-red-500 to-red-600 text-white py-12 mt-auto">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <div class="bg-white px-4 py-2 rounded-md inline-block mb-6">
-                        <span class="text-red-500 font-bold text-xl">HASTA</span>
-                    </div>
-                    <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
-                            <i class="fab fa-x-twitter"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex items-start space-x-3 mb-3">
-                        <div class="w-10 h-10 bg-orange-400 rounded-full flex items-center justify-center flex-shrink-0">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold mb-1">Address</h4>
-                            <p class="text-sm">Student Mall UTM</p>
-                            <p class="text-sm">Skudai, 81300, Johor Bahru</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="font-bold mb-4">Useful links</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:underline">About us</a></li>
-                        <li><a href="#" class="hover:underline">Contact us</a></li>
-                        <li><a href="#" class="hover:underline">Gallery</a></li>
-                        <li><a href="#" class="hover:underline">Blog</a></li>
-                        <li><a href="#" class="hover:underline">F.A.Q</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="font-bold mb-4">Vehicles</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:underline">Sedan</a></li>
-                        <li><a href="#" class="hover:underline">Hatchback</a></li>
-                        <li><a href="#" class="hover:underline">MPV</a></li>
-                        <li><a href="#" class="hover:underline">Minivan</a></li>
-                        <li><a href="#" class="hover:underline">SUV</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-white border-opacity-20 pt-8">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-orange-400 rounded-full flex items-center justify-center">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold">Email</h4>
-                        <p class="text-sm">hastatravel@gmail.com</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-orange-400 rounded-full flex items-center justify-center">
-                        <i class="fas fa-phone"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold">Phone</h4>
-                        <p class="text-sm">011-1090 0700</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
     <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
         <div class="bg-white rounded-2xl p-8 max-w-sm text-center shadow-lg flex flex-col items-center">
             <div class="w-20 h-20 flex items-center justify-center bg-green-100 rounded-full mb-4">
                 <i class="fas fa-check text-green-600 text-4xl"></i>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h2>
-            <p class="text-gray-500 mb-6">Your payment has been uploaded successfully.</p>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Upload Successful!</h2>
+            <p class="text-gray-500 mb-6">Your receipt has been uploaded successfully.</p>
             <button onclick="closeModal()" class="px-6 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition">
                 Close
             </button>
@@ -280,5 +156,4 @@
             modal.classList.remove('flex');
         }
     </script>
-</body>
-</html>
+@endsection
