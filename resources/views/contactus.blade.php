@@ -11,13 +11,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- CONTACT BANNER -->
-    <section class="contact-banner py-5" style="background-color: #f8f9fa;">
-        <div class="container">
+    <section class="contact-banner py-5" style="background-color: #1a1a2e;">
+    <div class="container">
             <div class="row align-items-center">
                 <!-- Text Column -->
-                <div class="col-lg-6 col-md-12 text-start">
+                <div class="col-lg-6 col-md-12 text-start text-white">
                     <!-- Title -->
-                    <h3 class="display-4 fw-bold">Contact Us</h3>
+                    <h2 class="display-4 fw-bold">Contact Us</h2>
                     
                     <!-- Description -->
                     <p class="lead mt-3">
