@@ -501,7 +501,7 @@
                         </div>
                         <div class="footer-contact-item">
                             <i class="fas fa-envelope"></i>
-                            <span>hastatravelandtours@gmail.com</span>
+                            <span>hastatraveltours@gmail.com</span>
                         </div>
                         <div class="footer-contact-item">
                             <i class="fas fa-phone"></i>
@@ -523,7 +523,7 @@
                         <li><a href="{{ route('home') }}">Home</a></li>
                         <li><a href="{{ route('staff.cars.index') }}">Vehicle Management</a></li>
                         <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="{{ route('contactus') }}">Contact</a></li>
                         <li><a href="#">FAQ</a></li>
                     </ul>
                 </div>
