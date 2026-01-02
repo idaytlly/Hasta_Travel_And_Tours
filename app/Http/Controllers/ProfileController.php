@@ -15,22 +15,33 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
-        $user = auth()->user();
+    $user = auth()->user();
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'nullable|string',
-            'ic' => 'nullable|string',
-            'street' => 'nullable|string',
-            'city' => 'nullable|string',
-            'state' => 'nullable|string',
-            'postcode' => 'nullable|string',
-            'license_no' => 'nullable|string',
-        ]);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email',
+        'phone' => 'nullable|string',
+        'ic_number' => 'nullable|string',
+        'street' => 'nullable|string',
+        'city' => 'nullable|string',
+        'state' => 'nullable|string',
+        'postcode' => 'nullable|string',
+        'license_no' => 'nullable|string',
+        'password' => 'nullable|string|min:8|confirmed', // password_confirmation required
+    ]);
 
-        $user->update($request->all());
+    $data = $request->only([
+        'name', 'email', 'phone', 'ic_number', 
+        'street', 'city', 'state', 'postcode', 'license_no'
+    ]);
 
-        return back()->with('success', 'Profile updated successfully');
+    if ($request->filled('password')) {
+        $data['password'] = bcrypt($request->password);
     }
+
+    $user->update($data);
+
+    return back()->with('success', 'Profile updated successfully');
+    }
+
 }
