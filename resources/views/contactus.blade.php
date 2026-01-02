@@ -457,19 +457,18 @@
                     </select>
                 </div>
 
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
-                </div>
+                <div class="row mb-3">
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone Number</label>
-                    <input type="text" class="form-control" id="phone" name="phone">
+                    <!-- Phone -->
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter your phone number">
+                    </div>
                 </div>
 
                 <div class="mb-3">
