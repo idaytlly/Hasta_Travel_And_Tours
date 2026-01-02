@@ -431,60 +431,67 @@
     
 </script>
 
-<!-- CONTACT FORM SECTION -->
-<section class="contact-section container mt-5 pt-5 mb-10">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            
-            <p class="text-center text-muted mb-5">Get in touch with us by email or phone. We'd love to hear from you!</p>
+            <!-- CONTACT FORM SECTION -->
+            <section class="contact-section container mt-5 pt-5 mb-10">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10">
 
+                        <p class="text-center text-muted mb-5">
+                            Get in touch with us by email or phone. We'd love to hear from you!
+                        </p>
+
+            <!-- Info -->
             <div class="mb-4 text-center">
-                <p>Email: <a href="mailto:enquiry@klezcar.com">hastatraveltours@gmail.com</a></p>
-                <p>Phone: <a href="tel:0136454040">011-10900700</a></p>
-                <p>LOT 1, STUDENT MALL, LINGKARAN ILMU UNIVERSITI TEKNOLOGI MALAYSIA SKUDAI, 81300 Johor Bahru, Johor, Malaysia</p>
+                <p>Email: <a href="hastatraveltours@gmail.com"><strong>hastatraveltours@gmail.com</strong></a></p>
+                <p>Phone: <a href="tel:01110900700"><strong>011-10900700</strong></a></p>
+                <p><strong>LOT 1, STUDENT MALL, LINGKARAN ILMU UNIVERSITI TEKNOLOGI MALAYSIA SKUDAI, 81300 Johor Bahru, Johor, Malaysia</strong></p>
             </div>
 
-            {{-- Contact Form --}}
-            <form action="{{ route('contactus.send') }}" method="POST">
-                @csrf
-                <div class="mb-3">
-                    <label for="enquiry_type" class="form-label">Please Select Enquiry Type</label>
-                    <select class="form-select" id="enquiry_type" name="enquiry_type" required>
-                        <option value="" disabled selected>Select type</option>
-                        <option value="booking">Booking</option>
-                        <option value="feedback">Feedback</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
+            <!-- Card Wrapper -->
+            <div class="card shadow p-4">
+                <h5 class="card-title text-center mb-4">Contact Form</h5>
 
-                <div class="row mb-3">
-                    <!-- Email -->
-                    <div class="col-md-6">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                <form action="{{ route('contactus.send') }}" method="POST">
+                    @csrf
+
+                    <div class="mb-3">
+                        <label for="enquiry_type" class="form-label">Please Select Enquiry Type</label>
+                        <select class="form-select" id="enquiry_type" name="enquiry_type" required>
+                            <option value="" disabled selected>Select type</option>
+                            <option value="booking">Booking</option>
+                            <option value="feedback">Feedback</option>
+                            <option value="other">Other</option>
+                        </select>
                     </div>
 
-                    <!-- Phone -->
-                    <div class="col-md-6">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter your phone number">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter your phone number">
+                        </div>
                     </div>
-                </div>
 
-                <div class="mb-3">
-                    <label for="booking_number" class="form-label">Booking Number (If available)</label>
-                    <input type="text" class="form-control" id="booking_number" name="booking_number">
-                </div>
+                    <div class="mb-3">
+                        <label for="booking_number" class="form-label">Booking Number (If available)</label>
+                        <input type="text" class="form-control" id="booking_number" name="booking_number">
+                    </div>
 
-                <div class="mb-3">
-                    <label for="comments" class="form-label">Comments and Enquiry</label>
-                    <textarea class="form-control" id="comments" name="comments" rows="5" required></textarea>
-                </div>
+                    <div class="mb-3">
+                        <label for="comments" class="form-label">Comments and Enquiry</label>
+                        <textarea class="form-control" id="comments" name="comments" rows="5" required></textarea>
+                    </div>
 
-                <div class="text-center">
-                    <button type="submit" class="btn btn-login px-5">Submit</button>
-                </div>
-            </form>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-login px-5">Submit</button>
+                    </div>
+
+                </form>
+            </div> <!-- end card -->
+
 
         </div>
     </div>
