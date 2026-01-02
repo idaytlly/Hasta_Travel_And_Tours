@@ -65,24 +65,19 @@ Route::middleware('auth')->group(function () {
     // Booking Routes
     Route::prefix('bookings')->name('bookings.')->group(function () {
         Route::get('/cars/{id}/book', [BookingController::class, 'create'])->name('create');
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
+
+        // --- ADDED THIS LINE ---
+        // This handles the "Pay Now" button by receiving the form data and showing the payment page
+        Route::post('/payment-summary', [BookingController::class, 'processToPayment'])->name('payment-summary');
+        
+        Route::post('/', [BookingController::class, 'store'])->name('store');
+
         
         // --- ADDED THIS LINE ---
         // This handles the "Pay Now" button by receiving the form data and showing the payment page
         Route::post('/payment-summary', [BookingController::class, 'processToPayment'])->name('payment-summary');
         
         Route::post('/', [BookingController::class, 'store'])->name('store');
->>>>>>> Stashed changes
-        
-        // --- ADDED THIS LINE ---
-        // This handles the "Pay Now" button by receiving the form data and showing the payment page
-        Route::post('/payment-summary', [BookingController::class, 'processToPayment'])->name('payment-summary');
-        
-        Route::post('/', [BookingController::class, 'store'])->name('store');
->>>>>>> Stashed changes
         
         // --- ADDED THIS LINE ---
         // This handles the "Pay Now" button by receiving the form data and showing the payment page
