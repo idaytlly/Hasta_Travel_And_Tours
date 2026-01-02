@@ -125,6 +125,7 @@ class BookingController extends Controller
                 'car_id'            => $car->id,
                 'user_id'           => auth()->id(),
                 'booking_reference' => Booking::generateBookingReference(),
+                'reference'         => 'REF' . strtoupper(uniqid()),
                 'customer_name'     => $request->customer_name ?? auth()->user()->name,
                 'customer_email'    => $request->customer_email ?? auth()->user()->email,
                 'customer_ic'       => $request->customer_ic ?? (auth()->user()->ic ?? null),
