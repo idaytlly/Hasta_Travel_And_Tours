@@ -132,6 +132,15 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(229, 57, 53, 0.4);
         }
+        .btn-outline-danger {
+            transition: all 0.3s ease; 
+        }
+
+        .btn-outline-danger:hover {
+            background-color: var(--primary); 
+            color: #fff !important;            
+            border-color: var(--primary);     
+        }
 
 
         .brand-card { 
@@ -305,16 +314,19 @@
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="{{ route('home') }}">Home</a>
+                        <a class="nav-link nav-link-hasta " href="{{ route('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#">About Us</a>
+                        <a class="nav-link nav-link-hasta" href="#">Notifications</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#">Contact</a>
+                        <a class="nav-link nav-link-hasta" href="#">History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="#">Settings</a>
                     </li>
                 </ul>
 

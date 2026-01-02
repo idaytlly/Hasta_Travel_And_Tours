@@ -132,6 +132,16 @@
             box-shadow: 0 5px 20px rgba(229, 57, 53, 0.4);
         }
 
+        .btn-outline-danger {
+            transition: all 0.3s ease; 
+        }
+
+        .btn-outline-danger:hover {
+            background-color: var(--primary); 
+            color: #fff !important;            
+            border-color: var(--primary);     
+        }
+
         /* HERO SECTION */
         .hero-section {
             background: linear-gradient(135deg, rgba(26, 26, 46, 0.85) 0%, rgba(22, 33, 62, 0.85) 100%),
@@ -769,10 +779,13 @@
                         <a class="nav-link nav-link-hasta " href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#">About Us</a>
+                        <a class="nav-link nav-link-hasta" href="#">Notifications</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#">Contact</a>
+                        <a class="nav-link nav-link-hasta" href="#">History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="#">Settings</a>
                     </li>
                 </ul>
 
