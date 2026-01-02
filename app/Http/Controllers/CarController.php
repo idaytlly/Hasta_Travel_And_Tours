@@ -22,8 +22,8 @@ class CarController extends Controller
         }
 
         // Filter by category/type if selected
-        if ($request->filled('category')) {
-            $query->where('category', $request->category); // Standard where check
+        if ($request->filled('carType')) {
+            $query->where('carType', $request->carType); // Standard where check
         }
 
         $cars = $query->get();

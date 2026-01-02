@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
+use App\Models\Booking;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +20,6 @@ Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 
 // Keep these for general access or remove if moving strictly into the booking flow
-Route::get('/payment', function () { return view('payment'); })->name('payment');
 Route::post('/receipt', function () { return view('receipt'); })->name('receipt');
 
 /*
@@ -48,9 +48,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     
     // Payment and Receipt Routes
-    Route::post('/payment', function (Request $request) {
-        return view('payment', ['bookingData' => $request->all()]);
-    })->name('payment.show');
     
     // ⭐ ADD THIS - Voucher validation (AJAX)
     Route::post('/validate-voucher', [BookingController::class, 'validateVoucher'])->name('voucher.validate');
@@ -95,6 +92,7 @@ Route::middleware('auth')->group(function () {
     
     // Payment Routes
     Route::prefix('payment')->name('payment.')->group(function () {
+        Route::get('/', [BookingController::class, 'paymentPage'])->name('page');
         Route::get('/{reference}/summary', [BookingController::class, 'paymentSummary'])->name('summary');
         Route::get('/{reference}/pay', [BookingController::class, 'paymentPage'])->name('page');
         Route::post('/{reference}/process', [BookingController::class, 'processPayment'])->name('process');
