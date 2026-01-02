@@ -36,6 +36,8 @@
         /* NAVBAR */
         .navbar-hasta {
             background: var(--white);
+            min-height: 70px;
+            max-height: 80px;
             padding: 15px 0;
             box-shadow: 0 2px 20px rgba(0,0,0,0.08);
             position: fixed;
@@ -48,6 +50,13 @@
         .navbar-hasta.scrolled {
             padding: 10px 0;
             box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+        }
+
+        .logo-image {
+            height: 120px;
+            width: 120px;
+            max-width: 150px;
+            object-fit: contain;
         }
 
         .logo-text {
@@ -73,6 +82,26 @@
             border-radius: 25px;
             transition: all 0.3s ease;
             margin: 0 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link-hasta::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary); 
+            border-radius: 25px;
+            opacity:0;
+            transition: all 0.3s ease;
+            z-index: -1; 
+        }
+
+        .nav-link-hasta:hover::after {
+            opacity: 0.1; 
         }
 
         .nav-link-hasta:hover {
@@ -80,8 +109,10 @@
         }
 
         .nav-link-hasta.active {
-            background: var(--primary);
-            color: var(--white) !important;
+            color: var(--white) !important; 
+        }
+        .nav-link-hasta.active::after {
+            opacity:1;
         }
 
         .btn-login {
@@ -103,14 +134,21 @@
 
         /* HERO SECTION */
         .hero-section {
-            min-height: 100vh;
-            background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
-            display: flex;
-            align-items: center;
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.85) 0%, rgba(22, 33, 62, 0.85) 100%),
+                        url('images/myvired.avif') no-repeat right center;
+            background-size: cover;
+            background-position: right center;
+            border-radius: 30px;
+            margin: 30px 60px;
+            padding: 80px 70px;
             position: relative;
             overflow: hidden;
-            padding-top: 80px;
+            min-height: 450px;
+            display: flex;
+            align-items: center;
         }
+
+    
 
         .hero-section::before {
             content: '';
@@ -135,6 +173,7 @@
             color: var(--white);
             line-height: 1.2;
             margin-bottom: 20px;
+            margin-top: 20px;
         }
 
         .hero-title span {
@@ -197,15 +236,22 @@
         }
 
         .hero-image {
-            position: relative;
-            z-index: 2;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 700px;
+            height: 400px;
+            z-index: 1;
         }
 
         .hero-image img {
-            max-width: 120%;
-            filter: drop-shadow(0 20px 50px rgba(0,0,0,0.3));
-            animation: float 3s ease-in-out infinite;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: blur(2px) brightness(0.9);
         }
+        
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
@@ -531,14 +577,14 @@
 
 
         .cta-section h2 {
-            color: var(--white);
+            color: #333;
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 20px;
         }
 
         .cta-section p {
-            color: rgba(255,255,255,0.9);
+            color: #333(255,255,255,0.9);
             font-size: 1.2rem;
             margin-bottom: 30px;
         }
@@ -671,11 +717,14 @@
             }
             
             .hero-image {
-                margin-top: 50px;
+                justify-content: center;
+                padding-right: 0;
+                margin-top: 40px;
             }
             
             .hero-image img {
-                max-width: 100%;
+                max-width: 320px;
+                transform: scale(1);
             }
             
             .hero-stats {
@@ -701,64 +750,61 @@
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-hasta">
-    <div class="container">
-        <a class="logo-text" href="{{ route('home') }}">
-            HASTA
-        </a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <nav class="navbar navbar-expand-lg navbar-hasta">
+        <div class="container">
+            <a class="logo-text" href="{{ route('home') }}">
+                <img src="{{ asset('images/hasta logo.png') }}" alt="HASTA Logo" class="logo-image">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="navbarMain">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
-                    <a class="nav-link nav-link-hasta active" href="{{ route('home') }}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-hasta" href="{{ route('cars.index') }}">Vehicles</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-hasta" href="#">Pricing</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-hasta" href="#">About Us</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-hasta" href="#">Contact</a>
-                </li>
-            </ul>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta active" href="{{ route('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta " href="{{ route('cars.index') }}">Vehicles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="#">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="#">Contact</a>
+                    </li>
+                </ul>
 
-            <div class="d-flex align-items-center gap-3">
-            @guest
-                <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px; border: 2px solid #e53935; color: #e53935;">
-                    Login
-                </a>
-                <a href="{{ route('register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
-                    Register
-                </a>
-            @else
-                <span class="me-2">Welcome, <strong>{{ Auth::user()->name }}</strong></span>
-                
-                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
-                        <i class="fas fa-sign-out-alt me-1"></i> Logout
-                    </button>
-                </form>
-            @endguest
+                <div class="d-flex align-items-center gap-3">
+                @guest
+                    <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px; border: 2px solid #e53935; color: #e53935;">
+                        Login
+                    </a>
+                    <a href="{{ route('register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
+                        Register
+                    </a>
+                @else
+                    <span class="me-2">Welcome, <strong>{{ Auth::user()->name }}</strong></span>
+                    
+                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </button>
+                    </form>
+                @endguest
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
 <!-- HERO SECTION -->
 <section class="hero-section">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-6">
+            <div class="col-lg-7">
                 <div class="hero-content">
                     <h1 class="hero-title">
                         Drive Your <span>Dream Car</span> Today!
@@ -790,11 +836,6 @@
                             <div class="stat-label">Years Experience</div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="hero-image text-center">
-                    <img src="{{ asset('images/hero-car.png') }}" alt="Rental Car">
                 </div>
             </div>
         </div>
