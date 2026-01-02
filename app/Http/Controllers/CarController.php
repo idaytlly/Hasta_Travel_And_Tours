@@ -193,4 +193,15 @@ class CarController extends Controller
             ->route('staff.cars')
             ->with('success', 'Vehicle deleted successfully!');
     }
+
+
+   
+    public function index(): View
+    {
+        $cars = Car::where('is_available', 1)->get(); // cuma cars available
+        return view('cars.index', compact('cars'));
+    }
+
+
+
 }
