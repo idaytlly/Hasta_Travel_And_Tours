@@ -10,8 +10,54 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- CONTACT BANNER -->
+    <section class="contact-banner py-5" style="background-color: #f8f9fa;">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Text Column -->
+                <div class="col-lg-6 col-md-12 text-start">
+                    <!-- Title -->
+                    <h3 class="display-4 fw-bold">Contact Us</h3>
+                    
+                    <!-- Description -->
+                    <p class="lead mt-3">
+                        Have any question? Feel free to contact us and let’s get in touch by following, liking, and sharing our social media for more info and upcoming promotions or updates.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
 
     <style>
+        .contact-banner {
+            position: relative;
+            background: url('{{ asset("images/contactus.jpg") }}') center/cover no-repeat;
+            height: 300px; /* boleh adjust ikut kehendak */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 70px; /* jarakkan dari navbar tetap */
+        }
+
+        .contact-banner .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5); /* overlay supaya text jelas */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-banner h2 {
+            position: relative;
+            z-index: 2;
+            color: #fff;
+
+        }
         :root {
             --primary: #e53935;
             --primary-dark: #c62828;
