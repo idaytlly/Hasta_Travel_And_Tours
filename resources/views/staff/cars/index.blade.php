@@ -1,20 +1,178 @@
-{{-- resources/views/staff/cars/index.blade.php --}}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehicle Management - Hasta Staff</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Vehicle Management - HASTA Staff</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        .header-gradient {
-            background: linear-gradient(135deg, #E53935 0%, #D32F2F 100%);
+        :root {
+            --primary: #e53935;
+            --primary-dark: #c62828;
+            --primary-light: #ffebee;
+            --dark: #1a1a2e;
+            --text-dark: #333;
+            --text-muted: #6c757d;
+            --bg-light: #f8f9fa;
+            --white: #fff;
         }
-        .footer-gradient {
-            background: linear-gradient(135deg, #E53935 0%, #D32F2F 100%);
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        .navbar-hasta {
+            background: var(--white);
+            min-height: 70px;
+            max-height: 80px;
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-hasta.scrolled {
+            padding: 10px 0;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+        }
+
+        .logo-image {
+            height: 120px;
+            width: 120px;
+            max-width: 150px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .logo-text:hover {
+            color: var(--primary-dark);
+        }
+
+        .nav-link-hasta {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            padding: 10px 20px !important;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link-hasta::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary); 
+            border-radius: 25px;
+            opacity:0;
+            transition: all 0.3s ease;
+            z-index: -1; 
+        }
+
+        .nav-link-hasta:hover::after {
+            opacity: 0.1; 
+        }
+
+        .nav-link-hasta:hover {
+            color: var(--primary) !important;
+        }
+
+        .nav-link-hasta.active {
+            color: var(--white) !important; 
+        }
+
+        .nav-link-hasta.active::after {
+            opacity:1;
+        }
+
+        .btn-login {
+            background: var(--primary);
+            color: var(--white);
+            padding: 12px 35px;
+            border-radius: 30px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background: var(--primary-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(229, 57, 53, 0.4);
+        }
+
+        .btn-outline-danger {
+            transition: all 0.3s ease; 
+        }
+
+        .btn-outline-danger:hover {
+            background-color: var(--primary); 
+            color: #fff !important;            
+            border-color: var(--primary);     
+        }
+
+        .car-card { 
+            border-radius: 1.5rem; 
+            border: 1px solid #eee; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .car-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+        }
+
+        .car-card img { 
+            max-height: 200px; 
+            object-fit: contain; 
+        }
+
+        .btn-category { 
+            border: 2px solid #c62828;
+            background: #fff;
+            color: #c62828;
+            border-radius: 50px; 
+            padding: 10px 20px;
+            font-weight: bold; 
+            transition: all 0.3s ease;
+        }
+
+        .btn-category.active, .btn-category:hover { 
+            background-color: #c62828; 
+            color: #fff; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #c62828; 
+        }
+
         .floating-add-btn {
             position: fixed;
             bottom: 30px;
@@ -22,290 +180,393 @@
             width: 70px;
             height: 70px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%);
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
             color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(229, 57, 53, 0.4);
+            text-decoration: none;
             cursor: pointer;
             transition: all 0.3s;
             z-index: 100;
         }
+
         .floating-add-btn:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 6px 20px rgba(229, 57, 53, 0.6);
+            color: white;
         }
-        .brand-btn {
-            width: 80px;
-            height: 80px;
-            background: white;
+
+        .alert-success {
             border-radius: 15px;
+            border-left: 4px solid #28a745;
+        }
+
+        .footer-hasta {
+            background: var(--dark);
+            color: var(--white);
+            padding: 80px 0 30px;
+        }
+
+        .footer-brand {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+
+        .footer-brand .star {
+            color: var(--primary);
+        }
+
+        .footer-text {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 25px;
+            max-width: 300px;
+        }
+
+        .footer-contact {
+            margin-bottom: 25px;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .footer-contact-item i {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .brand-btn:hover {
+
+        .footer-links h5 {
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links ul li a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            background: #ffb300;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+            color: white;
+            transform: translateY(-2px);
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body style="padding-top:90px;">
 
-<!-- Header -->
-<header class="header-gradient text-white shadow-lg">
-    <div class="container mx-auto px-4 py-4">
-        <div class="flex justify-between items-center">
-            <a href="{{ route('home') }}" class="flex items-center">
-                <h1 class="text-2xl font-bold tracking-wider">HASTA</h1>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-hasta">
+        <div class="container">
+            <a class="logo-text" href="{{ route('home') }}">
+                <img src="{{ asset('images/hasta logo.png') }}" alt="HASTA Logo" class="logo-image">
             </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-            <nav class="hidden md:flex items-center gap-6">
-                <a href="{{ route('home') }}" class="hover:text-gray-200 transition">
-                    <i class="fas fa-home text-xl"></i>
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-bell text-xl"></i>
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-th text-xl"></i>
-                </a>
-                <a href="{{ route('staff.cars.index') }}" class="bg-red-400 bg-opacity-50 px-4 py-2 rounded-lg hover:bg-opacity-70 transition">
-                    <i class="fas fa-car"></i> Vehicle Management
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-clipboard-list text-xl"></i>
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-clock text-xl"></i>
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-cog text-xl"></i>
-                </a>
-            </nav>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="{{ route('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta active" href="{{ route('staff.cars.index') }}">Vehicle Management</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="#">Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="#">Reports</a>
+                    </li>
+                </ul>
 
-            <div class="flex items-center gap-4">
-                <a href="{{ route('login') }}" class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg text-white font-semibold transition">
-                    Login
-                </a>
-                <img src="https://ui-avatars.com/api/?name=Staff&background=FF6B35&color=fff" 
-                     alt="Profile" 
-                     class="w-12 h-12 rounded-full border-2 border-white">
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- Main Content -->
-<div class="container mx-auto px-4 py-8">
-    
-    <!-- Success Message -->
-    @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            <i class="fas fa-check-circle"></i> {{ session('success') }}
-        </div>
-    @endif
-
-
-
-    <!-- Category Filters -->
-    <div class="flex justify-center gap-3 mb-8 flex-wrap">
-        <a href="{{ route('staff.cars.index') }}" 
-           class="px-6 py-2 rounded-full {{ !request('type') ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 border border-gray-200' }} font-semibold hover:border-orange-500 transition">
-            All vehicles
-        </a>
-        <a href="{{ route('staff.cars.index', ['type' => 'sedan']) }}" 
-           class="px-6 py-2 rounded-full {{ request('type') == 'sedan' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 border border-gray-200' }} font-semibold hover:border-orange-500 transition">
-            🚗 Sedan
-        </a>
-        <a href="{{ route('staff.cars.index', ['type' => 'hatchback']) }}" 
-           class="px-6 py-2 rounded-full {{ request('type') == 'hatchback' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 border border-gray-200' }} font-semibold hover:border-orange-500 transition">
-            🚙 Hatchback
-        </a>
-        <a href="{{ route('staff.cars.index', ['type' => 'mpv']) }}" 
-           class="px-6 py-2 rounded-full {{ request('type') == 'mpv' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 border border-gray-200' }} font-semibold hover:border-orange-500 transition">
-            🚐 MPV
-        </a>
-        <a href="{{ route('staff.cars.index', ['type' => 'suv']) }}" 
-           class="px-6 py-2 rounded-full {{ request('type') == 'suv' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 border border-gray-200' }} font-semibold hover:border-orange-500 transition">
-            🚙 SUV
-        </a>
-    </div>
-
-    <!-- Car Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($cars as $car)
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition">
-                <!-- Car Image -->
-                <div class="relative h-56 bg-gray-100">
-                    @if($car->image)
-                        <img src="{{ asset('storage/' . $car->image) }}"
-                             alt="{{ $car->brand }} {{ $car->model }}" 
-                             class="w-full h-full object-contain p-4">
+                <div class="d-flex align-items-center gap-3">
+                    @guest
+                    <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px; border: 2px solid #e53935; color: #e53935;">
+                        Login
+                    </a>
                     @else
-                        <div class="w-full h-full flex items-center justify-center">
-                            <i class="fas fa-car text-gray-300 text-6xl"></i>
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Car Details -->
-                <div class="p-5">
-                    <!-- Title and Type -->
-                    <div class="mb-3">
-                        <h3 class="font-bold text-lg">{{ $car->brand }} {{ $car->model }} {{ $car->year }}</h3>
-                        <p class="text-sm text-gray-500 capitalize">{{ $car->carType ?? 'Hatchback' }}</p>
-                    </div>
-
-                    <!-- Price -->
-                    <div class="mb-4">
-                        <p class="text-orange-500 font-bold text-2xl">
-                            RM{{ number_format($car->daily_rate, 0) }}
-                            <span class="text-sm text-gray-500 font-normal">per day</span>
-                        </p>
-                    </div>
-
-                    <!-- Features -->
-                    <div class="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                        <div class="flex items-center gap-1">
-                            <i class="fas fa-cog"></i>
-                            <span>{{ ucfirst($car->transmission ?? 'Automat') }}</span>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <i class="fas fa-gas-pump"></i>
-                            <span>RON 95</span>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <i class="fas fa-snowflake"></i>
-                            <span>Air Conditioner</span>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex gap-2">
-                        <a href="{{ route('staff.cars.edit', $car->id) }}" 
-                           class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-center py-3 rounded-lg font-semibold transition">
-                            Edit Car
-                        </a>
-                        <form action="{{ route('staff.cars.destroy', $car->id) }}" 
-                              method="POST" 
-                              class="inline"
-                              onsubmit="return confirm('Are you sure you want to delete {{ $car->brand }} {{ $car->model }}?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" 
-                                    class="bg-red-100 hover:bg-red-200 text-red-600 px-4 py-3 rounded-lg transition">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-                    </div>
+                    <span class="me-2">Welcome, <strong>Staff</strong></span>
+                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </button>
+                    </form>
+                    @endguest
                 </div>
             </div>
-        @empty
-            <div class="col-span-full text-center py-12">
-                <i class="fas fa-car text-gray-300 text-6xl mb-4"></i>
-                <h3 class="text-xl font-semibold text-gray-600 mb-2">No cars available</h3>
-                <p class="text-gray-500 mb-4">Start by adding your first vehicle</p>
-                <a href="{{ route('staff.cars.create') }}" class="inline-block bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition">
-                    <i class="fas fa-plus mr-2"></i> Add New Car
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="fw-bold text-dark mb-2">Vehicle Management</h2>
+                <p class="text-muted">Manage your fleet of vehicles</p>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        <!-- Category Filters -->
+        <div class="text-center mb-5">
+            <div class="btn-group" role="group">
+                <a href="{{ route('staff.cars.index') }}" class="btn btn-category {{ !request('type') ? 'active' : '' }}">
+                    All Vehicles <i class="fas fa-car ms-1"></i>
+                </a>
+                <a href="{{ route('staff.cars.index', ['type' => 'sedan']) }}" class="btn btn-category {{ request('type') === 'sedan' ? 'active' : '' }}">
+                    Sedan
+                </a>
+                <a href="{{ route('staff.cars.index', ['type' => 'hatchback']) }}" class="btn btn-category {{ request('type') === 'hatchback' ? 'active' : '' }}">
+                    Hatchback
+                </a>
+                <a href="{{ route('staff.cars.index', ['type' => 'mpv']) }}" class="btn btn-category {{ request('type') === 'mpv' ? 'active' : '' }}">
+                    MPV
+                </a>
+                <a href="{{ route('staff.cars.index', ['type' => 'suv']) }}" class="btn btn-category {{ request('type') === 'suv' ? 'active' : '' }}">
+                    SUV
                 </a>
             </div>
-        @endforelse
-    </div>
-</div>
+        </div>
 
-<!-- Floating Add Button -->
-<a href="{{ route('staff.cars.create') }}" class="floating-add-btn" title="Add New Car">
-    <i class="fas fa-plus"></i>
-</a>
-
-<!-- Footer -->
-<footer class="footer-gradient text-white mt-16">
-    <div class="container mx-auto px-4 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <!-- Logo and Contact -->
-            <div>
-                <h2 class="text-2xl font-bold mb-4">HASTA</h2>
-                <div class="space-y-3">
-                    <div class="flex items-start gap-3">
-                        <i class="fas fa-map-marker-alt mt-1"></i>
-                        <div>
-                            <p class="font-semibold">Address</p>
-                            <p class="text-sm opacity-90">Student Mall UTM</p>
-                            <p class="text-sm opacity-90">Skudai, 81300, Johor Bahru</p>
+        <!-- Car Cards -->
+        <div class="row g-4">
+            @forelse($cars as $car)
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="car-card overflow-hidden bg-white">
+                    <div class="bg-light text-center p-3">
+                        @if($car->image)
+                        <img src="{{ asset('storage/' . $car->image) }}" alt="{{ $car->brand }} {{ $car->model }}" class="img-fluid">
+                        @else
+                        <div class="d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-car text-muted" style="font-size: 4rem;"></i>
                         </div>
+                        @endif
                     </div>
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <p class="font-semibold">Email</p>
-                            <p class="text-sm opacity-90">hastatravel@gmail.com</p>
+                    <div class="p-4">
+                        <h5 class="fw-bold">{{ $car->brand }} {{ $car->model }} {{ $car->year }}</h5>
+                        <p class="text-muted text-capitalize">{{ $car->carType ?? 'Hatchback' }}</p>
+                        <div class="d-flex align-items-baseline mb-3">
+                            <span class="text-danger fw-bold fs-4">RM{{ number_format($car->daily_rate, 0) }}</span>
+                            <span class="text-muted ms-2">per day</span>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <p class="font-semibold">Phone</p>
-                            <p class="text-sm opacity-90">011-1090 0700</p>
+                        <div class="mb-3 text-muted small d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark"><i class="fas fa-cog text-warning"></i> {{ ucfirst($car->transmission ?? 'Automat') }}</span>
+                            <span class="badge bg-light text-dark"><i class="fas fa-gas-pump text-warning"></i> {{ $car->fuel_type ?? 'RON 95' }}</span>
+                            <span class="badge bg-light text-dark"><i class="fas fa-snowflake text-warning"></i> {{ $car->air_conditioner ? 'AC' : 'No AC' }}</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('staff.cars.edit', $car->id) }}" class="btn btn-edit flex-grow-1">
+                                <i class="fas fa-edit me-1"></i> Edit
+                            </a>
+                            <form action="{{ route('staff.cars.destroy', $car->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete {{ $car->brand }} {{ $car->model }}?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Useful Links -->
-            <div>
-                <h3 class="font-bold text-lg mb-4">Useful Links</h3>
-                <ul class="space-y-2 text-sm opacity-90">
-                    <li><a href="#" class="hover:opacity-100 transition">About us</a></li>
-                    <li><a href="#" class="hover:opacity-100 transition">Contact us</a></li>
-                    <li><a href="#" class="hover:opacity-100 transition">Gallery</a></li>
-                    <li><a href="#" class="hover:opacity-100 transition">Blog</a></li>
-                    <li><a href="#" class="hover:opacity-100 transition">F.A.Q</a></li>
-                </ul>
+            @empty
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-car text-muted mb-3" style="font-size: 5rem;"></i>
+                <h3 class="fw-bold text-muted mb-3">No vehicles found</h3>
+                <p class="text-muted mb-4">Start by adding your first vehicle</p>
+                <a href="{{ route('staff.cars.create') }}" class="btn btn-login">
+                    <i class="fas fa-plus me-2"></i> Add New Vehicle
+                </a>
             </div>
-
-            <!-- Vehicles -->
-            <div>
-                <h3 class="font-bold text-lg mb-4">Vehicles</h3>
-                <ul class="space-y-2 text-sm opacity-90">
-                    <li><a href="#" class="hover:opacity-100 transition">Sedan</a></li>
-                    <li><a href="#" class="hover:opacity-100 transition">Hatchback</a></li>
-                    <li><a href="#" class="hover:opacity-100 transition">MPV</a></li>
-                    <li><a href="#" class="hover:opacity-100 transition">Minivan</a></li>
-                    <li><a href="#" class="hover:opacity-100 transition">SUV</a></li>
-                </ul>
-            </div>
-
-            <!-- Social Media -->
-            <div>
-                <h3 class="font-bold text-lg mb-4">Follow Us</h3>
-                <div class="flex gap-3">
-                    <a href="#" class="bg-white text-red-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" class="bg-white text-red-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#" class="bg-white text-red-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="#" class="bg-white text-red-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-100 transition">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="border-t border-red-400 border-opacity-50 mt-8 pt-8 text-center text-sm opacity-90">
-            <p>&copy; {{ date('Y') }} Hasta Travel & Tours. All rights reserved.</p>
+            @endforelse
         </div>
     </div>
-</footer>
+
+    <!-- Floating Add Button -->
+    <a href="{{ route('staff.cars.create') }}" class="floating-add-btn" title="Add New Vehicle">
+        <i class="fas fa-plus"></i>
+    </a>
+
+    <!-- FOOTER -->
+    <footer id="footer-hasta" class="footer-hasta mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="footer-brand">HASTA</div>
+                    <p class="footer-text">
+                        Your trusted partner for car rental services in Malaysia. Quality vehicles, affordable prices.
+                    </p>
+                    
+                    <div class="footer-contact">
+                        <div class="footer-contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Student Mall UTM, Skudai, 81300, Johor Bahru</span>
+                        </div>
+                        <div class="footer-contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>hastatravelandtours@gmail.com</span>
+                        </div>
+                        <div class="footer-contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>011-1090 0700</span>
+                        </div>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="http://wasap.my/601110900700/nakkeretasewa"><i class="fab fa-whatsapp"></i></a>
+                        <a href="http://t.me/infoHastaCarRentalUTM"><i class="fab fa-telegram"></i></a>
+                        <a href="http://youtube.com/watch?v=41Vedbjxn_s"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.instagram.com/hastatraveltours?igsh=MXR0ZjYyM3c3Znpsdg=="><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-2 offset-lg-1 footer-links">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="{{ route('home') }}">Home</a></li>
+                        <li><a href="{{ route('staff.cars.index') }}">Vehicle Management</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6 col-lg-2 footer-links">
+                    <h5>Vehicles</h5>
+                    <ul>
+                        <li><a href="#">Sedan</a></li>
+                        <li><a href="#">Hatchback</a></li>
+                        <li><a href="#">MPV</a></li>
+                        <li><a href="#">SUV</a></li>
+                        <li><a href="#">Luxury</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 footer-links">
+                    <h5>Newsletter</h5>
+                    <p class="text-white-50 mb-3">Subscribe for updates and special offers</p>
+                    <form class="d-flex gap-2">
+                        <input type="email" class="form-control" placeholder="Your email" style="border-radius: 10px;">
+                        <button type="submit" class="btn" style="background: var(--primary); color: white; border-radius: 10px;">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; {{ date('Y') }} Hasta Travel & Tours. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar-hasta');
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+    </script>
 
 </body>
 </html>

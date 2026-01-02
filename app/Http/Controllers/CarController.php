@@ -5,28 +5,50 @@ namespace App\Http\Controllers;
 use App\Models\Car;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class CarController extends Controller
 {
     /**
-     * Display listing of cars
+     * Display listing of cars for customers
      */
-    public function staffIndex(Request $request): View
+    public function index(Request $request): View
     {
-        // Start with only available cars
-        $query = Car::available();
+        $query = Car::query();
 
         // Filter by brand if selected
         if ($request->filled('brand')) {
-            $query->byBrand($request->brand);
+            $query->where('brand', 'like', '%' . $request->brand . '%');
         }
 
         // Filter by category/type if selected
         if ($request->filled('carType')) {
-            $query->where('carType', $request->carType); // Standard where check
+            $query->where('carType', $request->carType);
         }
 
         $cars = $query->get();
+
+        return view('cars.index', compact('cars'));
+    }
+
+    /**
+     * Display listing of cars for staff
+     */
+    public function staffIndex(Request $request): View
+    {
+        $query = Car::query();
+
+        // Filter by brand if selected
+        if ($request->filled('brand')) {
+            $query->where('brand', 'like', '%' . $request->brand . '%');
+        }
+
+        // Filter by type if selected (matches the 'type' parameter from your routes)
+        if ($request->filled('type')) {
+            $query->where('carType', $request->type);
+        }
+
+        $cars = $query->latest()->get();
 
         return view('staff.cars.index', compact('cars'));
     }
@@ -47,64 +69,128 @@ class CarController extends Controller
         return view('cars.show', compact('car', 'otherCars'));
     }
 
+    /**
+     * Show the form for creating a new car
+     */
     public function create(): View
     {
+        if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+            abort(403, 'Unauthorized');
+        }
+        
         return view('staff.cars.create');
     }
 
+    /**
+     * Store a newly created car
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'plateNo' => 'required|string|max:20',
-            'brand' => 'required|string',
-            'model' => 'required|string',
-            'year' => 'required|integer',
-            'carType' => 'required|string',
-            'transmission' => 'required|string',
-            'daily_rate' => 'required|numeric',
-            'is_available' => 'required|boolean',
-            'image' => 'nullable|image|max:2048',
-        ]);
-
-        $data = $request->all();
-
-        // Handle image upload (kalau ada)
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('cars', 'public');
+        if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+            abort(403, 'Unauthorized');
         }
 
-        Car::create($data);
+        $validated = $request->validate([
+            'plateNo' => 'required|string|max:20|unique:cars,plateNo',
+            'brand' => 'required|string|max:255',
+            'model' => 'required|string|max:255',
+            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'carType' => 'required|string|in:Sedan,Hatchback,MPV,SUV',
+            'transmission' => 'required|string|in:manual,automatic',
+            'fuel_type' => 'nullable|string|max:50',
+            'daily_rate' => 'required|numeric|min:0',
+            'is_available' => 'required|boolean',
+            'air_conditioner' => 'boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('cars', 'public');
+        }
+
+        // Set default for air_conditioner if not present
+        $validated['air_conditioner'] = $request->has('air_conditioner') ? true : false;
+
+        Car::create($validated);
 
         return redirect()
-            ->route('staff.cars.index')
-            ->with('success', 'Car added successfully');
+            ->route('staff.cars')
+            ->with('success', 'Vehicle added successfully!');
     }
 
-    public function edit($id): View
+    /**
+     * Show the form for editing the car
+     */
+    public function edit(Car $car): View
     {
-        $car = Car::findOrFail($id);
+        if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+            abort(403, 'Unauthorized');
+        }
+        
         return view('staff.cars.edit', compact('car'));
     }
 
-    // Update car
-    public function update(Request $request, $id)
+    /**
+     * Update the specified car
+     */
+    public function update(Request $request, Car $car)
     {
-        $car = Car::findOrFail($id);
-        $car->update($request->all());
+        if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+            abort(403, 'Unauthorized');
+        }
 
-        return redirect()->route('staff.cars.index')
-                         ->with('success', 'Car updated successfully!');
+        $validated = $request->validate([
+            'plateNo' => 'required|string|max:20|unique:cars,plateNo,' . $car->id,
+            'brand' => 'required|string|max:255',
+            'model' => 'required|string|max:255',
+            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'carType' => 'required|string|in:Sedan,Hatchback,MPV,SUV',
+            'transmission' => 'required|string|in:manual,automatic',
+            'fuel_type' => 'nullable|string|max:50',
+            'daily_rate' => 'required|numeric|min:0',
+            'is_available' => 'required|boolean',
+            'air_conditioner' => 'boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($car->image) {
+                Storage::disk('public')->delete($car->image);
+            }
+            $validated['image'] = $request->file('image')->store('cars', 'public');
+        }
+
+        // Set default for air_conditioner if not present
+        $validated['air_conditioner'] = $request->has('air_conditioner') ? true : false;
+
+        $car->update($validated);
+
+        return redirect()
+            ->route('staff.cars')
+            ->with('success', 'Vehicle updated successfully!');
     }
 
-    // Delete car
-    public function destroy($id)
+    /**
+     * Remove the specified car
+     */
+    public function destroy(Car $car)
     {
-        $car = Car::findOrFail($id);
+        if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Delete image if exists
+        if ($car->image) {
+            Storage::disk('public')->delete($car->image);
+        }
+
         $car->delete();
 
-        return redirect()->route('staff.cars.index')
-                         ->with('success', 'Car deleted successfully!');
+        return redirect()
+            ->route('staff.cars')
+            ->with('success', 'Vehicle deleted successfully!');
     }
-
-
 }
