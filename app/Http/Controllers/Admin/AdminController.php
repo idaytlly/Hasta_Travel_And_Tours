@@ -15,9 +15,9 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $revenue = Booking::where('status', 'approved')->sum('total_price');
+        $revenue = Booking::where('bookingStatus', 'approved')->sum('totalPrice');
         $todayUsers = User::whereDate('created_at', now()->today())->count();
-        $totalSales = Booking::where('status', 'approved')->count();
+        $totalSales = Booking::where('bookingStatus', 'approved')->count();
         $recentLogs = Car::latest()->take(5)->get();
 
         return view('admin.dashboard', compact('revenue', 'todayUsers', 'totalSales', 'recentLogs'));

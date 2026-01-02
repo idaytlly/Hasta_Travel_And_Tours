@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Customer;
+use App\Models\Booking;
+
 
 class User extends Authenticatable
 {
@@ -79,6 +82,11 @@ class User extends Authenticatable
     public function isCustomer(): bool
     {
         return $this->usertype === 'customer';
+    }
+
+    public function customer()
+    {
+        return $this->hasOne(Customer::class, 'userID', 'id');
     }
     
 }
