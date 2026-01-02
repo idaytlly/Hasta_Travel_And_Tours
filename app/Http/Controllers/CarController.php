@@ -107,4 +107,13 @@ class CarController extends Controller
     }
 
 
+   
+    public function index(): View
+    {
+        $cars = Car::where('is_available', 1)->get(); // cuma cars available
+        return view('cars.index', compact('cars'));
+    }
+
+
+
 }
