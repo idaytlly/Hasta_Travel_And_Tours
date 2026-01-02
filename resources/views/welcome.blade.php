@@ -1194,7 +1194,7 @@
                     </div>
                     <div class="footer-contact-item">
                         <i class="fas fa-envelope"></i>
-                        <span>hastatravelandtours@gmail.com</span>
+                        <span>hastatraveltours@gmail.com</span>
                     </div>
                     <div class="footer-contact-item">
                         <i class="fas fa-phone"></i>
