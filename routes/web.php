@@ -112,47 +112,14 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
         }
         return view('staff.dashboard');
     })->name('dashboard');
-
-    Route::resource('cars', CarController::class)
-         ->names('staff.cars');
     
-    // Car management
-    Route::prefix('cars')->name('cars.')->group(function () {
-        Route::get('/', [CarController::class, 'staffIndex'])
-            ->name('index');
-
-        
-        Route::get('/create', function() {
-            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-                abort(403, 'Unauthorized');
-            }
-            return app(CarController::class)->create();
-        })->name('create');
-        
-        Route::post('/', [CarController::class, 'store'])->name('store');
-
-        
-        Route::get('/{id}/edit', function($id) {
-            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-                abort(403, 'Unauthorized');
-            }
-            return app(CarController::class)->edit($id);
-        })->name('edit');
-        
-        Route::patch('/{id}', function($id) {
-            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-                abort(403, 'Unauthorized');
-            }
-            return app(CarController::class)->update(request(), $id);
-        })->name('update');
-        
-        Route::delete('/{id}', function($id) {
-            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-                abort(403, 'Unauthorized');
-            }
-            return app(CarController::class)->destroy($id);
-        })->name('destroy');
-    });
+    // Car management routes
+    Route::get('/cars', [CarController::class, 'staffIndex'])->name('cars.index');
+    Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
+    Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
+    Route::get('/cars/{car}/edit', [CarController::class, 'edit'])->name('cars.edit');
+    Route::put('/cars/{car}', [CarController::class, 'update'])->name('cars.update');
+    Route::delete('/cars/{car}', [CarController::class, 'destroy'])->name('cars.destroy');
     
     // Booking Management
     Route::prefix('bookings')->name('bookings.')->group(function () {
