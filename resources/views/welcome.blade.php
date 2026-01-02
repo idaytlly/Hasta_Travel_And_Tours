@@ -1216,7 +1216,7 @@
                     <li><a href="{{ route('home') }}">Home</a></li>
                     <li><a href="{{ route('cars.index') }}">Vehicles</a></li>
                     <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="{{ route('contactus') }}">Contact</a></li>
                     <li><a href="#">FAQ</a></li>
                 </ul>
             </div>
