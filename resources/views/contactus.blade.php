@@ -17,7 +17,7 @@
                 <!-- Text Column -->
                 <div class="col-lg-6 col-md-12 text-start text-white">
                     <!-- Title -->
-                    <h2 class="display-4 fw-bold">Contact Us</h2>
+                    <!--<h2 class="display-4 fw-bold">Contact Us</h2> -->
                     
                     <!-- Description -->
                     <p class="lead mt-3">
