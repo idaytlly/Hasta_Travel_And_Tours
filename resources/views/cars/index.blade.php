@@ -325,6 +325,12 @@
                     <li class="nav-item">
                         <a class="nav-link nav-link-hasta" href="#footer-hasta">Contact</a>
                     </li>
+
+                    @auth
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="{{ route('profile.edit') }}">Profile</a>
+                    </li>
+                    @endauth
                 </ul>
 
                 <div class="d-flex align-items-center gap-3">
