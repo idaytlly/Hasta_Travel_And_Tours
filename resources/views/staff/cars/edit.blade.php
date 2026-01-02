@@ -32,7 +32,7 @@
                 <a href="#" class="hover:text-gray-200 transition">
                     <i class="fas fa-th text-xl"></i>
                 </a>
-                <a href="{{ route('staff.cars') }}" class="bg-red-400 bg-opacity-50 px-4 py-2 rounded-lg hover:bg-opacity-70 transition">
+                <a href="{{ route('staff.cars.index') }}" class="bg-red-400 bg-opacity-50 px-4 py-2 rounded-lg hover:bg-opacity-70 transition">
                     <i class="fas fa-car"></i> Vehicle Management
                 </a>
                 <a href="#" class="hover:text-gray-200 transition">
@@ -62,7 +62,7 @@
 <div class="container mx-auto px-4 py-8">
     
     <!-- Back Button -->
-    <a href="{{ route('staff.cars') }}" class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
+    <a href="{{ route('staff.cars.index') }}" class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
         <i class="fas fa-chevron-left text-3xl"></i>
     </a>
 
@@ -221,7 +221,7 @@
 
                 <!-- Buttons -->
                 <div class="flex gap-3">
-                    <a href="{{ route('staff.cars') }}" 
+                    <a href="{{ route('staff.cars.index') }}" 
                        class="flex-1 px-6 py-3 rounded-lg border-2 border-orange-500 text-orange-500 text-center font-semibold hover:bg-orange-50 transition">
                         Discard Changes
                     </a>

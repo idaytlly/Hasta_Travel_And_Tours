@@ -75,7 +75,7 @@
                 <a href="#" class="hover:text-gray-200 transition">
                     <i class="fas fa-th text-xl"></i>
                 </a>
-                <a href="{{ route('staff.cars') }}" class="bg-red-400 bg-opacity-50 px-4 py-2 rounded-lg hover:bg-opacity-70 transition">
+                <a href="{{ route('staff.cars.index') }}" class="bg-red-400 bg-opacity-50 px-4 py-2 rounded-lg hover:bg-opacity-70 transition">
                     <i class="fas fa-car"></i> Vehicle Management
                 </a>
                 <a href="#" class="hover:text-gray-200 transition">
@@ -115,23 +115,23 @@
 
     <!-- Category Filters -->
     <div class="flex justify-center gap-3 mb-8 flex-wrap">
-        <a href="{{ route('staff.cars') }}" 
+        <a href="{{ route('staff.cars.index') }}" 
            class="px-6 py-2 rounded-full {{ !request('type') ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 border border-gray-200' }} font-semibold hover:border-orange-500 transition">
             All vehicles
         </a>
-        <a href="{{ route('staff.cars', ['type' => 'sedan']) }}" 
+        <a href="{{ route('staff.cars.index', ['type' => 'sedan']) }}" 
            class="px-6 py-2 rounded-full {{ request('type') == 'sedan' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 border border-gray-200' }} font-semibold hover:border-orange-500 transition">
             🚗 Sedan
         </a>
-        <a href="{{ route('staff.cars', ['type' => 'hatchback']) }}" 
+        <a href="{{ route('staff.cars.index', ['type' => 'hatchback']) }}" 
            class="px-6 py-2 rounded-full {{ request('type') == 'hatchback' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 border border-gray-200' }} font-semibold hover:border-orange-500 transition">
             🚙 Hatchback
         </a>
-        <a href="{{ route('staff.cars', ['type' => 'mpv']) }}" 
+        <a href="{{ route('staff.cars.index', ['type' => 'mpv']) }}" 
            class="px-6 py-2 rounded-full {{ request('type') == 'mpv' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 border border-gray-200' }} font-semibold hover:border-orange-500 transition">
             🚐 MPV
         </a>
-        <a href="{{ route('staff.cars', ['type' => 'suv']) }}" 
+        <a href="{{ route('staff.cars.index', ['type' => 'suv']) }}" 
            class="px-6 py-2 rounded-full {{ request('type') == 'suv' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700 border border-gray-200' }} font-semibold hover:border-orange-500 transition">
             🚙 SUV
         </a>

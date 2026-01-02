@@ -11,7 +11,7 @@ class CarController extends Controller
     /**
      * Display listing of cars
      */
-    public function index(Request $request): View
+    public function staffIndex(Request $request): View
     {
         // Start with only available cars
         $query = Car::available();
@@ -28,7 +28,7 @@ class CarController extends Controller
 
         $cars = $query->get();
 
-        return view('cars.index', compact('cars'));
+        return view('staff.cars.index', compact('cars'));
     }
 
     /**
@@ -46,4 +46,65 @@ class CarController extends Controller
 
         return view('cars.show', compact('car', 'otherCars'));
     }
+
+    public function create(): View
+    {
+        return view('staff.cars.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'plateNo' => 'required|string|max:20',
+            'brand' => 'required|string',
+            'model' => 'required|string',
+            'year' => 'required|integer',
+            'carType' => 'required|string',
+            'transmission' => 'required|string',
+            'daily_rate' => 'required|numeric',
+            'is_available' => 'required|boolean',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        $data = $request->all();
+
+        // Handle image upload (kalau ada)
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('cars', 'public');
+        }
+
+        Car::create($data);
+
+        return redirect()
+            ->route('staff.cars.index')
+            ->with('success', 'Car added successfully');
+    }
+
+    public function edit($id): View
+    {
+        $car = Car::findOrFail($id);
+        return view('staff.cars.edit', compact('car'));
+    }
+
+    // Update car
+    public function update(Request $request, $id)
+    {
+        $car = Car::findOrFail($id);
+        $car->update($request->all());
+
+        return redirect()->route('staff.cars.index')
+                         ->with('success', 'Car updated successfully!');
+    }
+
+    // Delete car
+    public function destroy($id)
+    {
+        $car = Car::findOrFail($id);
+        $car->delete();
+
+        return redirect()->route('staff.cars.index')
+                         ->with('success', 'Car deleted successfully!');
+    }
+
+
 }

@@ -6,12 +6,12 @@
 
     <div class="row g-4">
         <div class="col-md-4">
-            <a href="{{ route('staff.cars') }}" class="btn btn-primary w-100 p-4">
+            <a href="{{ route('staff.cars.index') }}" class="btn btn-primary w-100 p-4">
                 Manage Cars
             </a>
         </div>
         <div class="col-md-4">
-            <a href="{{ route('staff.bookings') }}" class="btn btn-success w-100 p-4">
+            <a href="{{ route('staff.bookings.index') }}" class="btn btn-success w-100 p-4">
                 View Bookings
             </a>
         </div>

@@ -92,7 +92,7 @@ Route::middleware('auth')->group(function () {
     
     // Payment Routes
     Route::prefix('payment')->name('payment.')->group(function () {
-        Route::get('/', [BookingController::class, 'paymentPage'])->name('page');
+        Route::get('/{reference}', [BookingController::class, 'paymentPage'])->name('page');
         Route::get('/{reference}/summary', [BookingController::class, 'paymentSummary'])->name('summary');
         Route::get('/{reference}/pay', [BookingController::class, 'paymentPage'])->name('page');
         Route::post('/{reference}/process', [BookingController::class, 'processPayment'])->name('process');
@@ -112,15 +112,15 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
         }
         return view('staff.dashboard');
     })->name('dashboard');
+
+    Route::resource('cars', CarController::class)
+         ->names('staff.cars');
     
     // Car management
     Route::prefix('cars')->name('cars.')->group(function () {
-        Route::get('/', function() {
-            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-                abort(403, 'Unauthorized');
-            }
-            return app(CarController::class)->staffIndex();
-        })->name('index');
+        Route::get('/', [CarController::class, 'staffIndex'])
+            ->name('index');
+
         
         Route::get('/create', function() {
             if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
@@ -129,12 +129,8 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
             return app(CarController::class)->create();
         })->name('create');
         
-        Route::post('/', function() {
-            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-                abort(403, 'Unauthorized');
-            }
-            return app(CarController::class)->store(request());
-        })->name('store');
+        Route::post('/', [CarController::class, 'store'])->name('store');
+
         
         Route::get('/{id}/edit', function($id) {
             if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
