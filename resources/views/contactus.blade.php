@@ -33,7 +33,7 @@
         .contact-banner {
             position: relative;
             background: url('{{ asset("images/contactus.jpg") }}') center/cover no-repeat;
-            height: 300px; /* boleh adjust ikut kehendak */
+            height: 350px; /* boleh adjust ikut kehendak */
             display: flex;
             align-items: center;
             justify-content: center;
