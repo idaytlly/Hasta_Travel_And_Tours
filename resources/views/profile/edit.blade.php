@@ -309,7 +309,7 @@
                         <a class="nav-link nav-link-hasta" href="#footer-hasta">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#footer-hasta">Contact</a>
+                        <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
                     </li>
 
                     @auth

@@ -390,9 +390,9 @@
             <p class="text-center text-muted mb-5">Get in touch with us by email or phone. We'd love to hear from you!</p>
 
             <div class="mb-4 text-center">
-                <p>Email: <a href="mailto:enquiry@klezcar.com">enquiry@klezcar.com</a></p>
-                <p>Phone: <a href="tel:0136454040">013-6454040</a></p>
-                <p>Klezcar Travel & Tours Sdn Bhd, WORQ, Unit 2-1, Level 2, The Podium, Tower 3, UOA Business Park 1, Jalan Pengaturcara, Seksyen U1/51A, 40150 Shah Alam, Selangor</p>
+                <p>Email: <a href="mailto:enquiry@klezcar.com">hastatraveltours@gmail.com</a></p>
+                <p>Phone: <a href="tel:0136454040">011-10900700</a></p>
+                <p>LOT 1, STUDENT MALL, LINGKARAN ILMU UNIVERSITI TEKNOLOGI MALAYSIA SKUDAI, 81300 Johor Bahru, Johor, Malaysia</p>
             </div>
 
             {{-- Contact Form --}}
@@ -434,7 +434,7 @@
                 </div>
 
                 <div class="text-center">
-                    <button type="submit" class="btn btn-login px-5">Send Message</button>
+                    <button type="submit" class="btn btn-login px-5">Submit</button>
                 </div>
             </form>
 
