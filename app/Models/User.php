@@ -7,7 +7,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Customer;
 use App\Models\Booking;
-
+use App\Models\Staff;
+use App\Models\Admin;
 
 class User extends Authenticatable
 {
@@ -22,14 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'phone',
-        'ic',
-        'street',
-        'city',
-        'state',
-        'postcode',
-        'license_no',
-        'password',
         'usertype',
+        'password',
     ];
 
     /**
@@ -49,12 +44,30 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed', // Laravel 10+ will automatically hash passwords
+        'password' => 'hashed',
     ];
 
     /**
      * Relationships
      */
+
+    // User can have one customer profile
+    public function customer()
+    {
+        return $this->hasOne(Customer::class, 'userID', 'id');
+    }
+
+    // User can have one staff profile
+    public function staff()
+    {
+        return $this->hasOne(Staff::class, 'userID', 'id');
+    }
+
+    // User can have one admin profile
+    public function admin()
+    {
+        return $this->hasOne(Admin::class, 'userID', 'id');
+    }
 
     // User can have many bookings
     public function bookings()
@@ -83,10 +96,4 @@ class User extends Authenticatable
     {
         return $this->usertype === 'customer';
     }
-
-    public function customer()
-    {
-        return $this->hasOne(Customer::class, 'userID', 'id');
-    }
-    
 }
