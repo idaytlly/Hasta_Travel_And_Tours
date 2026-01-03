@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Customer;
+use App\Models\Booking;
+use App\Models\Staff;
+use App\Models\Admin;
 
 class User extends Authenticatable
 {
@@ -19,15 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'phone',
-        'ic',
-        'street',
-        'city',
-        'state',
-        'postcode',
-        'license_no',
-        'password',
         'usertype',
-        'role', // make sure 'role' exists if you are checking for admin/staff
+        'password',
     ];
 
     /**
@@ -54,6 +51,24 @@ class User extends Authenticatable
      * Relationships
      */
 
+    // User can have one customer profile
+    public function customer()
+    {
+        return $this->hasOne(Customer::class, 'userID', 'id');
+    }
+
+    // User can have one staff profile
+    public function staff()
+    {
+        return $this->hasOne(Staff::class, 'userID', 'id');
+    }
+
+    // User can have one admin profile
+    public function admin()
+    {
+        return $this->hasOne(Admin::class, 'userID', 'id');
+    }
+
     // User can have many bookings
     public function bookings()
     {
@@ -64,24 +79,21 @@ class User extends Authenticatable
      * Helper methods
      */
 
-    // Check if user is staff (including admin)
+    // Check if user is admin
+    public function isAdmin(): bool
+    {
+        return $this->usertype === 'admin';
+    }
+
+    // Check if user is staff
     public function isStaff(): bool
     {
-        return in_array($this->role, ['staff', 'admin']);
+        return $this->usertype === 'staff';
     }
 
     // Check if user is a customer
     public function isCustomer(): bool
     {
         return $this->usertype === 'customer';
-    }
-
-    /**
-     * Get unread notifications count.
-     */
-    public function unreadNotificationsCount(): int
-    {
-        // Uses Laravel's built-in notifications()
-        return $this->unreadNotifications()->count();
     }
 }

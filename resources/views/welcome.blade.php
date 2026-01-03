@@ -779,12 +779,20 @@
                         <a class="nav-link nav-link-hasta " href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#footer-hasta">About Us</a>
+                        <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#footer-hasta">Contact</a>
+                        <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
                     </li>
+
+                    @auth
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="{{ route('profile.edit') }}">Profile</a>
+                    </li>
+                    @endauth
                 </ul>
+
+
 
                 <div class="d-flex align-items-center gap-3">
                 @guest
@@ -1186,7 +1194,7 @@
                     </div>
                     <div class="footer-contact-item">
                         <i class="fas fa-envelope"></i>
-                        <span>hastatravelandtours@gmail.com</span>
+                        <span>hastatraveltours@gmail.com</span>
                     </div>
                     <div class="footer-contact-item">
                         <i class="fas fa-phone"></i>
@@ -1208,7 +1216,7 @@
                     <li><a href="{{ route('home') }}">Home</a></li>
                     <li><a href="{{ route('cars.index') }}">Vehicles</a></li>
                     <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="{{ route('contactus') }}">Contact</a></li>
                     <li><a href="#">FAQ</a></li>
                 </ul>
             </div>
@@ -1223,7 +1231,7 @@
                     <li><a href="#">Luxury</a></li>
                 </ul>
             </div>
-
+            
             <div class="col-lg-3 footer-links">
                 <h5>Newsletter</h5>
                 <p class="text-white-50 mb-3">Subscribe for updates and special offers</p>

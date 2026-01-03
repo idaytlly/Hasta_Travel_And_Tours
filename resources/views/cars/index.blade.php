@@ -320,11 +320,17 @@
                         <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#footer-hasta">About Us</a>
+                        <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#footer-hasta">Contact</a>
+                        <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
                     </li>
+
+                    @auth
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="{{ route('profile.edit') }}">Profile</a>
+                    </li>
+                    @endauth
                 </ul>
 
                 <div class="d-flex align-items-center gap-3">
@@ -371,16 +377,30 @@
         </div>
     </div>
 
-    <!-- CATEGORY FILTERS -->
-    <div class="container mb-4 text-center">
-        <div class="btn-group" role="group">
-            <a href="{{ route('cars.index') }}" class="btn btn-category active">All Vehicles <i class="fas fa-car"></i></a>
-            <a href="{{ route('cars.index', ['category' => 'Sedan']) }}" class="btn btn-category">Sedan </a>
-            <a href="{{ route('cars.index', ['category' => 'Hatchback']) }}" class="btn btn-category">Hatchback </i></a>
-            <a href="{{ route('cars.index', ['category' => 'MPV']) }}" class="btn btn-category">MPV </i></a>
-            <a href="{{ route('cars.index', ['category' => 'SUV']) }}" class="btn btn-category">SUV </i></a>
-        </div>
+    @php
+    $currentCarType = request('carType');
+    @endphp
+
+<div class="container mb-4 text-center">
+    <div class="btn-group" role="group">
+        <a href="{{ route('cars.index') }}" class="btn btn-category {{ is_null($currentCarType) ? 'active' : '' }}">
+            All Vehicles <i class="fas fa-car"></i>
+        </a>
+        <a href="{{ route('cars.index', ['carType' => 'Sedan']) }}" class="btn btn-category {{ $currentCarType === 'Sedan' ? 'active' : '' }}">
+            Sedan
+        </a>
+        <a href="{{ route('cars.index', ['carType' => 'Hatchback']) }}" class="btn btn-category {{ $currentCarType === 'Hatchback' ? 'active' : '' }}">
+            Hatchback
+        </a>
+        <a href="{{ route('cars.index', ['carType' => 'MPV']) }}" class="btn btn-category {{ $currentCarType === 'MPV' ? 'active' : '' }}">
+            MPV
+        </a>
+        <a href="{{ route('cars.index', ['carType' => 'SUV']) }}" class="btn btn-category {{ $currentCarType === 'SUV' ? 'active' : '' }}">
+            SUV
+        </a>
     </div>
+</div>
+
 
     <!-- CAR CARDS -->
     <div class="container mb-5">
