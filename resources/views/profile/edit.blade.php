@@ -297,6 +297,66 @@
     </div>
 </nav>
 
+<!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-hasta">
+        <div class="container">
+            <a class="logo-text" href="{{ route('home') }}">
+                <img src="{{ asset('images/hasta logo.png') }}" alt="HASTA Logo" class="logo-image">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta " href="{{ route('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta " href="{{ route('cars.index') }}">Vehicles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="#footer-hasta">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
+                    </li>
+
+                    @auth
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta active" href="{{ route('profile.edit') }}">Profile</a>
+                    </li>
+                    @endauth
+                </ul>
+
+
+
+                <div class="d-flex align-items-center gap-3">
+                @guest
+                    <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px; border: 2px solid #e53935; color: #e53935;">
+                        Login
+                    </a>
+                    <a href="{{ route('register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
+                        Register
+                    </a>
+                @else
+                    <span class="me-2">Welcome, <strong>{{ Auth::user()->name }}</strong></span>
+                    
+                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </button>
+                    </form>
+                @endguest
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
 @php
     // Prepare address parts from customer's address string
     $address = $user->customer->address ?? '';
