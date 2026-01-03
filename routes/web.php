@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\AboutController;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 
@@ -20,6 +21,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 Route::get('/contact-us', [ContactController::class, 'index'])->name('contactus');
+Route::get('/about-us', function () {return view('aboutus');})->name('aboutus');
 // Keep these for general access or remove if moving strictly into the booking flow
 Route::post('/receipt', function () { return view('receipt'); })->name('receipt');
 Route::post('/contact-us', [ContactController::class, 'send'])->name('contactus.send');

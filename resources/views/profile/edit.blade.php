@@ -317,7 +317,7 @@
                         <a class="nav-link nav-link-hasta " href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="#footer-hasta">About Us</a>
+                        <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
