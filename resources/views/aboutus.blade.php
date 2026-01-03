@@ -22,6 +22,53 @@
         </div>
     </section>
 
+    <!-- YOUTUBE + ABOUT SECTION -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="row justify-content-center align-items-center">
+
+                <!-- Video Column -->
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="fw-bold mb-4 text-center">Get to Know Hasta Travel & Tours</h2>
+                    <div class="ratio ratio-16x9 rounded-4 shadow" style="max-width: 100%; margin: 0 auto;">
+                        <iframe 
+                            src="https://www.youtube.com/embed/9rXJ20kheYI?autoplay=1&mute=1"
+                            title="Hasta Travel & Tours"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+
+                <!-- About Text Column -->
+                <div class="col-lg-6">
+                    <p class="about-text">
+                        <strong>Hasta Travel & Tours Sdn. Bhd.</strong> was established in 2020
+                        with a mission to provide reliable, affordable, and student-focused mobility solutions.
+                    </p>
+
+                    <p class="about-text">
+                        The company began as an initiative to support transportation needs of students and staff
+                        at Universiti Teknologi Malaysia (UTM) Skudai. By leveraging technology and student-driven
+                        operations, Hasta has grown into a trusted campus-based car rental service.
+                    </p>
+
+                    <p class="about-text">
+                        Beyond car rentals, Hasta is expanding into travel and tourism services, including
+                        Singapore travel packages, airport transfers, and short getaway solutions.
+                    </p>
+
+                    <p class="about-text">
+                        With a strong belief in accessibility, community empowerment, and service excellence,
+                        Hasta aims to become a comprehensive mobility and travel partner for students and young professionals.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
 
     <style>
         .contact-banner {
@@ -429,44 +476,6 @@
     });
     
     </script>
-
-<div class="container py-5" style="margin-top: 80px;">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-
-            <h1 class="fw-bold mb-4">About Hasta Travel & Tours</h1>
-
-            <p class="about-text">
-                <strong>Hasta Travel & Tours Sdn. Bhd.</strong> was established in 2020
-                with a mission to provide reliable, affordable, and student-focused mobility solutions.
-            </p>
-
-            <p class="about-text">
-                The company began as an initiative to support transportation needs of students and staff
-                at Universiti Teknologi Malaysia (UTM) Skudai. By leveraging technology and student-driven
-                operations, Hasta has grown into a trusted campus-based car rental service.
-            </p>
-
-            <p class="about-text">
-                Beyond car rentals, Hasta is expanding into travel and tourism services, including
-                Singapore travel packages, airport transfers, and short getaway solutions.
-            </p>
-
-            <p class="about-text">
-                With a strong belief in accessibility, community empowerment, and service excellence,
-                Hasta aims to become a comprehensive mobility and travel partner for students and young professionals.
-            </p>
-
-            <!-- IMAGE -->
-                <div class="about-image mt-5 text-center">
-                    <img src="{{ asset('images/hastastaff.png') }}"
-                         alt="Hasta Travel & Tours"
-                         class="img-fluid rounded-4 shadow">
-                </div>
-        </div>
-    </div>
-</div>
-</section>
 
 <!-- FOOTER -->
 <footer id="footer-hasta" class="footer-hasta">
