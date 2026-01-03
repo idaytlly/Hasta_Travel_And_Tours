@@ -41,6 +41,7 @@ class ProfileController extends Controller
 
         // Prepare data for customers table
         $customerData = [
+            'users_id' => $user->id,
             'name' => $request->name,
             'ic' => $request->ic,
             'email' => $request->email,
@@ -51,7 +52,7 @@ class ProfileController extends Controller
 
         // Update or create customer linked to this user
         Customer::updateOrCreate(
-            ['userID' => $user->id],
+            ['users_id' => $user->id],
             $customerData
         );
 
