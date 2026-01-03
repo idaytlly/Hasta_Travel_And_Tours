@@ -1231,7 +1231,7 @@
                     <li><a href="#">Luxury</a></li>
                 </ul>
             </div>
-
+            
             <div class="col-lg-3 footer-links">
                 <h5>Newsletter</h5>
                 <p class="text-white-50 mb-3">Subscribe for updates and special offers</p>
