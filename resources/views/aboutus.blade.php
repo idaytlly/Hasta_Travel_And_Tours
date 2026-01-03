@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hasta Travel & Tours - Car Rental</title>
+    <title>About Us | Hasta Travel & Tours</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,7 +14,7 @@
     <section class="contact-banner">
         <div class="overlay">
             <div class="container text-center text-white">
-                <h1 class="fw-bold mb-3">About Hasta Travel & Tours</h1>
+                <h1 class="fw-bold mb-3">About Us</h1>
                 <p class="lead">
                     Empowering student mobility with reliable and affordable travel solutions
                 </p>
@@ -430,7 +430,7 @@
     
     </script>
 
-<div class="container py-5" style="margin-top: 140px;">
+<div class="container py-5" style="margin-top: 80px;">
     <div class="row justify-content-center">
         <div class="col-lg-10">
 
