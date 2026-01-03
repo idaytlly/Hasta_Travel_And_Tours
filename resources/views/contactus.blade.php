@@ -58,6 +58,7 @@
             color: #fff;
 
         }
+        
         :root {
             --primary: #e53935;
             --primary-dark: #c62828;

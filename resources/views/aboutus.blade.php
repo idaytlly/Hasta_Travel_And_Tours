@@ -10,8 +10,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- ABOUT BANNER -->
+    <section class="contact-banner">
+        <div class="overlay">
+            <div class="container text-center text-white">
+                <h1 class="fw-bold mb-3">About Hasta Travel & Tours</h1>
+                <p class="lead">
+                    Empowering student mobility with reliable and affordable travel solutions
+                </p>
+            </div>
+        </div>
+    </section>
+
 
     <style>
+        .contact-banner {
+            position: relative;
+            background: url('{{ asset("images/hasta.jpg") }}') center/cover no-repeat;
+            height: 350px; /* boleh adjust ikut kehendak */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 70px; /* jarakkan dari navbar tetap */
+        }
+
+        .contact-banner .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5); /* overlay supaya text jelas */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-banner h2 {
+            position: relative;
+            z-index: 2;
+            color: #fff;
+
+        }
+
         :root {
             --primary: #e53935;
             --primary-dark: #c62828;
