@@ -416,6 +416,12 @@
                 Hasta aims to become a comprehensive mobility and travel partner for students and young professionals.
             </p>
 
+            <!-- IMAGE -->
+                <div class="about-image mt-5 text-center">
+                    <img src="{{ asset('images/hastastaff.png') }}"
+                         alt="Hasta Travel & Tours"
+                         class="img-fluid rounded-4 shadow">
+                </div>
         </div>
     </div>
 </div>
