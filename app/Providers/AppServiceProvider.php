@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,11 +19,20 @@ class AppServiceProvider extends ServiceProvider
     }
 
     public function boot(): void
-    {
-    Gate::define('admin-access', function (User $user) {
+{
+    // 1. Admin gate
+    Gate::define('admin-access', function ($user) {
         return $user->role === 'admin';
     });
-    }
+
+    // 2. Share unread notifications with all staff views
+    View::composer('layouts.staff', function ($view) {
+        // Temporarily disabled - fix database prefix issue first
+        $unreadNotifications = 0;
+        $view->with('unreadNotifications', $unreadNotifications);
+    });
+}
+
 }
 
 

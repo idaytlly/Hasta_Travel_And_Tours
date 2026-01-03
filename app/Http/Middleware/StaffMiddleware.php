@@ -4,22 +4,20 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class StaffMiddleware
 {
-    /**
-     * Handle an incoming request.
-     */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        // Pastikan user login
-        if (Auth::check() && Auth::user()->role === 'staff') {
-            return $next($request);
+        if (!auth()->check()) {
+            return redirect()->route('login');
         }
 
-        // Kalau bukan staff, redirect ke home atau abort 403
-        return redirect()->route('home')->with('error', 'You dont have any access to this site.');
-        // atau boleh juga: abort(403);
+        if (!in_array(auth()->user()->role, ['staff', 'admin'])) {
+            abort(403, 'Access denied.');
+        }
+
+        return $next($request);
     }
 }

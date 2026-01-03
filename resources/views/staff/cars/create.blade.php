@@ -20,39 +20,31 @@
 <header class="header-gradient text-white shadow-lg">
     <div class="container mx-auto px-4 py-4">
         <div class="flex justify-between items-center">
-            <a href="{{ route('home') }}" class="flex items-center">
+            <a href="{{ route('staff.dashboard') }}" class="flex items-center">
                 <h1 class="text-2xl font-bold tracking-wider">HASTA</h1>
             </a>
 
             <nav class="hidden md:flex items-center gap-6">
-                <a href="{{ route('home') }}" class="hover:text-gray-200 transition">
+                <a href="{{ route('staff.dashboard') }}" class="hover:text-gray-200 transition">
                     <i class="fas fa-home text-xl"></i>
                 </a>
-                <a href="#" class="hover:text-gray-200 transition">
+                <a href="{{ route('staff.notifications.index') }}" class="hover:text-gray-200 transition">
                     <i class="fas fa-bell text-xl"></i>
                 </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-th text-xl"></i>
-                </a>
-                <a href="{{ route('staff.cars') }}" class="bg-red-400 bg-opacity-50 px-4 py-2 rounded-lg hover:bg-opacity-70 transition">
+                <a href="{{ route('staff.cars.index') }}" class="bg-red-400 bg-opacity-50 px-4 py-2 rounded-lg hover:bg-opacity-70 transition">
                     <i class="fas fa-car"></i> Vehicle Management
                 </a>
-                <a href="#" class="hover:text-gray-200 transition">
+                <a href="{{ route('staff.bookings.index') }}" class="hover:text-gray-200 transition">
                     <i class="fas fa-clipboard-list text-xl"></i>
                 </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-clock text-xl"></i>
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
+                <a href="{{ route('staff.settings.profile') }}" class="hover:text-gray-200 transition">
                     <i class="fas fa-cog text-xl"></i>
                 </a>
             </nav>
 
             <div class="flex items-center gap-4">
-                <button class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg text-white font-semibold transition">
-                    Login
-                </button>
-                <img src="https://ui-avatars.com/api/?name=Staff&background=FF6B35&color=fff" 
+                <span class="text-sm">{{ Auth::user()->name }}</span>
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=FF6B35&color=fff" 
                      alt="Profile" 
                      class="w-12 h-12 rounded-full border-2 border-white">
             </div>
@@ -64,7 +56,7 @@
 <div class="container mx-auto px-4 py-8">
     
     <!-- Back Button -->
-    <a href="{{ route('staff.cars') }}" class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
+    <a href="{{ route('staff.cars.index') }}" class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
         <i class="fas fa-chevron-left text-3xl"></i>
     </a>
 
@@ -81,48 +73,40 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        <!-- Left Side - Image Upload -->
+        <!-- Left Side - Image URL Input -->
         <div class="bg-white rounded-3xl shadow-lg p-8">
             <div class="bg-gray-50 rounded-2xl p-8 mb-6 flex items-center justify-center" style="min-height: 350px;">
-                <div id="imagePreviewContainer">
+                <div id="imagePreviewContainer" class="text-center">
                     <i class="fas fa-car text-gray-300 text-9xl" id="carImageIcon"></i>
-                    <img id="carImagePreview" src="" alt="Car Preview" class="hidden max-w-full max-h-80 object-contain">
+                    <img id="carImagePreview" src="" alt="Car Preview" class="hidden max-w-full max-h-80 object-contain mx-auto">
                 </div>
             </div>
             
-            <label for="imageUpload" class="block w-full">
-                <div class="border-2 border-orange-500 text-orange-500 px-6 py-3 rounded-lg text-center cursor-pointer hover:bg-orange-50 transition">
-                    <i class="fas fa-camera mr-2"></i> Upload Picture
-                </div>
-                <input type="file" 
-                       id="imageUpload" 
-                       name="image" 
-                       accept="image/*" 
-                       class="hidden"
-                       form="createCarForm"
-                       onchange="previewImage(event)">
-            </label>
-            <p class="text-sm text-gray-500 text-center mt-2">JPG, PNG (Max 2MB)</p>
+            <div>
+                <label class="block text-gray-700 text-sm font-medium mb-2">Image URL</label>
+                <input type="url" 
+                       id="imageUrlInput"
+                       placeholder="https://example.com/car-image.jpg"
+                       class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                       onchange="previewImageUrl(event)">
+            </div>
+            <p class="text-sm text-gray-500 text-center mt-2">Enter image URL from web</p>
         </div>
 
         <!-- Right Side - Form -->
         <div class="bg-white rounded-3xl shadow-lg p-8">
             <h2 class="text-3xl font-bold mb-6">Add New Car</h2>
 
-            <form action="{{ route('staff.cars.store') }}" method="POST" enctype="multipart/form-data" id="createCarForm">
+            <form action="{{ route('staff.cars.store') }}" method="POST" id="createCarForm">
                 @csrf
-
-                <!-- Hidden image input -->
-                <input type="file" name="image" id="actualImageInput" class="hidden">
 
                 <!-- Plate Number -->
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium mb-2">Plate Number <span class="text-red-500">*</span></label>
                     <input type="text" 
-                           name="plateNo" 
-                           value="{{ old('plateNo') }}"
+                           name="plate_number" 
+                           value="{{ old('plate_number') }}"
                            placeholder="e.g., ABC1234"
-                           required
                            class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
 
@@ -133,58 +117,100 @@
                             required
                             class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
                         <option value="">Select Brand</option>
-                        <option value="PERODUA" {{ old('brand') == 'PERODUA' ? 'selected' : '' }}>PERODUA</option>
-                        <option value="PROTON" {{ old('brand') == 'PROTON' ? 'selected' : '' }}>PROTON</option>
-                        <option value="TOYOTA" {{ old('brand') == 'TOYOTA' ? 'selected' : '' }}>TOYOTA</option>
-                        <option value="HONDA" {{ old('brand') == 'HONDA' ? 'selected' : '' }}>HONDA</option>
-                        <option value="NISSAN" {{ old('brand') == 'NISSAN' ? 'selected' : '' }}>NISSAN</option>
-                        <option value="MAZDA" {{ old('brand') == 'MAZDA' ? 'selected' : '' }}>MAZDA</option>
+                        <option value="Perodua" {{ old('brand') == 'Perodua' ? 'selected' : '' }}>Perodua</option>
+                        <option value="Proton" {{ old('brand') == 'Proton' ? 'selected' : '' }}>Proton</option>
+                        <option value="Toyota" {{ old('brand') == 'Toyota' ? 'selected' : '' }}>Toyota</option>
+                        <option value="Honda" {{ old('brand') == 'Honda' ? 'selected' : '' }}>Honda</option>
+                        <option value="Nissan" {{ old('brand') == 'Nissan' ? 'selected' : '' }}>Nissan</option>
+                        <option value="Mazda" {{ old('brand') == 'Mazda' ? 'selected' : '' }}>Mazda</option>
+                        <option value="Hyundai" {{ old('brand') == 'Hyundai' ? 'selected' : '' }}>Hyundai</option>
                     </select>
                 </div>
 
                 <!-- Model -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Model</label>
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Model <span class="text-red-500">*</span></label>
                     <input type="text" 
                            name="model" 
                            value="{{ old('model') }}"
-                           placeholder="e.g., AXIA"
+                           placeholder="e.g., Axia"
+                           required
                            class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
 
                 <!-- Year -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Year</label>
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Year <span class="text-red-500">*</span></label>
                     <input type="number" 
                            name="year" 
                            value="{{ old('year', date('Y')) }}"
                            min="2000" 
                            max="{{ date('Y') + 1 }}"
                            placeholder="2024"
+                           required
                            class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
 
-                <!-- Car Type -->
+                <!-- Category -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Car Type</label>
-                    <select name="carType" 
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Category <span class="text-red-500">*</span></label>
+                    <select name="category" 
+                            required
                             class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <option value="">Select Type</option>
-                        <option value="sedan" {{ old('carType') == 'sedan' ? 'selected' : '' }}>Sedan</option>
-                        <option value="hatchback" {{ old('carType') == 'hatchback' ? 'selected' : '' }}>Hatchback</option>
-                        <option value="mpv" {{ old('carType') == 'mpv' ? 'selected' : '' }}>MPV</option>
-                        <option value="suv" {{ old('carType') == 'suv' ? 'selected' : '' }}>SUV</option>
-                        <option value="minivan" {{ old('carType') == 'minivan' ? 'selected' : '' }}>Minivan</option>
+                        <option value="">Select Category</option>
+                        <option value="Sedan" {{ old('category') == 'Sedan' ? 'selected' : '' }}>Sedan</option>
+                        <option value="Hatchback" {{ old('category') == 'Hatchback' ? 'selected' : '' }}>Hatchback</option>
+                        <option value="MPV" {{ old('category') == 'MPV' ? 'selected' : '' }}>MPV</option>
+                        <option value="SUV" {{ old('category') == 'SUV' ? 'selected' : '' }}>SUV</option>
+                        <option value="Motorcycle" {{ old('category') == 'Motorcycle' ? 'selected' : '' }}>Motorcycle</option>
                     </select>
                 </div>
 
                 <!-- Transmission -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Transmission</label>
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Transmission <span class="text-red-500">*</span></label>
                     <select name="transmission" 
+                            required
                             class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <option value="automatic" {{ old('transmission', 'automatic') == 'automatic' ? 'selected' : '' }}>Automatic</option>
-                        <option value="manual" {{ old('transmission') == 'manual' ? 'selected' : '' }}>Manual</option>
+                        <option value="Automatic" {{ old('transmission', 'Automatic') == 'Automatic' ? 'selected' : '' }}>Automatic</option>
+                        <option value="Manual" {{ old('transmission') == 'Manual' ? 'selected' : '' }}>Manual</option>
+                    </select>
+                </div>
+
+                <!-- Fuel Type -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Fuel Type <span class="text-red-500">*</span></label>
+                    <select name="fuel_type" 
+                            required
+                            class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="Petrol" {{ old('fuel_type', 'Petrol') == 'Petrol' ? 'selected' : '' }}>Petrol</option>
+                        <option value="Diesel" {{ old('fuel_type') == 'Diesel' ? 'selected' : '' }}>Diesel</option>
+                        <option value="Hybrid" {{ old('fuel_type') == 'Hybrid' ? 'selected' : '' }}>Hybrid</option>
+                        <option value="Electric" {{ old('fuel_type') == 'Electric' ? 'selected' : '' }}>Electric</option>
+                    </select>
+                </div>
+
+                <!-- Seats -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Seats <span class="text-red-500">*</span></label>
+                    <input type="number" 
+                           name="seats" 
+                           value="{{ old('seats', 5) }}"
+                           min="1" 
+                           max="12"
+                           placeholder="5"
+                           required
+                           class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                </div>
+
+                <!-- Air Conditioner -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Air Conditioner <span class="text-red-500">*</span></label>
+                    <select name="air_conditioner" 
+                            required
+                            class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="1" {{ old('air_conditioner', 1) == 1 ? 'selected' : '' }}>Yes</option>
+                        <option value="0" {{ old('air_conditioner') == 0 ? 'selected' : '' }}>No</option>
                     </select>
                 </div>
 
@@ -201,19 +227,24 @@
                            class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
                 </div>
 
-                <!-- Availability -->
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Availability</label>
-                    <select name="is_available" 
+                <!-- Status -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">Status <span class="text-red-500">*</span></label>
+                    <select name="status" 
+                            required
                             class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <option value="1" {{ old('is_available', 1) == 1 ? 'selected' : '' }}>Available</option>
-                        <option value="0" {{ old('is_available') == 0 ? 'selected' : '' }}>Not Available</option>
+                        <option value="available" {{ old('status', 'available') == 'available' ? 'selected' : '' }}>Available</option>
+                        <option value="rented" {{ old('status') == 'rented' ? 'selected' : '' }}>Rented</option>
+                        <option value="maintenance" {{ old('status') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
                     </select>
                 </div>
 
+                <!-- Hidden Image URL -->
+                <input type="hidden" name="image" id="hiddenImageInput" value="{{ old('image') }}">
+
                 <!-- Buttons -->
-                <div class="flex gap-3">
-                    <a href="{{ route('staff.cars') }}" 
+                <div class="flex gap-3 mt-6">
+                    <a href="{{ route('staff.cars.index') }}" 
                        class="flex-1 px-6 py-3 rounded-lg border-2 border-orange-500 text-orange-500 text-center font-semibold hover:bg-orange-50 transition">
                         Cancel
                     </a>
@@ -228,31 +259,29 @@
 </div>
 
 <script>
-    function previewImage(event) {
-        const file = event.target.files[0];
-        if (file) {
-            // Check file size (2MB max)
-            if (file.size > 2 * 1024 * 1024) {
-                alert('File size must be less than 2MB');
+    function previewImageUrl(event) {
+        const url = event.target.value;
+        if (url) {
+            const icon = document.getElementById('carImageIcon');
+            const preview = document.getElementById('carImagePreview');
+            const hiddenInput = document.getElementById('hiddenImageInput');
+            
+            // Update preview
+            icon.classList.add('hidden');
+            preview.classList.remove('hidden');
+            preview.src = url;
+            
+            // Update hidden input
+            hiddenInput.value = url;
+            
+            // Handle image load error
+            preview.onerror = function() {
+                alert('Failed to load image. Please check the URL.');
+                icon.classList.remove('hidden');
+                preview.classList.add('hidden');
+                hiddenInput.value = '';
                 event.target.value = '';
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const icon = document.getElementById('carImageIcon');
-                const preview = document.getElementById('carImagePreview');
-                
-                icon.classList.add('hidden');
-                preview.classList.remove('hidden');
-                preview.src = e.target.result;
-                
-                // Copy file to actual form input
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                document.getElementById('actualImageInput').files = dataTransfer.files;
             };
-            reader.readAsDataURL(file);
         }
     }
 </script>

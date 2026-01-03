@@ -27,6 +27,7 @@ class User extends Authenticatable
         'license_no',
         'password',
         'usertype',
+        'role', // make sure 'role' exists if you are checking for admin/staff
     ];
 
     /**
@@ -46,7 +47,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed', // Laravel 10+ will automatically hash passwords
+        'password' => 'hashed',
     ];
 
     /**
@@ -63,16 +64,10 @@ class User extends Authenticatable
      * Helper methods
      */
 
-    // Check if user is admin
-    public function isAdmin(): bool
-    {
-        return $this->usertype === 'admin';
-    }
-
-    // Check if user is staff
+    // Check if user is staff (including admin)
     public function isStaff(): bool
     {
-        return $this->usertype === 'staff';
+        return in_array($this->role, ['staff', 'admin']);
     }
 
     // Check if user is a customer
@@ -80,5 +75,13 @@ class User extends Authenticatable
     {
         return $this->usertype === 'customer';
     }
-    
+
+    /**
+     * Get unread notifications count.
+     */
+    public function unreadNotificationsCount(): int
+    {
+        // Uses Laravel's built-in notifications()
+        return $this->unreadNotifications()->count();
+    }
 }
