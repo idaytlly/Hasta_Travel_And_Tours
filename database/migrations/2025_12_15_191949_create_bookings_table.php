@@ -10,9 +10,12 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('car_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            
+            $table->foreignId('customers_id')->constrained('customers')->onDelete('cascade');
+            $table->foreignId('staff_id')->constrained('staff')->onDelete('cascade');
+            $table->foreignId('admin_id')->constrained('admin')->onDelete('cascade');
+            $table->foreignId('cars_id')->constrained('cars')->onDelete('cascade');
+            $table->foreignId('vouchers_id')->constrained('vouchers')->onDelete('cascade');
+
             // Booking details
             $table->string('booking_reference')->unique();
             $table->string('customer_name')->nullable();

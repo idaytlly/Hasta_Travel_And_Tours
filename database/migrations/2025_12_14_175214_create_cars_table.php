@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('cars', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('staff_id')->constrained('staff')->onDelete('cascade');
+            $table->foreignId('admin_id')->constrained('admin')->onDelete('cascade');
             $table->string('brand');
             $table->string('model');
             $table->integer('year');

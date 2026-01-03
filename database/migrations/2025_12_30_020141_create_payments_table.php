@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
         $table->id();
+        $table->foreignId('staff_id')->constrained('staff')->onDelete('cascade');
+        $table->foreignId('admin_id')->constrained('admin')->onDelete('cascade');
 
         // kalau payment ni untuk booking
-        $table->unsignedBigInteger('booking_id')->nullable();
+        $table->foreignId('bookings_id')->constrained('bookings')->onDelete('cascade');
 
         // simpan file path
         $table->string('payment_proof');
