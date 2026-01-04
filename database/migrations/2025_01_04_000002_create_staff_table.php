@@ -14,8 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('staff', function (Blueprint $table) {
-            $table->id('staffID');
-            $table->unsignedBigInteger('userID');
+            $table->id();
+            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->enum('staff_type', ['management', 'runner'])->default('runner');
             $table->date('hire_date')->nullable();
             $table->timestamps();

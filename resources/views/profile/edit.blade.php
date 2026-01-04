@@ -287,17 +287,6 @@
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-hasta">
-    <div class="container">
-        <a class="logo-text" href="{{ route('home') }}">
-            <img src="{{ asset('images/hasta logo.png') }}" alt="HASTA Logo" class="logo-image">
-        </a>
-        <!-- navbar toggler and links -->
-        <!-- ... your existing navbar code ... -->
-    </div>
-</nav>
-
-<!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-hasta">
         <div class="container">
             <a class="logo-text" href="{{ route('home') }}">
@@ -325,7 +314,7 @@
 
                     @auth
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta active" href="{{ route('profile.edit') }}">Profile</a>
+                        <a class="nav-link nav-link-hasta active" href="{{ route('profile.show') }}">Profile</a>
                     </li>
                     @endauth
                 </ul>

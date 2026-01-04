@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('customers_id')->constrained('customers')->onDelete('cascade');
             $table->string('code')->unique();
             $table->string('description');
             $table->enum('type', ['percentage', 'fixed'])->default('percentage');

@@ -9,9 +9,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('notifications', function (Blueprint $table) {
-            $table->string('link')->nullable()->after('message');
-            $table->json('data')->nullable()->after('link');
-            $table->timestamp('read_at')->nullable()->after('is_read');
+            if (!Schema::hasColumn('notifications', 'link')) {
+                $table->string('link')->nullable()->after('message');
+                $table->json('data')->nullable()->after('link');
+                $table->timestamp('read_at')->nullable()->after('is_read');
+            }
         });
     }
 

@@ -9,8 +9,8 @@ class CreateCustomersTable extends Migration
     public function up()
     {
         Schema::create('customers', function (Blueprint $table) {
-            $table->id('customerID'); // primary key
-            $table->foreignId('userID')->constrained('users')->onDelete('cascade'); // foreign key to users.id
+            $table->id(); // primary key
+            $table->foreignId('users_id')->constrained('users')->onDelete('cascade'); // foreign key to users.id
             $table->string('name', 100);
             $table->string('ic', 14);
             $table->string('email', 50);
