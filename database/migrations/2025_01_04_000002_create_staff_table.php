@@ -14,20 +14,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('staff', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
+            $table->id('user_id');
             $table->enum('staff_type', ['management', 'runner'])->default('runner');
             $table->date('hire_date')->nullable();
             $table->timestamps();
 
             // Foreign key constraint
-            $table->foreign('userID')
+            $table->foreign('user_id')
                   ->references('id')
                   ->on('users')
                   ->onDelete('cascade');
 
             // Unique constraint
-            $table->unique('userID');
+            //$table->unique('userID');
         });
     }
 

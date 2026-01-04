@@ -13,17 +13,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('admin')) {
+        
             Schema::create('admin', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
+                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
                 $table->string('access_level', 50)->default('full');
                 $table->timestamps();
 
                 // Unique constraint
-                $table->unique('userID');
+                //$table->unique('userID');
             });
-        }
+        
     }
 
     /**
