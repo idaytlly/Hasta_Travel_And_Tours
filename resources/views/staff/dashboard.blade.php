@@ -578,22 +578,6 @@
 
 <div class="container-fluid py-4">
     
-    <!-- Welcome Header -->
-    <div class="welcome-header">
-        <div class="welcome-content">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <h1 class="welcome-title">Welcome back, {{ Auth::user()->name }}! 👋</h1>
-                    <p class="welcome-subtitle">Here's what's happening with your rental business today</p>
-                </div>
-                <div class="text-end">
-                    <div style="font-size: 0.875rem; opacity: 0.9;">{{ now()->format('l, F d, Y') }}</div>
-                    <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem;">{{ now()->format('g:i A') }}</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Quick Actions -->
     <div class="quick-actions-grid">
         <a href="{{ route('staff.cars.create') }}" class="action-card">
@@ -671,7 +655,8 @@
             <div class="stat-label">Monthly Revenue</div>
             <div class="stat-footer">
                 <span>vs last month</span>
-                <span class="stat-link" style="color: var(--gray); cursor: default; pointer-events: none;">                    View details <i class="fas fa-arrow-right"></i>
+                <a href="javascript:void(0)" class="stat-link" onclick="alert('Reports feature coming soon!')">
+                    View details <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>

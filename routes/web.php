@@ -96,13 +96,6 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
     }
     Route::view('/dashboard', 'staff.dashboard')->name('dashboard');
     
-    // Or if you need to pass data:
-    Route::get('/dashboard', function () {
-        return view('staff.dashboard');
-    })->name('dashboard');
-    
-    Route::view('/dashboard', 'staff.dashboard')->name('dashboard');
-    
     Route::get('/cars', [CarController::class, 'staffIndex'])->name('cars.index');
     Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
     Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
@@ -202,61 +195,65 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
         ->with('success', 'Test notification sent!');
 })->name('test.notification')->middleware(['auth', 'staff.admin']);
 });
-    // Settings routes
-Route::prefix('settings')->name('settings.')->group(function () {
-    // View profile
-    Route::get('/profile', function () {
-        $user = auth()->user();
-        return view('staff.settings.profile', ['user' => $user]);
-    })->name('profile');
-    
-    // Update profile
-    Route::put('/profile', function () {
-        $user = auth()->user();
+       // Settings routes
+    Route::prefix('settings')->name('settings.')->group(function () {
+        // View profile
+        Route::get('/profile', function () {
+            $user = auth()->user();
+            return view('staff.settings.profile', ['user' => $user]);
+        })->name('profile');
         
-        $validated = request()->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-        ]);
-        
-        $user->update($validated);
-        
-        return redirect()->route('staff.settings.profile')
-            ->with('success', 'Profile updated successfully!');
-    })->name('updateProfile');
-    
-    // Update password
-    Route::put('/password', function () {
-        $user = auth()->user();
-        
-        $validated = request()->validate([
-            'current_password' => 'required',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-        
-        // Verify current password
-        if (!\Hash::check($validated['current_password'], $user->password)) {
-            return back()->withErrors(['current_password' => 'Current password is incorrect.']);
-        }
+        // Update profile
+        Route::put('/profile', function () {
+            $user = auth()->user();
+            
+            $validated = request()->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'phone' => 'nullable|string|max:20',
+                'address' => 'nullable|string|max:255',
+            ]);
+            
+            $user->update($validated);
+            
+            return redirect()->route('staff.settings.profile')
+                ->with('success', 'Profile updated successfully!');
+        })->name('updateProfile');
         
         // Update password
-        $user->update([
-            'password' => \Hash::make($validated['password'])
-        ]);
+        Route::put('/password', function () {
+            $user = auth()->user();
+            
+            $validated = request()->validate([
+                'current_password' => 'required',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
+            
+            // Verify current password
+            if (!\Hash::check($validated['current_password'], $user->password)) {
+                return back()->withErrors(['current_password' => 'Current password is incorrect.']);
+            }
+            
+            // Update password
+            $user->update([
+                'password' => \Hash::make($validated['password'])
+            ]);
+            
+            return redirect()->route('staff.settings.profile')
+                ->with('success', 'Password updated successfully!');
+        })->name('updatePassword');
         
-        return redirect()->route('staff.settings.profile')
-            ->with('success', 'Password updated successfully!');
-    })->name('updatePassword');
-
-    Route::get('/reports', [\App\Http\Controllers\Staff\ReportController::class, 'index'])->name('reports.index');
-    Route::post('/reports/export', [\App\Http\Controllers\Staff\ReportController::class, 'export'])->name('reports.export');
-    // Add this for dashboard data endpoints
-    Route::get('/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboard.data');
-    Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData'])->name('dashboard.chart-data');
-});
-});
+        // Add this for dashboard data endpoints
+        Route::get('/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboard.data');
+        Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData'])->name('dashboard.chart-data');
+    }); // <-- This closes the settings group
+    
+    // REPORTS ROUTE - Add it HERE, outside settings but inside staff
+    Route::get('/reports', function () {
+        return view('staff.reports.index');
+    })->name('reports.index');
+    
+}); // This closes the main staff group
 
 // Admin Routes - WITH ROLE CHECK
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
