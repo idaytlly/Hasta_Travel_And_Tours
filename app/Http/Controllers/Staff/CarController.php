@@ -29,7 +29,8 @@ class CarController extends Controller
                 $q->where('name', 'like', '%' . $request->search . '%')
                   ->orWhere('brand', 'like', '%' . $request->search . '%')
                   ->orWhere('model', 'like', '%' . $request->search . '%')
-                  ->orWhere('registration_number', 'like', '%' . $request->search . '%');
+                  ->orWhere('registration_number', 'like', '%' . $request->search . '%')
+                  ->orWhere('license_plate', 'like', '%' . $request->search . '%');
             });
         }
         
@@ -68,17 +69,23 @@ class CarController extends Controller
             'brand' => 'required|string|max:100',
             'model' => 'required|string|max:100',
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'registration_number' => 'required|string|unique:cars,registration_number|max:20',
+            'registration_number' => 'nullable|string|max:20',
+            'license_plate' => 'nullable|string|max:20',
             'color' => 'nullable|string|max:50',
-            'transmission' => 'required|in:manual,automatic',
-            'fuel_type' => 'required|in:petrol,diesel,hybrid,electric',
-            'seats' => 'required|integer|min:2|max:50',
+            'category' => 'nullable|string|max:50',
+            'transmission' => 'required|string',
+            'fuel_type' => 'nullable|string',
+            'seats' => 'nullable|integer|min:1|max:50',
+            'passengers' => 'nullable|integer|min:1|max:50',
+            'air_conditioner' => 'nullable|boolean',
+            'engine_capacity' => 'nullable|integer|min:50|max:2000',
             'daily_rate' => 'required|numeric|min:0',
             'mileage' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'features' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'is_available' => 'boolean',
+            'vehicle_type' => 'nullable|string|in:car,motorcycle',
         ]);
 
         try {
@@ -92,14 +99,26 @@ class CarController extends Controller
             // Set defaults
             $validated['status'] = $validated['is_available'] ?? true ? 'available' : 'maintenance';
             $validated['is_available'] = $validated['is_available'] ?? true;
+            
+            // Auto-detect vehicle type if not set
+            if (!isset($validated['vehicle_type'])) {
+                // If has engine_capacity or category is motorcycle-related, it's a motorcycle
+                if (isset($validated['engine_capacity']) || 
+                    in_array(strtolower($validated['category'] ?? ''), ['sport', 'cruiser', 'touring', 'standard', 'scooter', 'adventure'])) {
+                    $validated['vehicle_type'] = 'motorcycle';
+                } else {
+                    $validated['vehicle_type'] = 'car';
+                }
+            }
 
             $car = Car::create($validated);
 
-            // 🔔 NOTIFICATION: Notify all staff about new car
+            // 🔔 NOTIFICATION: Notify all staff about new vehicle
+            $plateNumber = $car->registration_number ?? $car->license_plate ?? 'N/A';
             NotificationHelper::notifyAllStaff(
                 'system',
-                'New Car Added',
-                "{$car->name} ({$car->registration_number}) has been added to the fleet by " . auth()->user()->name,
+                'New Vehicle Added',
+                "{$car->name} ({$plateNumber}) has been added to the fleet by " . auth()->user()->name,
                 route('staff.cars.show', $car->id),
                 ['car_id' => $car->id, 'car_name' => $car->name]
             );
@@ -107,11 +126,11 @@ class CarController extends Controller
             DB::commit();
 
             return redirect()->route('staff.cars.index')
-                ->with('success', 'Car added successfully!');
+                ->with('success', 'Vehicle added successfully!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to add car: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Failed to add vehicle: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -120,6 +139,11 @@ class CarController extends Controller
      */
     public function edit(Car $car)
     {
+        // Check if it's a motorcycle and return appropriate view
+        if ($car->vehicle_type === 'motorcycle') {
+            return view('staff.motorcycles.edit', compact('car'));
+        }
+        
         return view('staff.cars.edit', compact('car'));
     }
 
@@ -128,23 +152,35 @@ class CarController extends Controller
      */
     public function update(Request $request, Car $car)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        // Base validation rules
+        $rules = [
             'brand' => 'required|string|max:100',
             'model' => 'required|string|max:100',
-            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'registration_number' => 'required|string|max:20|unique:cars,registration_number,' . $car->id,
-            'color' => 'nullable|string|max:50',
-            'transmission' => 'required|in:manual,automatic',
-            'fuel_type' => 'required|in:petrol,diesel,hybrid,electric',
-            'seats' => 'required|integer|min:2|max:50',
+            'year' => 'required|integer|min:2000|max:' . (date('Y') + 1),
+            'category' => 'nullable|string|max:50',
+            'transmission' => 'required|string',
+            'fuel_type' => 'nullable|string',
             'daily_rate' => 'required|numeric|min:0',
             'mileage' => 'nullable|integer|min:0',
+            'color' => 'nullable|string|max:50',
             'description' => 'nullable|string',
             'features' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'is_available' => 'boolean',
-        ]);
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'is_available' => 'required|boolean',
+        ];
+
+        // Add vehicle-specific validation
+        if ($car->vehicle_type === 'motorcycle') {
+            $rules['license_plate'] = 'required|string|max:20|unique:cars,license_plate,' . $car->id;
+            $rules['engine_capacity'] = 'nullable|integer|min:50|max:2000';
+        } else {
+            $rules['license_plate'] = 'required|string|max:20|unique:cars,license_plate,' . $car->id;
+            $rules['seats'] = 'nullable|integer|min:1|max:15';
+            $rules['passengers'] = 'nullable|integer|min:1|max:15';
+            $rules['air_conditioner'] = 'nullable|boolean';
+        }
+
+        $validated = $request->validate($rules);
 
         try {
             DB::beginTransaction();
@@ -163,23 +199,20 @@ class CarController extends Controller
             DB::commit();
 
             return redirect()->route('staff.cars.index')
-                ->with('success', 'Car updated successfully!');
+                ->with('success', ($car->vehicle_type === 'motorcycle' ? 'Motorcycle' : 'Car') . ' updated successfully!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to update car: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Failed to update vehicle: ' . $e->getMessage())->withInput();
         }
     }
 
-    /**
-     * Delete car
-     */
     public function destroy(Car $car)
     {
         try {
             // Check if car has active bookings
             if ($car->bookings()->whereIn('status', ['pending', 'confirmed', 'active'])->exists()) {
-                return back()->with('error', 'Cannot delete car with active bookings!');
+                return back()->with('error', 'Cannot delete vehicle with active bookings!');
             }
 
             // Delete image
@@ -187,14 +220,21 @@ class CarController extends Controller
                 Storage::disk('public')->delete($car->image);
             }
 
-            $carName = $car->name;
+            $vehicleType = $car->vehicle_type === 'motorcycle' ? 'Motorcycle' : 'Car';
+            $vehicleName = $car->name;
+            
             $car->delete();
 
-            return redirect()->route('staff.cars.index')
-                ->with('success', "{$carName} deleted successfully!");
+            // Force a fresh redirect with cache headers
+            return redirect()
+                ->route('staff.cars.index')
+                ->with('success', "{$vehicleType} {$vehicleName} deleted successfully!")
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
 
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to delete car: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete vehicle: ' . $e->getMessage());
         }
     }
 

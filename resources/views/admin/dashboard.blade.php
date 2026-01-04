@@ -84,6 +84,10 @@
                     </div>
                 </div>
 
+                <a href="{{ route('admin.commissions.index') }}" class="nav-link">
+                    <i class="fas fa-hand-holding-usd"></i> Commission Management
+                </a>
+
                 <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
                     <h3 class="text-xl font-bold text-red-500 mb-4">Revenue Overview</h3>
                     <div style="height: 300px;">

@@ -611,6 +611,14 @@
             <div class="action-title">Reports</div>
             <div class="action-subtitle">Coming soon</div>
         </div>
+        
+        <a href="{{ route('staff.commissions.index') }}" class="action-card">
+            <div class="action-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--purple);">
+                <i class="fas fa-hand-holding-usd"></i>
+            </div>
+            <div class="action-title">My Commissions</div>
+            <div class="action-subtitle">Track your earnings</div>
+        </a>
     </div>
     </div>
 

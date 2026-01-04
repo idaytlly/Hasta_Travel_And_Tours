@@ -311,7 +311,7 @@
 
     .vehicle-card {
         background: var(--white);
-        border-radius: 12px;
+        border-radius: 1px;
         overflow: hidden;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         transition: all 0.3s;
@@ -745,11 +745,10 @@
                 <div class="vehicle-content">
                     <h3 class="vehicle-name">{{ $car->brand }} {{ $car->model }}</h3>
                     
-                    <div class="vehicle-meta">
-                        <span><i class="fas fa-calendar"></i> {{ $car->year }}</span>
-                        @if($car->license_plate)
-                            <span><i class="fas fa-id-card"></i> {{ $car->license_plate }}</span>
-                        @endif
+                    <!-- Plate Number -->
+                    <div class="vehicle-info-item">
+                        <i class="fas fa-id-card"></i>
+                        {{ $car->license_plate ?? $car->registration_number ?? 'N/A' }}
                     </div>
 
                     <div class="vehicle-details">
