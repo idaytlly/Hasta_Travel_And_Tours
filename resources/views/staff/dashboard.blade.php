@@ -578,6 +578,22 @@
 
 <div class="container-fluid py-4">
     
+    <!-- Welcome Header -->
+    <div class="welcome-header">
+        <div class="welcome-content">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h1 class="welcome-title">Welcome back, {{ Auth::user()->name }}! 👋</h1>
+                    <p class="welcome-subtitle">Here's what's happening with your rental business today</p>
+                </div>
+                <div class="text-end">
+                    <div style="font-size: 0.875rem; opacity: 0.9;">{{ now()->format('l, F d, Y') }}</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.25rem;">{{ now()->format('g:i A') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Quick Actions -->
     <div class="quick-actions-grid">
         <a href="{{ route('staff.cars.create') }}" class="action-card">
@@ -596,7 +612,7 @@
             <div class="action-subtitle">Manage all reservations</div>
         </a>
 
-        <a href="{{ route('staff.cars.index') }}" class="action-card">
+                <a href="{{ route('staff.cars.index') }}" class="action-card">
             <div class="action-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
                 <i class="fas fa-car"></i>
             </div>
@@ -604,13 +620,14 @@
             <div class="action-subtitle">Check vehicle availability</div>
         </a>
 
-        <a href="{{ route('staff.reports.index') }}" class="action-card">
+        <div class="action-card" style="opacity: 0.7; cursor: not-allowed;">
             <div class="action-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--purple);">
                 <i class="fas fa-chart-bar"></i>
             </div>
             <div class="action-title">Reports</div>
-            <div class="action-subtitle">View analytics & insights</div>
-        </a>
+            <div class="action-subtitle">Coming soon</div>
+        </div>
+    </div>
     </div>
 
     <!-- Stats Cards -->
@@ -654,8 +671,7 @@
             <div class="stat-label">Monthly Revenue</div>
             <div class="stat-footer">
                 <span>vs last month</span>
-                <a href="{{ route('staff.reports.index') }}" class="stat-link">
-                    View details <i class="fas fa-arrow-right"></i>
+                <span class="stat-link" style="color: var(--gray); cursor: default; pointer-events: none;">                    View details <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>

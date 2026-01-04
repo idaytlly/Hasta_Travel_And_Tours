@@ -27,24 +27,13 @@ class BookingController extends Controller
     /**
      * Show booking form for a specific car
      */
-    public function create($carId): View
+    // In app/Http/Controllers/BookingController.php
+    public function create()
     {
-        try {
-            $car = Car::findOrFail($carId);
-            
-            if (!$car->is_available) {
-                abort(404, 'This vehicle is not available for booking.');
-            }
-            
-            $vouchers = Voucher::where('is_active', true)
-                ->where('expiry_date', '>=', now())
-                ->get();
-            
-            return view('bookings.create', compact('car', 'vouchers'));
-        } catch (\Exception $e) {
-            Log::error('Booking create error: ' . $e->getMessage());
-            abort(404, 'Vehicle not found or unavailable.');
-        }
+        $users = \App\Models\User::all();
+        $cars = \App\Models\Car::where('status', 'available')->get();
+        
+        return view('staff.bookings.create', compact('users', 'cars'));
     }
 
     /**

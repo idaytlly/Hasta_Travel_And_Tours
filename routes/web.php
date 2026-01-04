@@ -94,6 +94,12 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
     if (auth()->check() && !in_array(auth()->user()->usertype, ['staff', 'admin'])) {
         abort(403, 'Unauthorized access. Staff or admin privileges required.');
     }
+    Route::view('/dashboard', 'staff.dashboard')->name('dashboard');
+    
+    // Or if you need to pass data:
+    Route::get('/dashboard', function () {
+        return view('staff.dashboard');
+    })->name('dashboard');
     
     Route::view('/dashboard', 'staff.dashboard')->name('dashboard');
     
@@ -104,14 +110,14 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
     Route::put('/cars/{car}', [CarController::class, 'update'])->name('cars.update');
     Route::delete('/cars/{car}', [CarController::class, 'destroy'])->name('cars.destroy');
     
-    
+     // Bookings - ALL with consistent naming
     Route::get('/bookings', [BookingController::class, 'staffIndex'])->name('bookings.index');
+    Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{id}', [BookingController::class, 'staffShow'])->name('bookings.show');
     Route::patch('/bookings/{id}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'staffCancel'])->name('bookings.cancel');
-    Route::post('/bookings/{id}/inspection', [BookingController::class, 'storeInspection'])
-    ->name('bookings.inspection.store');
-    Route::view('/reports', 'staff.reports.index')->name('reports.index');
+    Route::post('/bookings/{id}/inspection', [BookingController::class, 'storeInspection'])->name('bookings.inspection.store');
     
 
     Route::prefix('notifications')->name('notifications.')->group(function () {
@@ -243,6 +249,12 @@ Route::prefix('settings')->name('settings.')->group(function () {
         return redirect()->route('staff.settings.profile')
             ->with('success', 'Password updated successfully!');
     })->name('updatePassword');
+
+    Route::get('/reports', [\App\Http\Controllers\Staff\ReportController::class, 'index'])->name('reports.index');
+    Route::post('/reports/export', [\App\Http\Controllers\Staff\ReportController::class, 'export'])->name('reports.export');
+    // Add this for dashboard data endpoints
+    Route::get('/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboard.data');
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData'])->name('dashboard.chart-data');
 });
 });
 

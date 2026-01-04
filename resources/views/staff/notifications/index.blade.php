@@ -5,12 +5,12 @@
 @section('content')
 <style>
     :root {
-        --primary-color: #2563eb;
-        --primary-dark: #1e40af;
+        --primary-color: #ff2626ff;
+        --primary-dark: #af1e1eff;
         --success-color: #10b981;
         --danger-color: #ef4444;
         --warning-color: #f59e0b;
-        --info-color: #3b82f6;
+        --info-color: #f63b3bff;
         --border-color: #e2e8f0;
         --bg-light: #f8fafc;
         --text-dark: #1e293b;
