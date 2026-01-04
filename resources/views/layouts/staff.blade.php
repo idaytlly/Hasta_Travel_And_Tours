@@ -446,10 +446,6 @@
                 <i class="fas fa-bars"></i>
             </button>
 
-            <!-- Page Title (Desktop Only) -->
-            <div class="page-title-section d-none d-lg-flex">
-                <h1 class="page-title">@yield('page-title', 'Dashboard')</h1>
-            </div>
 
             <!-- Navigation & Actions -->
             <div class="collapse navbar-collapse" id="navbarContent">

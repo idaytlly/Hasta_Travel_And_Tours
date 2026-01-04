@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
@@ -224,21 +225,16 @@ class BookingController extends Controller
     /**
      * Staff/Admin: Manage all bookings with SoftDelete support
      */
-    public function staffIndex(Request $request): View
-{
-    $query = Booking::with(['car', 'user'])
-        ->when($request->status == 'cancelled', fn($q) => $q->onlyTrashed(), fn($q) => $q)
-        ->when($request->filled('status') && $request->status != 'cancelled', fn($q) => $q->where('status', $request->status));
+    public function staffIndex(Request $request)
+    {
+        $query = Booking::with(['car', 'user'])
+            ->when($request->status == 'cancelled', fn($q) => $q->onlyTrashed(), fn($q) => $q)
+            ->when($request->filled('status') && $request->status != 'cancelled', fn($q) => $q->where('status', $request->status));
 
-    $bookings = $query->orderBy('updated_at', 'desc')->get();
+        $bookings = $query->orderBy('updated_at', 'desc')->get();
 
-    // Pass unread notifications to fix Blade error
-    $unreadNotifications = Auth::user()->unreadNotifications()->count();
-
-    return view('staff.manage-bookings', compact('bookings', 'unreadNotifications'));
-}
-
-
+        return view('staff.bookings.index', compact('bookings'));
+    }
     /**
      * Staff: Process Cancellation from Modal
      */
@@ -324,6 +320,14 @@ class BookingController extends Controller
             ->firstOrFail();
             
         return view('bookings.show', compact('booking'));
+    }
+
+    public function staffShow($id)
+    {
+        // Find the booking
+        $booking = Booking::with(['car', 'user'])->findOrFail($id);
+        
+        return view('staff.bookings.show', compact('booking'));
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Models\Car;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
