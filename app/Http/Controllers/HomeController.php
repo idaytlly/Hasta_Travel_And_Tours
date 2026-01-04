@@ -21,23 +21,11 @@ class HomeController extends Controller
     public function dashboard()
     {
         $user = auth()->user();
-
-        if (!$user) {
-            return redirect()->route('login'); // redirect guests to login
+        
+        if (in_array($user->usertype, ['staff', 'admin'])) {
+            return redirect()->route('staff.dashboard');
         }
-
-        // Redirect based on user type
-        if ($user->usertype === 'admin') {
-            return redirect()->route('admin.dashboard'); // or wherever admin goes
-        }
-
-        if ($user->usertype === 'staff') {
-            return redirect()->route('staff.cars'); // Staff goes to car management
-        }
-
-        // Customer dashboard
-        $user = auth()->user()->refresh();
-        $bookings = $user->bookings()->with('car')->get();
-        return view('profile.setting', compact('bookings', 'user'));
+        
+        return view('dashboard');
     }
 }

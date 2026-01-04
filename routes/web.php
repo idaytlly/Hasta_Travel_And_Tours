@@ -8,115 +8,73 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\AboutController;
-use Illuminate\Http\Request;
-use App\Models\Booking;
+use App\Http\Controllers\Admin\AdminController;
 
-/*
-|--------------------------------------------------------------------------
-| Public Routes (No Authentication Required)
-|--------------------------------------------------------------------------
-*/
+// Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 Route::get('/contact-us', [ContactController::class, 'index'])->name('contactus');
-Route::get('/about-us', function () {return view('aboutus');})->name('aboutus');
-// Keep these for general access or remove if moving strictly into the booking flow
-Route::post('/receipt', function () { return view('receipt'); })->name('receipt');
 Route::post('/contact-us', [ContactController::class, 'send'])->name('contactus.send');
-/*
-|--------------------------------------------------------------------------
-| Guest Routes (Only for non-authenticated users)
-|--------------------------------------------------------------------------
-*/
+Route::view('/about-us', 'aboutus')->name('aboutus');
+
+// Guest Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-    
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| Authenticated Routes (Only for logged in users)
-|--------------------------------------------------------------------------
-*/
+// Authenticated Routes
 Route::middleware('auth')->group(function () {
-    // Dashboard - redirects based on usertype
-    Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
-    
-    // Logout
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-    
-    // Payment and Receipt Routes
-    
-    // ⭐ ADD THIS - Voucher validation (AJAX)
-    Route::post('/validate-voucher', [BookingController::class, 'validateVoucher'])->name('voucher.validate');
-    
-    // Profile management
-    Route::prefix('profile')->name('profile.')->group(function () {
-        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
-        Route::patch('/update', [ProfileController::class, 'update'])->name('update');
-        Route::delete('/delete', [ProfileController::class, 'destroy'])->name('destroy');
-    });
-    
-    // Booking Routes
-    Route::prefix('bookings')->name('bookings.')->group(function () {
-        Route::get('/cars/{id}/book', [BookingController::class, 'create'])->name('create');
-
-
-        // --- ADDED THIS LINE ---
-        // This handles the "Pay Now" button by receiving the form data and showing the payment page
-        Route::post('/payment-summary', [BookingController::class, 'processToPayment'])->name('payment-summary');
-        
-        Route::post('/', [BookingController::class, 'store'])->name('store');
-
-        
-        // --- ADDED THIS LINE ---
-        // This handles the "Pay Now" button by receiving the form data and showing the payment page
-        Route::post('/payment-summary', [BookingController::class, 'processToPayment'])->name('payment-summary');
-        
-        Route::post('/', [BookingController::class, 'store'])->name('store');
-
-        
-        // --- ADDED THIS LINE ---
-        // This handles the "Pay Now" button by receiving the form data and showing the payment page
-        Route::post('/payment-summary', [BookingController::class, 'processToPayment'])->name('payment-summary');
-        
-        Route::post('/', [BookingController::class, 'store'])->name('store');
-        Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my-bookings');
-        Route::get('/{reference}', [BookingController::class, 'show'])->name('show');
-        Route::get('/{reference}/pending', [BookingController::class, 'pending'])->name('pending');
-        Route::patch('/{reference}/cancel', [BookingController::class, 'cancel'])->name('cancel');
-        Route::post('/payment-summary', [BookingController::class, 'processToPayment'])->name('payment-summary');
-    });
-    
-    // Payment Routes
-    Route::prefix('payment')->name('payment.')->group(function () {
-        Route::get('/{reference}', [BookingController::class, 'paymentPage'])->name('page');
-        Route::get('/{reference}/summary', [BookingController::class, 'paymentSummary'])->name('summary');
-        Route::get('/{reference}/pay', [BookingController::class, 'paymentPage'])->name('page');
-        Route::post('/{reference}/process', [BookingController::class, 'processPayment'])->name('process');
-        Route::get('/{reference}/receipt', [BookingController::class, 'receipt'])->name('receipt');
-    });
-});
-
-/*
-|--------------------------------------------------------------------------
-| Staff Routes (Requires usertype: staff or admin)
-|--------------------------------------------------------------------------
-*/
-Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () {
+    // FIXED: Dashboard redirects based on usertype
     Route::get('/dashboard', function () {
-        if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-            abort(403, 'Unauthorized');
+        $user = auth()->user();
+        
+        if ($user->usertype === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->usertype === 'staff') {
+            return redirect()->route('staff.dashboard');
+        } else {
+            // Show customer dashboard
+            return app(HomeController::class)->dashboard();
         }
-        return view('staff.dashboard');
     })->name('dashboard');
     
-    // Car management routes
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::post('/validate-voucher', [BookingController::class, 'validateVoucher'])->name('voucher.validate');
+    
+    // Profile
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Bookings
+    Route::get('/bookings/cars/{id}/book', [BookingController::class, 'create'])->name('bookings.create');
+    Route::post('/bookings/payment-summary', [BookingController::class, 'processToPayment'])->name('bookings.payment-summary');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::get('/bookings/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my-bookings');
+    Route::get('/bookings/{reference}', [BookingController::class, 'show'])->name('bookings.show');
+    Route::get('/bookings/{reference}/pending', [BookingController::class, 'pending'])->name('bookings.pending');
+    Route::patch('/bookings/{reference}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+    
+    // Payment
+    Route::get('/payment/{reference}', [BookingController::class, 'paymentPage'])->name('payment.page');
+    Route::get('/payment/{reference}/summary', [BookingController::class, 'paymentSummary'])->name('payment.summary');
+    Route::post('/payment/{reference}/process', [BookingController::class, 'processPayment'])->name('payment.process');
+    Route::get('/payment/{reference}/receipt', [BookingController::class, 'receipt'])->name('payment.receipt');
+});
+
+// Staff Routes - WITH ROLE CHECK
+Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
+    // Check if user is staff or admin
+    if (auth()->check() && !in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+        abort(403, 'Unauthorized access. Staff or admin privileges required.');
+    }
+    
+    Route::view('/dashboard', 'staff.dashboard')->name('dashboard');
+    
     Route::get('/cars', [CarController::class, 'staffIndex'])->name('cars.index');
     Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
     Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
@@ -124,63 +82,56 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
     Route::put('/cars/{car}', [CarController::class, 'update'])->name('cars.update');
     Route::delete('/cars/{car}', [CarController::class, 'destroy'])->name('cars.destroy');
     
-    // Booking Management
-    Route::prefix('bookings')->name('bookings.')->group(function () {
-        Route::get('/', function() {
-            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-                abort(403, 'Unauthorized');
-            }
-            return app(BookingController::class)->staffIndex();
-        })->name('index');
-    });
+    Route::get('/bookings', [BookingController::class, 'staffIndex'])->name('bookings.index');
+    Route::get('/bookings/{id}', [BookingController::class, 'staffShow'])->name('bookings.show');
+    Route::patch('/bookings/{id}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
+    Route::post('/bookings/{id}/cancel', [BookingController::class, 'staffCancel'])->name('bookings.cancel');
     
-    // Reports
-    Route::prefix('reports')->name('reports.')->group(function () {
-        Route::get('/', function () {
-            if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-                abort(403, 'Unauthorized');
-            }
-            return view('staff.reports.index');
-        })->name('index');
+    Route::view('/reports', 'staff.reports.index')->name('reports.index');
+
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+    Route::get('/', function () {
+        return view('staff.notifications.index');
+    })->name('index');
+    
+    Route::put('/{notification}/read', function ($notification) {
+        // Mark as read logic here
+        return redirect()->back();
+    })->name('markAsRead');
+    });
+
+    // Settings routes (also missing)
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/profile', function () {
+            return view('staff.settings.profile');
+        })->name('profile');
     });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Admin Routes (Requires usertype: admin only)
-|--------------------------------------------------------------------------
-*/
-use App\Http\Controllers\Admin\AdminController;
-
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    // Dashboard
+// Admin Routes - WITH ROLE CHECK
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    // Check if user is admin
+    if (auth()->check() && auth()->user()->usertype !== 'admin') {
+        abort(403, 'Unauthorized access. Admin privileges required.');
+    }
+    
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
-    // Bookings Management
-    Route::prefix('bookings')->name('bookings.')->group(function () {
-        Route::get('/', [AdminController::class, 'bookings'])->name('index');
-        Route::get('/{id}', [AdminController::class, 'showBooking'])->name('show');
-        Route::patch('/{id}/status', [AdminController::class, 'updateStatus'])->name('updateStatus');  // ← Changed to PATCH
-        Route::delete('/{id}', [AdminController::class, 'deleteBooking'])->name('delete');
-    });
+    Route::get('/bookings', [AdminController::class, 'bookings'])->name('bookings.index');
+    Route::get('/bookings/{id}', [AdminController::class, 'showBooking'])->name('bookings.show');
+    Route::patch('/bookings/{id}/status', [AdminController::class, 'updateStatus'])->name('bookings.updateStatus');
+    Route::delete('/bookings/{id}', [AdminController::class, 'deleteBooking'])->name('bookings.delete');
     
-    // Cars Management
-    Route::prefix('cars')->name('cars.')->group(function () {
-        Route::get('/', [AdminController::class, 'cars'])->name('index');
-        Route::get('/create', [AdminController::class, 'createCar'])->name('create');
-        Route::post('/', [AdminController::class, 'storeCar'])->name('store');
-        Route::get('/{id}/edit', [AdminController::class, 'editCar'])->name('edit');
-        Route::put('/{id}', [AdminController::class, 'updateCar'])->name('update');
-        Route::delete('/{id}', [AdminController::class, 'destroyCar'])->name('destroy');
-    });
+    Route::get('/cars', [AdminController::class, 'cars'])->name('cars.index');
+    Route::get('/cars/create', [AdminController::class, 'createCar'])->name('cars.create');
+    Route::post('/cars', [AdminController::class, 'storeCar'])->name('cars.store');
+    Route::get('/cars/{id}/edit', [AdminController::class, 'editCar'])->name('cars.edit');
+    Route::put('/cars/{id}', [AdminController::class, 'updateCar'])->name('cars.update');
+    Route::delete('/cars/{id}', [AdminController::class, 'destroyCar'])->name('cars.destroy');
     
-    // User Management
-    Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/', [AdminController::class, 'users'])->name('index');
-        Route::get('/{id}', [AdminController::class, 'showUser'])->name('show');
-        Route::delete('/{id}', [AdminController::class, 'deleteUser'])->name('delete');
-    });
+    Route::get('/users', [AdminController::class, 'users'])->name('users.index');
+    Route::get('/users/{id}', [AdminController::class, 'showUser'])->name('users.show');
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
     
-    // Reports
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
 });

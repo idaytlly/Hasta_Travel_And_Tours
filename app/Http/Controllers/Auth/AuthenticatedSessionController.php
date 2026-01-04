@@ -5,59 +5,49 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Show the login page.
-     */
     public function create()
     {
         return view('auth.login');
     }
 
-    /**
-     * Handle login request.
-     */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // Attempt to login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            /** @var \App\Models\User $user */
+            
             $user = Auth::user();
-
-            // Log the user in and immediately check the 'usertype' column
-            return match($user->usertype) {
-                'admin' => redirect()->intended(route('admin.dashboard')), 
-                'staff' => redirect()->intended(route('staff.cars.index')), 
-                default => redirect()->intended(route('home')),
-            };
+            
+            // CRITICAL: Redirect based on usertype
+            if ($user->usertype === 'admin') {
+                return redirect()->route('admin.dashboard');
+            } elseif ($user->usertype === 'staff') {
+                return redirect()->route('staff.dashboard');
+            } else {
+                // Regular customer - redirect to home, not dashboard
+                return redirect()->route('home');
+            }
         }
 
-        // If login fails
         return back()->withErrors([
             'email' => 'Invalid credentials.',
         ])->onlyInput('email');
     }
 
-    /**
-     * Logout the authenticated user.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home'); 
+        return redirect()->route('home');
     }
 }

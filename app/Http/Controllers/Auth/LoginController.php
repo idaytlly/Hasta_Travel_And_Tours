@@ -36,6 +36,19 @@ class LoginController extends Controller
         ])->onlyInput('email');
     }
 
+     protected function redirectTo()
+    {
+        $user = Auth::user();
+        
+        // Check user role and redirect accordingly
+        if ($user->role === 'admin' || $user->role === 'staff') {
+            return route('staff.dashboard');
+        }
+        
+        // For regular users
+        return route('home');
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();
