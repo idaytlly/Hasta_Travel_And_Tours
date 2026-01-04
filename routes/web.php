@@ -112,6 +112,7 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
     Route::post('/bookings/{id}/inspection', [BookingController::class, 'storeInspection'])->name('bookings.inspection.store');
     
 
+<<<<<<< Updated upstream
     Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::get('/', function () {
             try {
@@ -153,6 +154,45 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
                 ]);
             }
         })->name('index');
+=======
+   Route::prefix('notifications')->name('notifications.')->group(function () {
+    Route::get('/', function () {
+        $user = auth()->user();
+        
+        // Get filter with default value
+        $filter = request('filter', 'all');
+        
+        // Initialize with default values
+        $notifications = collect();
+        $unreadCount = 0;
+        
+        try {
+            // Try to get notifications if table exists
+            $query = $user->notifications();
+            
+            // Apply filter
+            if ($filter === 'unread') {
+                $query->whereNull('read_at');
+            } elseif ($filter === 'read') {
+                $query->whereNotNull('read_at');
+            }
+            
+            $notifications = $query->latest()->paginate(20);
+            $unreadCount = $user->unreadNotifications()->count();
+            
+        } catch (\Exception $e) {
+            // If notifications table doesn't exist, use empty paginator
+            $notifications = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
+            \Log::error('Notifications error: ' . $e->getMessage());
+        }
+        
+        return view('staff.notifications.index', [
+            'notifications' => $notifications,
+            'unreadCount' => $unreadCount,
+            'filter' => $filter  // Make sure this is always passed
+        ]);
+    })->name('index');
+>>>>>>> Stashed changes
     
     Route::post('/{id}/mark-as-read', function ($id) {
         try {
@@ -185,6 +225,18 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
             return redirect()->back()->with('error', 'Failed to delete notification');
         }
     })->name('delete');
+<<<<<<< Updated upstream
+=======
+
+    Route::get('/test-notification', function () {
+        // Send a test notification to the current user
+        auth()->user()->notify(new TestNotification());
+        
+        return redirect()->route('staff.notifications.index')
+            ->with('success', 'Test notification sent!');
+    })->name('test.notification')->middleware(['auth', 'staff.admin']);
+});
+>>>>>>> Stashed changes
 
     Route::get('/test-notification', function () {
     // Send a test notification to the current user

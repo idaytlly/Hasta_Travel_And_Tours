@@ -5,7 +5,11 @@
 @section('content')
 <style>
     :root {
+<<<<<<< Updated upstream
         --primary-color: #ff2626ff;
+=======
+        --primary-color: #eb2525ff;
+>>>>>>> Stashed changes
         --primary-dark: #af1e1eff;
         --success-color: #10b981;
         --danger-color: #ef4444;
@@ -364,6 +368,12 @@
 
 <div class="container-fluid py-4 notifications-container">
     <!-- Page Header -->
+     @php
+    // Set default values if variables are not set
+    $filter = $filter ?? 'all';
+    $unreadCount = $unreadCount ?? 0;
+    $notifications = $notifications ?? collect();
+@endphp
     <div class="page-header-section">
         <div class="page-title-wrapper">
             <h2>
@@ -372,7 +382,7 @@
             </h2>
         </div>
         
-        @if($unreadCount > 0)
+@if(isset($unreadCount) && $unreadCount > 0)
         <button type="button" class="btn-mark-all" id="markAllRead">
             <i class="fas fa-check-double"></i>
             Mark All as Read

@@ -578,6 +578,10 @@
 
 <div class="container-fluid py-4">
     
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     <!-- Quick Actions -->
     <div class="quick-actions-grid">
         <a href="{{ route('staff.cars.create') }}" class="action-card">

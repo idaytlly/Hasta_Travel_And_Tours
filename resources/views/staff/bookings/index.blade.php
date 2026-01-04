@@ -1,6 +1,10 @@
 @extends('layouts.staff')
+<<<<<<< Updated upstream
 
 @section('title', 'Booking Management')
+=======
+@@section('title', 'Booking Management')
+>>>>>>> Stashed changes
 @section('page-title', 'Booking Management')
 
 @section('content')
@@ -927,6 +931,34 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
             emptyState.remove();
         }
     }
+<<<<<<< Updated upstream
+=======
+
+visibleCount;
+
+    // Show/hide empty state
+    const bookingList = document.getElementById('bookingList');
+    if (visibleCount === 0 && searchTerm !== '') {
+        if (!document.getElementById('searchEmptyState')) {
+            const emptyState = document.createElement('div');
+            emptyState.id = 'searchEmptyState';
+            emptyState.className = 'empty-state';
+            emptyState.innerHTML = `
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="empty-title">No Results Found</h3>
+                <p class="empty-text">Try adjusting your search terms</p>
+            `;
+            bookingList.appendChild(emptyState);
+        }
+    } else {
+        const emptyState = document.getElementById('searchEmptyState');
+        if (emptyState) {
+            emptyState.remove();
+        }
+    }
+>>>>>>> Stashed changes
 });
 </script>
 @endsection
