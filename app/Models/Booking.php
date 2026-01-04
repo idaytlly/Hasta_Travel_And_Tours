@@ -18,7 +18,8 @@ class Booking extends Model
         'dropoff_location', 'destination', 'pickup_date', 'pickup_time', 
         'return_date', 'return_time', 'duration', 'voucher', 'base_price', 
         'discount_amount', 'total_price', 'deposit_amount', 'paid_amount', 
-        'status', 'payment_status', 'remarks', 'cancellation_reason',
+        'status', 'payment_status', 'remarks', 'cancellation_reason', 
+        'approved_by','approved_at',
     ];
 
     protected $casts = [
@@ -30,6 +31,7 @@ class Booking extends Model
         'deposit_amount' => 'decimal:2',
         'paid_amount' => 'decimal:2',
         'deleted_at' => 'datetime',
+        'approved_at' => 'datetime',
     ];
 
     // --- RELATIONSHIPS ---
@@ -59,6 +61,10 @@ class Booking extends Model
         return $this->hasOne(Inspection::class)->where('type', 'return');
     }
 
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
     // --- ACCESSORS ---
 
     public function getFullAddressAttribute()

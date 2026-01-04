@@ -73,64 +73,73 @@ class BookingController extends Controller
     }
 
     /**
-     * Confirm a booking
-     */
-    public function confirm(Booking $booking)
-    {
-        if ($booking->status !== 'pending') {
-            return redirect()->back()->with('error', 'Only pending bookings can be confirmed.');
-        }
-
-        $booking->update(['status' => 'confirmed']);
-        
-        // 🔔 NOTIFICATION: Notify customer about confirmation
-        if ($booking->user) {
-            NotificationHelper::createBookingNotification(
-                $booking->user,
-                'Booking Confirmed',
-                "Your booking #{$booking->booking_reference} for {$booking->car->name} has been confirmed by our team.",
-                route('bookings.show', $booking->booking_reference),
-                [
-                    'booking_id' => $booking->id,
-                    'booking_reference' => $booking->booking_reference,
-                    'car_name' => $booking->car->name
-                ]
-            );
-        }
-        
-        return redirect()->back()->with('success', 'Booking confirmed successfully');
+ * Confirm a booking
+ */
+public function confirm($id)
+{
+    $booking = Booking::findOrFail($id);
+    
+    if ($booking->status !== 'pending') {
+        return redirect()->back()->with('error', 'Only pending bookings can be confirmed.');
     }
 
+    $booking->update([
+        'status' => 'confirmed',
+        'approved_by' => auth()->id(),
+        'approved_at' => now(),
+    ]);
+    
+    // 🔔 NOTIFICATION: Notify customer about confirmation
+    if ($booking->user) {
+        NotificationHelper::createBookingNotification(
+            $booking->user,
+            'Booking Confirmed',
+            "Your booking #{$booking->booking_reference} for {$booking->car->name} has been confirmed by our team.",
+            route('bookings.show', $booking->booking_reference),
+            [
+                'booking_id' => $booking->id,
+                'booking_reference' => $booking->booking_reference,
+                'car_name' => $booking->car->name
+            ]
+        );
+    }
+    
+    return redirect()->back()->with('success', 'Booking confirmed successfully');
+}
     /**
-     * Approve a booking (alternative to confirm)
-     */
-    public function approve(Booking $booking)
-    {
-        if ($booking->status !== 'pending') {
-            return redirect()->back()->with('error', 'Only pending bookings can be approved.');
-        }
-
-        $booking->update(['status' => 'approved']);
-        
-        // 🔔 NOTIFICATION: Notify customer about approval
-        if ($booking->user) {
-            NotificationHelper::createBookingNotification(
-                $booking->user,
-                'Booking Approved',
-                "Your booking #{$booking->booking_reference} for {$booking->car->name} has been approved.",
-                route('bookings.show', $booking->booking_reference),
-                [
-                    'booking_id' => $booking->id,
-                    'booking_reference' => $booking->booking_reference,
-                    'car_name' => $booking->car->name
-                ]
-            );
-        }
-        
-        return redirect()->back()->with('success', 'Booking approved successfully');
+ * Approve a booking (alternative to confirm)
+ */
+public function approve(Request $request, $id)
+{
+    $booking = Booking::findOrFail($id);
+    
+    if ($booking->status !== 'pending') {
+        return redirect()->back()->with('error', 'Only pending bookings can be approved.');
     }
 
-
+    $booking->update([
+        'status' => 'confirmed', // Changed from 'approved' to 'confirmed'
+        'approved_by' => auth()->id(),
+        'approved_at' => now(),
+    ]);
+    
+    if ($booking->user) {
+        NotificationHelper::createBookingNotification(
+            $booking->user,
+            'Booking Approved',
+            "Your booking #{$booking->booking_reference} for {$booking->car->name} has been approved.",
+            route('bookings.show', $booking->booking_reference),
+            [
+                'booking_id' => $booking->id,
+                'booking_reference' => $booking->booking_reference,
+                'car_name' => $booking->car->name
+            ]
+        );
+    }
+    
+    return redirect()->route('staff.bookings.show', $id)
+        ->with('success', 'Booking approved successfully!');
+}
     /**
      * Mark booking as active (car picked up)
      */
@@ -365,4 +374,33 @@ class BookingController extends Controller
             'message' => 'Payment status updated successfully'
         ]);
     }
+
+    public function storeInspection(Request $request, $id)
+{
+    $booking = Booking::findOrFail($id);
+    $type = $request->inspection_type;
+    
+    $validated = $request->validate([
+        'inspection_type' => 'required|in:pickup,return',
+        'vehicle_type' => 'nullable|string',
+        'exterior_condition' => 'required|string',
+        'interior_condition' => 'nullable|string',
+        'tire_condition' => 'nullable|string',
+        'fuel_level' => 'required|string',
+        'mileage_start' => 'nullable|integer',
+        'mileage_return' => 'nullable|integer',
+        'damages' => 'nullable|string',
+        'cleanliness' => 'nullable|string',
+        'additional_notes' => 'nullable|string',
+    ]);
+    
+    \App\Models\Inspection::create(array_merge($validated, [
+        'booking_id' => $booking->id,
+        'inspected_at' => now(),
+        'inspector_name' => auth()->user()->name,
+    ]));
+    
+    return redirect()->route('staff.bookings.show', $id)
+        ->with('success', ucfirst($type) . ' inspection completed successfully!');
+}
 }

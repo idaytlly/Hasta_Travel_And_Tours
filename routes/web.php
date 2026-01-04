@@ -82,30 +82,146 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
     Route::put('/cars/{car}', [CarController::class, 'update'])->name('cars.update');
     Route::delete('/cars/{car}', [CarController::class, 'destroy'])->name('cars.destroy');
     
+    
     Route::get('/bookings', [BookingController::class, 'staffIndex'])->name('bookings.index');
     Route::get('/bookings/{id}', [BookingController::class, 'staffShow'])->name('bookings.show');
     Route::patch('/bookings/{id}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'staffCancel'])->name('bookings.cancel');
-    
+    Route::post('/bookings/{id}/inspection', [BookingController::class, 'storeInspection'])
+    ->name('bookings.inspection.store');
     Route::view('/reports', 'staff.reports.index')->name('reports.index');
+    
 
     Route::prefix('notifications')->name('notifications.')->group(function () {
-    Route::get('/', function () {
-        return view('staff.notifications.index');
-    })->name('index');
+        Route::get('/', function () {
+            try {
+                $user = auth()->user();
+                
+                // Get filter type
+                $filter = request('filter', 'all');
+                
+                // Build query - always paginate, never use get()
+                $query = $user->notifications();
+                
+                if ($filter === 'unread') {
+                    $query->whereNull('read_at');
+                } elseif ($filter === 'read') {
+                    $query->whereNotNull('read_at');
+                }
+                
+                // Always use paginate() to get a paginator
+                $notifications = $query->latest()->paginate(20)->withQueryString();
+                $unreadCount = $user->unreadNotifications()->count();
+                
+                return view('staff.notifications.index', [
+                    'notifications' => $notifications,
+                    'unreadCount' => $unreadCount,
+                    'filter' => $filter
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Notifications error: ' . $e->getMessage());
+                
+                // Return an empty paginator instead of a collection
+                $emptyPaginator = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath();
+                $notifications = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
+                
+                return view('staff.notifications.index', [
+                    'notifications' => $notifications,
+                    'unreadCount' => 0,
+                    'filter' => 'all',
+                    'error' => 'Notifications system is not yet set up. Please run: php artisan notifications:table && php artisan migrate'
+                ]);
+            }
+        })->name('index');
     
-    Route::put('/{notification}/read', function ($notification) {
-        // Mark as read logic here
-        return redirect()->back();
-    })->name('markAsRead');
-    });
+    Route::post('/{id}/mark-as-read', function ($id) {
+        try {
+            $notification = auth()->user()->notifications()->findOrFail($id);
+            $notification->markAsRead();
+            
+            return redirect()->back()->with('success', 'Notification marked as read');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to mark notification as read');
+        }
+    })->name('mark-as-read');
+    
+    Route::post('/mark-all-as-read', function () {
+        try {
+            auth()->user()->unreadNotifications->markAsRead();
+            
+            return redirect()->back()->with('success', 'All notifications marked as read');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to mark notifications as read');
+        }
+    })->name('mark-all-as-read');
+    
+    Route::delete('/{id}', function ($id) {
+        try {
+            $notification = auth()->user()->notifications()->findOrFail($id);
+            $notification->delete();
+            
+            return redirect()->back()->with('success', 'Notification deleted');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete notification');
+        }
+    })->name('delete');
 
-    // Settings routes (also missing)
-    Route::prefix('settings')->name('settings.')->group(function () {
-        Route::get('/profile', function () {
-            return view('staff.settings.profile');
-        })->name('profile');
-    });
+    Route::get('/test-notification', function () {
+    // Send a test notification to the current user
+    auth()->user()->notify(new TestNotification());
+    
+    return redirect()->route('staff.notifications.index')
+        ->with('success', 'Test notification sent!');
+})->name('test.notification')->middleware(['auth', 'staff.admin']);
+});
+    // Settings routes
+Route::prefix('settings')->name('settings.')->group(function () {
+    // View profile
+    Route::get('/profile', function () {
+        $user = auth()->user();
+        return view('staff.settings.profile', ['user' => $user]);
+    })->name('profile');
+    
+    // Update profile
+    Route::put('/profile', function () {
+        $user = auth()->user();
+        
+        $validated = request()->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+        ]);
+        
+        $user->update($validated);
+        
+        return redirect()->route('staff.settings.profile')
+            ->with('success', 'Profile updated successfully!');
+    })->name('updateProfile');
+    
+    // Update password
+    Route::put('/password', function () {
+        $user = auth()->user();
+        
+        $validated = request()->validate([
+            'current_password' => 'required',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+        
+        // Verify current password
+        if (!\Hash::check($validated['current_password'], $user->password)) {
+            return back()->withErrors(['current_password' => 'Current password is incorrect.']);
+        }
+        
+        // Update password
+        $user->update([
+            'password' => \Hash::make($validated['password'])
+        ]);
+        
+        return redirect()->route('staff.settings.profile')
+            ->with('success', 'Password updated successfully!');
+    })->name('updatePassword');
+});
 });
 
 // Admin Routes - WITH ROLE CHECK

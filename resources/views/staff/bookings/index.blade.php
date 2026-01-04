@@ -1,8 +1,7 @@
 @extends('layouts.staff')
 
-@section('page-title')
-    <i class="fas fa-calendar-check me-2"></i>Booking Management
-@endsection
+@section('title', 'Booking Management')
+@section('page-title', 'Booking Management')
 
 @section('content')
 <style>
@@ -10,344 +9,604 @@
         --primary: #dc2626;
         --primary-dark: #b91c1c;
         --primary-light: rgba(220, 38, 38, 0.1);
+        --success: #22c55e;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+        --purple: #8b5cf6;
         --dark: #1e293b;
         --gray: #64748b;
-        --gray-light: #e2e8f0;
-        --light: #f8fafc;
-        --success: #059669;
-        --warning: #d97706;
-        --info: #2563eb;
-        --danger: #dc2626;
+        --light: #f1f5f9;
+        --white: #ffffff;
+        --border: #e2e8f0;
     }
 
-    /* Status Badge */
-    .status-badge {
-        padding: 6px 12px;
+    body {
+        background: var(--light) !important;
+    }
+
+    /* Header */
+    .page-header-card {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
         border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .status-pending {
-        background: rgba(217, 119, 6, 0.1);
-        color: #d97706;
-    }
-
-    .status-confirmed {
-        background: rgba(5, 150, 105, 0.1);
-        color: #059669;
-    }
-
-    .status-active {
-        background: rgba(37, 99, 235, 0.1);
-        color: #2563eb;
-    }
-
-    .status-completed {
-        background: rgba(99, 102, 241, 0.1);
-        color: #6366f1;
-    }
-
-    .status-cancelled {
-        background: rgba(220, 38, 38, 0.1);
-        color: #dc2626;
-    }
-
-    /* Booking Card */
-    .booking-card {
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        transition: all 0.2s ease;
-        background: white;
-        margin-bottom: 12px;
-    }
-
-    .booking-card:hover {
-        border-color: var(--primary);
-        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08);
-    }
-
-    .car-image {
-        width: 70px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 6px;
-        border: 1px solid var(--gray-light);
-    }
-
-    /* Filter Tabs */
-    .filter-tabs .nav-link {
-        border: none;
-        color: var(--gray);
-        font-weight: 500;
-        padding: 0.75rem 1.25rem;
-        position: relative;
-        transition: all 0.2s;
-        border-radius: 6px 6px 0 0;
-        margin-right: 2px;
-    }
-
-    .filter-tabs .nav-link:hover {
-        color: var(--primary);
-        background: var(--primary-light);
-    }
-
-    .filter-tabs .nav-link.active {
-        color: var(--primary);
-        background: transparent;
-        border-bottom: 3px solid var(--primary);
-        font-weight: 600;
-    }
-
-    .filter-tabs .nav-badge {
-        font-size: 0.65rem;
-        padding: 2px 6px;
-        margin-left: 4px;
-    }
-
-    /* Action Buttons */
-    .action-btn {
-        padding: 6px 12px;
-        font-size: 0.75rem;
-        border-radius: 6px;
-        font-weight: 500;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .btn-view {
-        border: 1px solid var(--gray-light);
-        color: var(--gray);
-        background: white;
-    }
-
-    .btn-view:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-        background: var(--primary-light);
-    }
-
-    .btn-approve {
-        border: 1px solid var(--success);
-        color: var(--success);
-        background: white;
-    }
-
-    .btn-approve:hover {
-        background: var(--success);
+        padding: 2rem;
+        margin-bottom: 2rem;
         color: white;
-    }
-
-    /* Stat Cards */
-    .stat-card {
-        background: white;
-        border: 1px solid var(--gray-light);
-        border-radius: 10px;
-        padding: 1.25rem;
-        transition: all 0.2s ease;
+        box-shadow: 0 10px 40px rgba(220, 38, 38, 0.2);
         position: relative;
         overflow: hidden;
     }
 
-    .stat-card:hover {
-        border-color: var(--primary);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08);
-    }
-
-    .stat-card::before {
+    .page-header-card::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: var(--primary);
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+    }
+
+    .header-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header-subtitle {
+        opacity: 0.9;
+        font-size: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Search Bar */
+    .search-container {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.875rem 1rem 0.875rem 3rem;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        font-size: 0.9375rem;
+        transition: all 0.2s;
+        background: white;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+        font-size: 1rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s;
+        border: 1px solid transparent;
+        cursor: pointer;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary);
     }
 
     .stat-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
-        color: var(--primary);
-        background: var(--primary-light);
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
     }
 
     .stat-value {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
         font-weight: 700;
         color: var(--dark);
         margin-bottom: 0.25rem;
-        line-height: 1;
     }
 
     .stat-label {
-        font-size: 0.75rem;
+        font-size: 0.875rem;
         color: var(--gray);
         font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
 
-    /* Amount Display */
-    .amount-display {
-        font-weight: 700;
-        color: var(--dark);
-        font-size: 1.125rem;
+    /* Filter Card */
+    .filter-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    /* Time Range Filter */
-    .time-range-btn {
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        border: 1px solid var(--gray-light);
+    .filter-tabs {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        scrollbar-width: thin;
+    }
+
+    .filter-tabs::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .filter-tabs::-webkit-scrollbar-track {
+        background: var(--light);
+        border-radius: 4px;
+    }
+
+    .filter-tabs::-webkit-scrollbar-thumb {
+        background: var(--gray);
+        border-radius: 4px;
+    }
+
+    .filter-tab {
+        padding: 0.75rem 1.25rem;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border: 2px solid var(--border);
+        background: var(--white);
         color: var(--gray);
+        cursor: pointer;
         transition: all 0.2s;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 0.5rem;
+        white-space: nowrap;
     }
 
-    .time-range-btn.active {
+    .filter-tab:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--primary-light);
+        transform: translateY(-2px);
+    }
+
+    .filter-tab.active {
         background: var(--primary);
         color: white;
         border-color: var(--primary);
     }
 
-    .time-range-btn:hover:not(.active) {
-        border-color: var(--primary);
+    .tab-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .filter-tab.active .tab-badge {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Booking Card - Improved */
+    .booking-list {
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .booking-item {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        transition: all 0.2s;
+    }
+
+    .booking-item:last-child {
+        border-bottom: none;
+    }
+
+    .booking-item:hover {
+        background: var(--light);
+    }
+
+    .booking-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .booking-ref-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, var(--primary-light) 0%, rgba(220, 38, 38, 0.05) 100%);
+        border: 1px solid var(--primary);
+        border-radius: 8px;
+        font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+        font-size: 0.875rem;
+        font-weight: 700;
         color: var(--primary);
+    }
+
+    .booking-content {
+        display: grid;
+        grid-template-columns: 2fr 2fr 1.5fr 1.5fr auto;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    /* Customer Section */
+    .customer-section {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .customer-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.125rem;
+        flex-shrink: 0;
+    }
+
+    .customer-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .customer-name {
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 0.9375rem;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .customer-email {
+        font-size: 0.8125rem;
+        color: var(--gray);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Vehicle Section - Improved */
+    .vehicle-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .vehicle-image-wrapper {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .vehicle-image {
+        width: 80px;
+        height: 60px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 2px solid var(--border);
+        transition: all 0.2s;
+    }
+
+    .vehicle-image:hover {
+        transform: scale(1.05);
+        border-color: var(--primary);
+    }
+
+    .vehicle-placeholder {
+        width: 80px;
+        height: 60px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--light) 0%, #e2e8f0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gray);
+        font-size: 1.5rem;
+        border: 2px solid var(--border);
+    }
+
+    .vehicle-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .vehicle-name {
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 0.9375rem;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .vehicle-year {
+        font-size: 0.8125rem;
+        color: var(--gray);
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    /* Rental Info */
+    .rental-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+    }
+
+    .info-icon {
+        color: var(--gray);
+        width: 16px;
+        text-align: center;
+    }
+
+    .info-label {
+        color: var(--gray);
+        min-width: 50px;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: var(--dark);
+    }
+
+    /* Price Section */
+    .price-section {
+        text-align: center;
+    }
+
+    .price-amount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.25rem;
+    }
+
+    .price-duration {
+        font-size: 0.8125rem;
+        color: var(--gray);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+    }
+
+    /* Status Badge */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .status-pending { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+    .status-pending .status-dot { background: #d97706; }
+
+    .status-confirmed { background: rgba(34, 197, 94, 0.1); color: #16a34a; }
+    .status-confirmed .status-dot { background: #16a34a; }
+
+    .status-active { background: rgba(59, 130, 246, 0.1); color: #1d4ed8; }
+    .status-active .status-dot { background: #1d4ed8; }
+
+    .status-completed { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
+    .status-completed .status-dot { background: #7c3aed; }
+
+    .status-cancelled { background: rgba(220, 38, 38, 0.1); color: #b91c1c; }
+    .status-cancelled .status-dot { background: #b91c1c; }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn-action {
+        padding: 0.625rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        border: 2px solid;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.375rem;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .btn-view {
+        background: var(--white);
+        color: var(--info);
+        border-color: var(--info);
+    }
+
+    .btn-view:hover {
+        background: var(--info);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-approve {
+        background: var(--success);
+        color: white;
+        border-color: var(--success);
+    }
+
+    .btn-approve:hover {
+        background: #16a34a;
+        border-color: #16a34a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
     }
 
     /* Empty State */
     .empty-state {
-        padding: 3rem 2rem;
         text-align: center;
+        padding: 4rem 2rem;
         background: var(--light);
-        border-radius: 10px;
-        border: 1px dashed var(--gray-light);
+        border-radius: 16px;
+        margin: 2rem 0;
     }
 
-    .empty-state-icon {
-        font-size: 3rem;
-        color: var(--gray-light);
-        margin-bottom: 1rem;
-    }
-
-    /* Booking Reference */
-    .booking-ref {
-        font-family: 'SF Mono', Monaco, Consolas, monospace;
-        background: var(--light);
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        color: var(--dark);
-        border: 1px solid var(--gray-light);
-    }
-
-    /* Page Header */
-    .page-header {
-        background: white;
-        border: 1px solid var(--gray-light);
-        border-radius: 10px;
-        padding: 1.5rem;
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--gray);
+        opacity: 0.3;
         margin-bottom: 1.5rem;
     }
 
-    /* Table-like Layout */
-    .booking-row {
-        display: grid;
-        grid-template-columns: 220px 160px 200px 120px 140px 140px;
-        gap: 1rem;
-        align-items: center;
-        padding: 1rem 1.25rem;
+    .empty-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.75rem;
     }
 
-    @media (max-width: 1400px) {
-        .booking-row {
-            grid-template-columns: 200px 140px 180px 110px 130px 130px;
-            gap: 0.75rem;
-        }
+    .empty-text {
+        color: var(--gray);
+        margin-bottom: 2rem;
     }
 
+    /* Responsive */
     @media (max-width: 1200px) {
-        .booking-row {
-            grid-template-columns: 180px 120px 160px 100px 120px 120px;
-            gap: 0.75rem;
-        }
-    }
-
-    @media (max-width: 992px) {
-        .booking-row {
+        .booking-content {
             grid-template-columns: 1fr;
             gap: 1rem;
         }
-        
-        .booking-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+
+        .action-buttons {
+            flex-direction: row;
         }
-        
-        .booking-label {
-            font-weight: 600;
-            color: var(--gray);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 768px) {
+        .page-header-card {
+            padding: 1.5rem;
         }
-        
-        .booking-value {
-            text-align: right;
+
+        .header-title {
+            font-size: 1.5rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .vehicle-image, .vehicle-placeholder {
+            width: 60px;
+            height: 45px;
+        }
+
+        .customer-avatar {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
         }
     }
 </style>
 
-<div class="container-fluid py-3 px-4">
+<div class="container-fluid py-4">
+    
     <!-- Page Header -->
-    <div class="page-header">
-        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+    <div class="page-header-card">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
             <div>
-                <h2 class="h4 mb-2 fw-bold text-dark">
-                    <i class="fas fa-calendar-check me-2" style="color: var(--primary);"></i>
-                    Booking Management
-                </h2>
-                <p class="text-muted mb-0">Monitor and manage all rental bookings in real-time</p>
+                <h1 class="header-title">
+                    <i class="fas fa-calendar-check me-2"></i>Booking Management
+                </h1>
+                <p class="header-subtitle mb-0">Monitor and manage all rental reservations</p>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-light text-dark px-3 py-2 border" style="border-radius: 6px;">
-                    <i class="fas fa-sync-alt me-2" style="color: var(--primary);"></i>
-                    Live Updates
-                </span>
-                <span class="text-muted small">
+            <div class="text-end">
+                <div style="font-size: 0.875rem; opacity: 0.9;">
                     <i class="fas fa-clock me-1"></i>
-                    {{ now()->format('h:i A') }}
-                </span>
+                    {{ now()->format('g:i A') }}
+                </div>
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem;">
+                    {{ now()->format('l, M d, Y') }}
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Success Message -->
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert" 
-             style="border-radius: 8px; border: none; border-left: 4px solid var(--success);">
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" 
+             style="border-radius: 12px; border-left: 4px solid var(--success); background: rgba(34, 197, 94, 0.1); border: none; border-left: 4px solid var(--success);">
             <div class="d-flex align-items-center">
-                <i class="fas fa-check-circle me-3" style="color: var(--success);"></i>
+                <i class="fas fa-check-circle me-3" style="color: var(--success); font-size: 1.5rem;"></i>
                 <div class="flex-grow-1">
                     <strong>Success!</strong> {{ session('success') }}
                 </div>
@@ -356,340 +615,318 @@
         </div>
     @endif
 
-    <!-- Statistics Cards -->
-    <div class="row g-3 mb-4">
+    <!-- Statistics -->
+    <div class="stats-grid">
         @php
             $stats = [
                 'pending' => [
                     'icon' => 'fas fa-clock',
-                    'title' => 'Pending Review',
+                    'title' => 'Pending',
                     'count' => \App\Models\Booking::where('status', 'pending')->count(),
-                    'color' => 'warning'
+                    'color' => '#f59e0b'
                 ],
                 'confirmed' => [
                     'icon' => 'fas fa-check-circle',
                     'title' => 'Confirmed',
                     'count' => \App\Models\Booking::where('status', 'confirmed')->count(),
-                    'color' => 'success'
+                    'color' => '#22c55e'
                 ],
                 'active' => [
                     'icon' => 'fas fa-car',
-                    'title' => 'Active Rentals',
+                    'title' => 'Active',
                     'count' => \App\Models\Booking::where('status', 'active')->count(),
-                    'color' => 'primary'
+                    'color' => '#3b82f6'
                 ],
                 'completed' => [
                     'icon' => 'fas fa-flag-checkered',
                     'title' => 'Completed',
                     'count' => \App\Models\Booking::where('status', 'completed')->count(),
-                    'color' => 'info'
+                    'color' => '#8b5cf6'
                 ],
                 'cancelled' => [
                     'icon' => 'fas fa-times-circle',
                     'title' => 'Cancelled',
                     'count' => \App\Models\Booking::where('status', 'cancelled')->count(),
-                    'color' => 'danger'
+                    'color' => '#dc2626'
                 ],
                 'total' => [
                     'icon' => 'fas fa-clipboard-list',
-                    'title' => 'Total Bookings',
+                    'title' => 'Total',
                     'count' => \App\Models\Booking::count(),
-                    'color' => 'dark'
+                    'color' => '#1e293b'
                 ]
             ];
         @endphp
         
         @foreach($stats as $key => $stat)
-            <div class="col-xxl-2 col-lg-3 col-md-4 col-sm-6">
-                <div class="stat-card">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon">
-                            <i class="{{ $stat['icon'] }}"></i>
-                        </div>
-                        <div>
-                            <div class="stat-value">{{ $stat['count'] }}</div>
-                            <div class="stat-label">{{ $stat['title'] }}</div>
-                        </div>
-                    </div>
+            <div class="stat-card" onclick="window.location.href='{{ $key === 'total' ? route('staff.bookings.index') : route('staff.bookings.index', ['status' => $key]) }}'">
+                <div class="stat-icon" style="background: {{ $stat['color'] }}1a; color: {{ $stat['color'] }};">
+                    <i class="{{ $stat['icon'] }}"></i>
                 </div>
+                <div class="stat-value">{{ $stat['count'] }}</div>
+                <div class="stat-label">{{ $stat['title'] }}</div>
             </div>
         @endforeach
     </div>
 
-    <!-- Status Filter Tabs -->
-    <div class="card border-0 shadow-sm mb-3">
-        <div class="card-body p-2">
-            <div class="filter-tabs">
-                <ul class="nav nav-tabs border-0">
-                    <li class="nav-item">
-                        <a class="nav-link {{ !request('status') ? 'active' : '' }}" 
-                           href="{{ route('staff.bookings.index') }}">
-                            <i class="fas fa-list me-1"></i> All
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request('status') == 'pending' ? 'active' : '' }}" 
-                           href="{{ route('staff.bookings.index', ['status' => 'pending']) }}">
-                            <i class="fas fa-clock me-1"></i> Pending
-                            <span class="badge bg-warning nav-badge">{{ $stats['pending']['count'] }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request('status') == 'confirmed' ? 'active' : '' }}" 
-                           href="{{ route('staff.bookings.index', ['status' => 'confirmed']) }}">
-                            <i class="fas fa-check-circle me-1"></i> Confirmed
-                            <span class="badge bg-success nav-badge">{{ $stats['confirmed']['count'] }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request('status') == 'active' ? 'active' : '' }}" 
-                           href="{{ route('staff.bookings.index', ['status' => 'active']) }}">
-                            <i class="fas fa-car me-1"></i> Active
-                            <span class="badge bg-primary nav-badge">{{ $stats['active']['count'] }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request('status') == 'completed' ? 'active' : '' }}" 
-                           href="{{ route('staff.bookings.index', ['status' => 'completed']) }}">
-                            <i class="fas fa-flag-checkered me-1"></i> Completed
-                            <span class="badge bg-info nav-badge">{{ $stats['completed']['count'] }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request('status') == 'cancelled' ? 'active' : '' }}" 
-                           href="{{ route('staff.bookings.index', ['status' => 'cancelled']) }}">
-                            <i class="fas fa-times-circle me-1"></i> Cancelled
-                            <span class="badge bg-danger nav-badge">{{ $stats['cancelled']['count'] }}</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+    <!-- Filters -->
+    <div class="filter-card">
+        <!-- Search Bar -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search by booking reference, customer name, or email...">
+        </div>
+
+        <div class="filter-tabs">
+            <a href="{{ route('staff.bookings.index') }}" 
+               class="filter-tab {{ !request('status') ? 'active' : '' }}">
+                <i class="fas fa-list"></i>
+                All Bookings
+            </a>
+            <a href="{{ route('staff.bookings.index', ['status' => 'pending']) }}" 
+               class="filter-tab {{ request('status') == 'pending' ? 'active' : '' }}">
+                <i class="fas fa-clock"></i>
+                Pending
+                @if($stats['pending']['count'] > 0)
+                    <span class="tab-badge">{{ $stats['pending']['count'] }}</span>
+                @endif
+            </a>
+            <a href="{{ route('staff.bookings.index', ['status' => 'confirmed']) }}" 
+               class="filter-tab {{ request('status') == 'confirmed' ? 'active' : '' }}">
+                <i class="fas fa-check-circle"></i>
+                Confirmed
+                @if($stats['confirmed']['count'] > 0)
+                    <span class="tab-badge">{{ $stats['confirmed']['count'] }}</span>
+                @endif
+            </a>
+            <a href="{{ route('staff.bookings.index', ['status' => 'active']) }}" 
+               class="filter-tab {{ request('status') == 'active' ? 'active' : '' }}">
+                <i class="fas fa-car"></i>
+                Active
+                @if($stats['active']['count'] > 0)
+                    <span class="tab-badge">{{ $stats['active']['count'] }}</span>
+                @endif
+            </a>
+            <a href="{{ route('staff.bookings.index', ['status' => 'completed']) }}" 
+               class="filter-tab {{ request('status') == 'completed' ? 'active' : '' }}">
+                <i class="fas fa-flag-checkered"></i>
+                Completed
+                @if($stats['completed']['count'] > 0)
+                    <span class="tab-badge">{{ $stats['completed']['count'] }}</span>
+                @endif
+            </a>
+            <a href="{{ route('staff.bookings.index', ['status' => 'cancelled']) }}" 
+               class="filter-tab {{ request('status') == 'cancelled' ? 'active' : '' }}">
+                <i class="fas fa-times-circle"></i>
+                Cancelled
+                @if($stats['cancelled']['count'] > 0)
+                    <span class="tab-badge">{{ $stats['cancelled']['count'] }}</span>
+                @endif
+            </a>
         </div>
     </div>
 
-    <!-- Time Range Filter for Cancelled -->
-    @if(request('status') == 'cancelled')
-    <div class="mb-3">
-        <div class="d-flex align-items-center flex-wrap gap-2">
-            <span class="text-muted small" style="font-weight: 500;">
-                <i class="fas fa-filter me-1"></i>Time Range:
-            </span>
-            <div class="d-flex gap-2">
-                <a href="{{ route('staff.bookings.index', ['status' => 'cancelled', 'days' => 3]) }}" 
-                   class="time-range-btn {{ request('days') == 3 ? 'active' : '' }}">
-                    3 Days
-                </a>
-                <a href="{{ route('staff.bookings.index', ['status' => 'cancelled', 'days' => 7]) }}" 
-                   class="time-range-btn {{ request('days') == 7 || !request('days') ? 'active' : '' }}">
-                    7 Days
-                </a>
-                <a href="{{ route('staff.bookings.index', ['status' => 'cancelled', 'days' => 10]) }}" 
-                   class="time-range-btn {{ request('days') == 10 ? 'active' : '' }}">
-                    10 Days
-                </a>
-                <a href="{{ route('staff.bookings.index', ['status' => 'cancelled', 'days' => 30]) }}" 
-                   class="time-range-btn {{ request('days') == 30 ? 'active' : '' }}">
-                    30 Days
-                </a>
-            </div>
-        </div>
-    </div>
-    @endif
+    <!-- Bookings List -->
+    @php
+        $query = \App\Models\Booking::with(['car', 'user', 'approvedBy']);
+        
+        if (request('status')) {
+            if (request('status') == 'cancelled') {
+                $query = \App\Models\Booking::onlyTrashed()->with(['car', 'user', 'approvedBy']);
+                $query->where('status', 'cancelled');
+            } else {
+                $query->where('status', request('status'));
+            }
+        }
+        
+        $bookings = $query->orderBy('created_at', 'desc')->get();
+    @endphp
 
-    <!-- Bookings Table -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            <!-- Table Header -->
-            <div class="booking-row bg-light border-bottom" style="grid-template-columns: 220px 160px 200px 120px 140px 140px;">
-                <div class="fw-semibold small text-muted">CUSTOMER & REFERENCE</div>
-                <div class="fw-semibold small text-muted">VEHICLE</div>
-                <div class="fw-semibold small text-muted">DATES</div>
-                <div class="fw-semibold small text-muted">AMOUNT</div>
-                <div class="fw-semibold small text-muted">STATUS</div>
-                <div class="fw-semibold small text-muted">ACTIONS</div>
-            </div>
+    <div class="booking-list" id="bookingList">
+        @forelse($bookings as $booking)
+            <div class="booking-item" data-search="{{ strtolower($booking->booking_reference . ' ' . ($booking->user ? $booking->user->name : '') . ' ' . ($booking->user ? $booking->user->email : '')) }}">
+                <!-- Booking Header -->
+                <div class="booking-header">
+                    <span class="booking-ref-badge">
+                        <i class="fas fa-hashtag"></i>
+                        {{ $booking->booking_reference }}
+                    </span>
+                    <span class="status-badge status-{{ $booking->status }}">
+                        <span class="status-dot"></span>
+                        {{ ucfirst($booking->status) }}
+                    </span>
+                </div>
 
-            @php
-                $query = \App\Models\Booking::with(['car', 'user']);
-                
-                if (request('status')) {
-                    if (request('status') == 'cancelled') {
-                        $query = \App\Models\Booking::onlyTrashed()->with(['car', 'user']);
-                        $query->where('status', 'cancelled');
-                        
-                        if (request('days')) {
-                            $query->where('deleted_at', '>=', now()->subDays((int)request('days')));
-                        }
-                    } else {
-                        $query->where('status', request('status'));
-                    }
-                } else {
-                    $query->where('created_at', '>=', now()->subDays(7));
-                }
-                
-                $bookings = $query->orderBy('created_at', 'desc')->get();
-            @endphp
-
-            @forelse($bookings as $booking)
-                <div class="booking-card mx-3 mt-3">
-                    <div class="booking-row">
-                        <!-- Customer & Reference -->
-                        <div class="booking-item">
-                            <div class="d-none d-lg-block">
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <span class="booking-ref">#{{ $booking->booking_reference }}</span>
-                                    <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">ID: {{ $booking->id }}</span>
-                                </div>
-                                <div>
-                                    <div class="fw-semibold mb-1">{{ $booking->user ? $booking->user->name : 'Guest Customer' }}</div>
-                                    @if($booking->user)
-                                        <div class="text-muted small">{{ $booking->user->email }}</div>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="d-lg-none">
-                                <div class="booking-label">Customer</div>
-                                <div class="booking-value fw-semibold">{{ $booking->user ? $booking->user->name : 'Guest' }}</div>
-                                <div class="booking-label mt-2">Reference</div>
-                                <div class="booking-value">#{{ $booking->booking_reference }}</div>
-                            </div>
+                <!-- Booking Content -->
+                <div class="booking-content">
+                    <!-- Customer Info -->
+                    <div class="customer-section">
+                        <div class="customer-avatar">
+                            {{ strtoupper(substr($booking->user ? $booking->user->name : 'G', 0, 1)) }}
                         </div>
-
-                        <!-- Vehicle -->
-                        <div class="booking-item">
-                            @if($booking->car)
-                                <div class="d-none d-lg-block">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="{{ $booking->car->image }}" 
-                                             alt="{{ $booking->car->brand }}" 
-                                             class="car-image">
-                                        <div>
-                                            <div class="fw-semibold small">{{ $booking->car->brand }} {{ $booking->car->model }}</div>
-                                            <div class="text-muted small">{{ $booking->car->year }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="d-lg-none">
-                                    <div class="booking-label">Vehicle</div>
-                                    <div class="booking-value fw-semibold">{{ $booking->car->brand }} {{ $booking->car->model }}</div>
-                                    <div class="text-muted small">{{ $booking->car->year }}</div>
-                                </div>
-                            @else
-                                <div class="text-danger small">
-                                    <i class="fas fa-exclamation-triangle me-1"></i>
-                                    Vehicle Not Found
-                                </div>
+                        <div class="customer-details">
+                            <div class="customer-name">{{ $booking->user ? $booking->user->name : 'Guest Customer' }}</div>
+                            @if($booking->user)
+                                <div class="customer-email">{{ $booking->user->email }}</div>
                             @endif
                         </div>
+                    </div>
 
-                        <!-- Dates -->
-                        <div class="booking-item">
-                            <div class="d-none d-lg-block">
-                                <div class="mb-2">
-                                    <div class="text-muted small mb-1">Pickup</div>
-                                    <div class="fw-semibold">{{ \Carbon\Carbon::parse($booking->pickup_date)->format('M d, Y') }}</div>
-                                </div>
-                                <div>
-                                    <div class="text-muted small mb-1">Return</div>
-                                    <div class="fw-semibold">{{ \Carbon\Carbon::parse($booking->return_date)->format('M d, Y') }}</div>
-                                </div>
-                            </div>
-                            <div class="d-lg-none">
-                                <div class="booking-label">Dates</div>
-                                <div class="booking-value">
-                                    <div>{{ \Carbon\Carbon::parse($booking->pickup_date)->format('M d') }} - {{ \Carbon\Carbon::parse($booking->return_date)->format('M d, Y') }}</div>
-                                    <div class="text-muted small">{{ $booking->duration }} days</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Amount -->
-                        <div class="booking-item">
-                            <div class="d-none d-lg-block">
-                                <div class="amount-display">RM{{ number_format($booking->total_price, 2) }}</div>
-                                <div class="text-muted small">{{ $booking->duration }} day{{ $booking->duration > 1 ? 's' : '' }}</div>
-                            </div>
-                            <div class="d-lg-none">
-                                <div class="booking-label">Amount</div>
-                                <div class="booking-value">
-                                    <div class="amount-display">RM{{ number_format($booking->total_price, 2) }}</div>
-                                    <div class="text-muted small">{{ $booking->duration }} days</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Status -->
-                        <div class="booking-item">
-                            <span class="status-badge status-{{ $booking->status }}">
-                                <i class="fas fa-circle fa-xs"></i>
-                                {{ ucfirst($booking->status) }}
-                            </span>
-                        </div>
-
-                        <!-- Actions -->
-                        <div class="booking-item">
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('staff.bookings.show', $booking->id) }}" 
-                                   class="btn-view action-btn">
-                                    <i class="fas fa-eye"></i>
-                                    <span class="d-none d-lg-inline">View</span>
-                                </a>
-                                
-                                @if($booking->status === 'pending')
-                                    <form action="{{ route('staff.bookings.approve', $booking->id) }}" 
-                                          method="POST" style="display: inline;">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="btn-approve action-btn" 
-                                                onclick="return confirm('Approve this booking?')">
-                                            <i class="fas fa-check"></i>
-                                            <span class="d-none d-lg-inline">Approve</span>
-                                        </button>
-                                    </form>
+                    <!-- Vehicle Info -->
+                    <div class="vehicle-section">
+                        @if($booking->car)
+                            <div class="vehicle-image-wrapper">
+                                @if($booking->car->image)
+                                    @if(filter_var($booking->car->image, FILTER_VALIDATE_URL))
+                                        <img src="{{ $booking->car->image }}" 
+                                             alt="{{ $booking->car->brand }}" 
+                                             class="vehicle-image">
+                                    @else
+                                        <img src="{{ asset('storage/' . $booking->car->image) }}" 
+                                             alt="{{ $booking->car->brand }}" 
+                                             class="vehicle-image">
+                                    @endif
+                                @else
+                                    <div class="vehicle-placeholder">
+                                        <i class="fas fa-car"></i>
+                                    </div>
                                 @endif
                             </div>
+                            <div class="vehicle-details">
+                                <div class="vehicle-name">{{ $booking->car->brand }} {{ $booking->car->model }}</div>
+                                <div class="vehicle-year">
+                                    <i class="far fa-calendar"></i>
+                                    {{ $booking->car->year }}
+                                </div>
+                            </div>
+                        @else
+                            <div class="text-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Vehicle Not Found
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Rental Info -->
+                    <div class="rental-info">
+                        <div class="info-row">
+                            <i class="fas fa-sign-out-alt info-icon"></i>
+                            <span class="info-label">Pickup:</span>
+                            <span class="info-value">{{ \Carbon\Carbon::parse($booking->pickup_date)->format('M d, Y') }}</span>
+                        </div>
+                        <div class="info-row">
+                            <i class="fas fa-sign-in-alt info-icon"></i>
+                            <span class="info-label">Return:</span>
+                            <span class="info-value">{{ \Carbon\Carbon::parse($booking->return_date)->format('M d, Y') }}</span>
                         </div>
                     </div>
-                </div>
-            @empty
-                <div class="empty-state mx-3 my-4">
-                    <div class="empty-state-icon">
-                        <i class="fas fa-calendar-times"></i>
+
+                    <!-- Price -->
+                    <div class="price-section">
+                        <div class="price-amount">RM {{ number_format($booking->total_price, 2) }}</div>
+                        <div class="price-duration">
+                            <i class="fas fa-calendar-day"></i>
+                            {{ $booking->duration }} day{{ $booking->duration > 1 ? 's' : '' }}
+                        </div>
                     </div>
-                    <h5 class="text-muted mb-3">No Bookings Found</h5>
-                    <p class="text-muted mb-4">
-                        @if(request('status') == 'cancelled')
-                            There are no cancelled bookings in the selected time range.
-                        @elseif(request('status'))
-                            There are no {{ request('status') }} bookings at the moment.
-                        @else
-                            There are no bookings from the last 7 days.
+
+                    <!-- Actions -->
+                    <div class="action-buttons">
+                        <a href="{{ route('staff.bookings.show', $booking->id) }}" 
+                           class="btn-action btn-view">
+                            <i class="fas fa-eye"></i>
+                            View Details
+                        </a>
+                        
+                        @if($booking->status === 'pending')
+                            <form action="{{ route('staff.bookings.approve', $booking->id) }}" 
+                                  method="POST"
+                                  onsubmit="return confirm('Approve this booking?')">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn-action btn-approve w-100">
+                                    <i class="fas fa-check"></i>
+                                    Approve
+                                </button>
+                            </form>
                         @endif
-                    </p>
-                    <a href="{{ route('staff.bookings.index') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-redo me-2"></i> Refresh
-                    </a>
+                    </div>
                 </div>
-            @endforelse
-        </div>
+            </div>
+        @empty
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+                <h3 class="empty-title">No Bookings Found</h3>
+                <p class="empty-text">
+                    @if(request('status'))
+                        There are no {{ request('status') }} bookings at the moment.
+                    @else
+                        No bookings have been made yet.
+                    @endif
+                </p>
+                <a href="{{ route('staff.bookings.index') }}" class="btn btn-primary">
+                    <i class="fas fa-redo me-2"></i>Refresh
+                </a>
+            </div>
+        @endforelse
     </div>
 
-    <!-- Updated Info -->
-    <div class="text-center mt-4 mb-2">
-        <small class="text-muted">
-            <i class="fas fa-info-circle me-1"></i>
-            Last updated {{ now()->format('g:i A') }} • 
-            Showing {{ $bookings->count() }} booking{{ $bookings->count() !== 1 ? 's' : '' }}
-        </small>
-    </div>
+    <!-- Footer Info -->
+    @if($bookings->count() > 0)
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                Showing <span id="visibleCount">{{ $bookings->count() }}</span> of {{ $bookings->count() }} booking{{ $bookings->count() !== 1 ? 's' : '' }} • 
+                Last updated {{ now()->format('g:i A') }}
+            </small>
+        </div>
+    @endif
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Auto-refresh page every 60 seconds
-        setTimeout(function() {
-            window.location.reload();
-        }, 60000);
+// Real-time search functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const bookingItems = document.querySelectorAll('.booking-item');
+    let visibleCount = 0;
+
+    bookingItems.forEach(item => {
+        const searchData = item.getAttribute('data-search');
+        if (searchData.includes(searchTerm)) {
+            item.style.display = 'block';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
     });
+
+    // Update visible count
+    document.getElementById('visibleCount').textContent = visibleCount;
+
+    // Show/hide empty state
+    const bookingList = document.getElementById('bookingList');
+    if (visibleCount === 0 && searchTerm !== '') {
+        if (!document.getElementById('searchEmptyState')) {
+            const emptyState = document.createElement('div');
+            emptyState.id = 'searchEmptyState';
+            emptyState.className = 'empty-state';
+            emptyState.innerHTML = `
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="empty-title">No Results Found</h3>
+                <p class="empty-text">Try adjusting your search terms</p>
+            `;
+            bookingList.appendChild(emptyState);
+        }
+    } else {
+        const emptyState = document.getElementById('searchEmptyState');
+        if (emptyState) {
+            emptyState.remove();
+        }
+    }
+});
 </script>
 @endsection

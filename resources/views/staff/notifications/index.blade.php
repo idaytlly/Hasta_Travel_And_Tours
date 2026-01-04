@@ -387,6 +387,7 @@
                class="filter-btn {{ $filter === 'all' ? 'active' : '' }}">
                 <i class="fas fa-list"></i>
                 All Notifications
+                <span class="filter-badge">{{ $notifications->total() }}</span>
             </a>
             <a href="{{ route('staff.notifications.index', ['filter' => 'unread']) }}" 
                class="filter-btn {{ $filter === 'unread' ? 'active' : '' }}">
@@ -400,6 +401,12 @@
                class="filter-btn {{ $filter === 'read' ? 'active' : '' }}">
                 <i class="fas fa-envelope-open"></i>
                 Read
+                @php
+                    $readCount = $notifications->total() - $unreadCount;
+                @endphp
+                @if($readCount > 0)
+                <span class="filter-badge">{{ $readCount }}</span>
+                @endif
             </a>
         </div>
     </div>
@@ -408,19 +415,47 @@
     <div class="notifications-card">
         @if($notifications->count() > 0)
             @foreach($notifications as $notification)
-                <div class="notification-item {{ !$notification->is_read ? 'unread' : '' }}" 
+                @php
+                    // Decode the notification data
+                    $notificationData = $notification->data ?? [];
+                    if (is_string($notificationData)) {
+                        $notificationData = json_decode($notificationData, true);
+                    }
+                    
+                    // Determine if notification is unread
+                    $isUnread = is_null($notification->read_at);
+                    
+                    // Get icon and color from notification type or data
+                    $notificationType = $notificationData['type'] ?? 'info';
+                    $iconMap = [
+                        'success' => ['icon' => 'fa-check-circle', 'color' => 'success'],
+                        'warning' => ['icon' => 'fa-exclamation-triangle', 'color' => 'warning'],
+                        'error' => ['icon' => 'fa-times-circle', 'color' => 'danger'],
+                        'danger' => ['icon' => 'fa-times-circle', 'color' => 'danger'],
+                        'info' => ['icon' => 'fa-info-circle', 'color' => 'info'],
+                        'primary' => ['icon' => 'fa-bell', 'color' => 'primary'],
+                        'booking' => ['icon' => 'fa-calendar-check', 'color' => 'primary'],
+                        'car' => ['icon' => 'fa-car', 'color' => 'info'],
+                        'payment' => ['icon' => 'fa-credit-card', 'color' => 'success'],
+                        'system' => ['icon' => 'fa-cog', 'color' => 'warning'],
+                    ];
+                    
+                    $iconConfig = $iconMap[$notificationType] ?? $iconMap['primary'];
+                @endphp
+                
+                <div class="notification-item {{ $isUnread ? 'unread' : '' }}" 
                      data-notification-id="{{ $notification->id }}">
                     <div class="d-flex gap-3">
                         <!-- Icon -->
-                        <div class="notification-icon {{ $notification->type ?? 'primary' }}">
-                            <i class="fas {{ $notification->icon ?? 'fa-bell' }}"></i>
+                        <div class="notification-icon {{ $iconConfig['color'] }}">
+                            <i class="fas {{ $iconConfig['icon'] }}"></i>
                         </div>
                         
                         <!-- Content -->
                         <div class="notification-content">
                             <div class="notification-header">
                                 <h6 class="notification-title">
-                                    {{ $notification->title }}
+                                    {{ $notificationData['title'] ?? 'New Notification' }}
                                 </h6>
                                 <span class="notification-time">
                                     {{ $notification->created_at->diffForHumans() }}
@@ -428,18 +463,18 @@
                             </div>
                             
                             <p class="notification-message">
-                                {{ $notification->message }}
+                                {{ $notificationData['message'] ?? 'No message available' }}
                             </p>
                             
                             <div class="notification-actions">
-                                @if($notification->link)
-                                    <a href="{{ $notification->link }}" class="action-btn btn-view">
+                                @if(isset($notificationData['link']) && $notificationData['link'])
+                                    <a href="{{ $notificationData['link'] }}" class="action-btn btn-view">
                                         <i class="fas fa-external-link-alt"></i>
                                         View Details
                                     </a>
                                 @endif
                                 
-                                @if(!$notification->is_read)
+                                @if($isUnread)
                                     <button type="button" class="action-btn btn-mark-read mark-read" 
                                             data-notification-id="{{ $notification->id }}">
                                         <i class="fas fa-check"></i>
@@ -534,20 +569,27 @@ document.addEventListener('DOMContentLoaded', function() {
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
         
-        fetch(`/staff/notifications/${notificationId}/read`, {
-            method: 'PUT',
+        // Use the correct route - from your fixed routes
+        fetch(`/staff/notifications/${notificationId}/mark-as-read`, {
+            method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+            return response.json();
+        })
         .then(data => {
-            if (data.success) {
+            if (data && data.success) {
                 location.reload();
-            } else {
-                throw new Error(data.message || 'Failed to mark as read');
+            } else if (data && data.error) {
+                throw new Error(data.error);
             }
         })
         .catch(error => {
@@ -562,20 +604,27 @@ document.addEventListener('DOMContentLoaded', function() {
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
         
-        fetch('/staff/notifications/read-all', {
-            method: 'PUT',
+        // Use the correct route - from your fixed routes
+        fetch('/staff/notifications/mark-all-as-read', {
+            method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+            return response.json();
+        })
         .then(data => {
-            if (data.success) {
+            if (data && data.success) {
                 location.reload();
-            } else {
-                throw new Error(data.message || 'Failed to mark all as read');
+            } else if (data && data.error) {
+                throw new Error(data.error);
             }
         })
         .catch(error => {
@@ -591,6 +640,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         
+        // Use the correct route - from your fixed routes
         fetch(`/staff/notifications/${notificationId}`, {
             method: 'DELETE',
             headers: {
@@ -599,9 +649,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Accept': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+            return response.json();
+        })
         .then(data => {
-            if (data.success) {
+            if (data && data.success) {
                 // Fade out animation
                 notificationItem.style.opacity = '0';
                 notificationItem.style.transform = 'translateX(-20px)';
@@ -615,8 +671,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         location.reload();
                     }
                 }, 300);
-            } else {
-                throw new Error(data.message || 'Failed to delete notification');
+            } else if (data && data.error) {
+                throw new Error(data.error);
             }
         })
         .catch(error => {

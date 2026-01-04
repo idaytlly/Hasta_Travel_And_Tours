@@ -1,7 +1,8 @@
-<form action="{{ route('staff.bookings.inspection.return', $booking->id) }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('staff.bookings.inspection.store', $booking->id) }}" method="POST" enctype="multipart/form-data">
     @csrf
+    <input type="hidden" name="inspection_type" value="{{ $type ?? 'pickup' }}">
     <input type="hidden" name="vehicle_type" value="{{ $booking->car->category }}">
-
+    
     <!-- Exterior Inspection -->
     <h6 class="mb-3 border-bottom pb-2"><i class="fas fa-car me-2"></i>Exterior Inspection</h6>
     <div class="row g-3 mb-4">

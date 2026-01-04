@@ -85,38 +85,65 @@ class CarController extends Controller
      * Store a newly created car
      */
     public function store(Request $request)
-    {
-        if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-            abort(403, 'Unauthorized');
-        }
+{
+    if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+        abort(403, 'Unauthorized');
+    }
 
-        $validated = $request->validate([
-            'plateNo' => 'required|string|max:20|unique:cars,plateNo',
-            'brand' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'carType' => 'required|string|in:Sedan,Hatchback,MPV,SUV',
-            'transmission' => 'required|string|in:manual,automatic',
-            'fuel_type' => 'nullable|string|max:50',
-            'daily_rate' => 'required|numeric|min:0',
-            'is_available' => 'required|boolean',
-            'air_conditioner' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+    // Determine if this is a motorcycle based on vehicle_type or category
+    $isMotorcycle = $request->vehicle_type === 'motorcycle' || $request->category === 'motorcycle';
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('cars', 'public');
-        }
+    $validated = $request->validate([
+        'license_plate' => 'required|string|max:20|unique:cars,license_plate',
+        'brand' => 'required|string|max:255',
+        'model' => 'required|string|max:255',
+        'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+        'category' => 'nullable|string|max:255',
+        'transmission' => 'required|string|in:manual,automatic,Manual,Automatic',
+        'fuel_type' => 'nullable|string|max:50',
+        'daily_rate' => 'required|numeric|min:0',
+        'is_available' => 'required|boolean',
+        'air_conditioner' => 'nullable|boolean',
+        'passengers' => 'nullable|integer|min:1|max:15',
+        'seats' => 'nullable|integer|min:1|max:15',
+        'engine_capacity' => 'nullable|integer|min:50|max:2000',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+        'vehicle_type' => 'nullable|string|in:car,motorcycle',
+    ]);
 
-        // Set default for air_conditioner if not present
-        $validated['air_conditioner'] = $request->has('air_conditioner') ? true : false;
+    // Set category to motorcycle if vehicle_type is motorcycle
+    if ($isMotorcycle) {
+        $validated['category'] = 'motorcycle';
+    }
 
-        Car::create($validated);
+    // Generate car name
+    $validated['name'] = $validated['brand'] . ' ' . $validated['model'] . ' ' . $validated['year'];
+    
+    // Normalize transmission to proper case
+    $validated['transmission'] = ucfirst(strtolower($validated['transmission']));
+    
+    // Set default values based on vehicle type
+    if ($isMotorcycle) {
+        $validated['air_conditioner'] = 0; // Motorcycles don't have AC
+        $validated['passengers'] = $validated['passengers'] ?? 2;
+        $validated['seats'] = $validated['seats'] ?? 2;
+    } else {
+        $validated['air_conditioner'] = $request->has('air_conditioner') ? 1 : ($validated['air_conditioner'] ?? 1);
+        $validated['passengers'] = $validated['passengers'] ?? 5;
+        $validated['seats'] = $validated['seats'] ?? 5;
+    }
+    
+    $validated['status'] = $validated['is_available'] ? 'available' : 'unavailable';
 
-        return redirect()
-            ->route('staff.cars')
-            ->with('success', 'Vehicle added successfully!');
+    // Handle image upload
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('cars', 'public');
+        $validated['image'] = $imagePath;
+    }
+
+    Car::create($validated);
+
+    return redirect()->route('staff.cars.index')->with('success', 'Vehicle added successfully!');
     }
 
     /**
@@ -135,43 +162,54 @@ class CarController extends Controller
      * Update the specified car
      */
     public function update(Request $request, Car $car)
-    {
-        if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-            abort(403, 'Unauthorized');
-        }
-
-        $validated = $request->validate([
-            'plateNo' => 'required|string|max:20|unique:cars,plateNo,' . $car->id,
-            'brand' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'carType' => 'required|string|in:Sedan,Hatchback,MPV,SUV',
-            'transmission' => 'required|string|in:manual,automatic',
-            'fuel_type' => 'nullable|string|max:50',
-            'daily_rate' => 'required|numeric|min:0',
-            'is_available' => 'required|boolean',
-            'air_conditioner' => 'boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($car->image) {
-                Storage::disk('public')->delete($car->image);
-            }
-            $validated['image'] = $request->file('image')->store('cars', 'public');
-        }
-
-        // Set default for air_conditioner if not present
-        $validated['air_conditioner'] = $request->has('air_conditioner') ? true : false;
-
-        $car->update($validated);
-
-        return redirect()
-            ->route('staff.cars')
-            ->with('success', 'Vehicle updated successfully!');
+{
+    if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+        abort(403, 'Unauthorized');
     }
+
+    $validated = $request->validate([
+        'license_plate' => 'required|string|max:20|unique:cars,license_plate,' . $car->id,
+        'brand' => 'required|string|max:255',
+        'model' => 'required|string|max:255',
+        'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+        'category' => 'nullable|string|in:Sedan,Hatchback,MPV,SUV,Minivan',
+        'transmission' => 'required|string|in:manual,automatic,Manual,Automatic',
+        'fuel_type' => 'nullable|string|max:50',
+        'daily_rate' => 'required|numeric|min:0',
+        'is_available' => 'required|boolean',
+        'air_conditioner' => 'nullable|boolean',
+        'passengers' => 'nullable|integer|min:1|max:15',
+        'seats' => 'nullable|integer|min:1|max:15',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+    ]);
+
+    // Generate car name
+    $validated['name'] = $validated['brand'] . ' ' . $validated['model'] . ' ' . $validated['year'];
+    
+    // Normalize transmission
+    $validated['transmission'] = ucfirst(strtolower($validated['transmission']));
+    
+    // Set default values if not provided
+    $validated['air_conditioner'] = $request->has('air_conditioner') ? 1 : ($validated['air_conditioner'] ?? 1);
+    $validated['passengers'] = $validated['passengers'] ?? 5;
+    $validated['seats'] = $validated['seats'] ?? 5;
+    $validated['status'] = $validated['is_available'] ? 'available' : 'unavailable';
+
+    // Handle image upload
+    if ($request->hasFile('image')) {
+        // Delete old image if exists
+        if ($car->image && file_exists(storage_path('app/public/' . $car->image))) {
+            unlink(storage_path('app/public/' . $car->image));
+        }
+        
+        $imagePath = $request->file('image')->store('cars', 'public');
+        $validated['image'] = $imagePath;
+    }
+
+    $car->update($validated);
+
+    return redirect()->route('staff.cars.index')->with('success', 'Vehicle updated successfully!');
+}
 
     /**
      * Remove the specified car

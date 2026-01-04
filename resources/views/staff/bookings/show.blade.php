@@ -11,7 +11,7 @@
     }
     
     .vehicle-showcase {
-        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        background: linear-gradient(135deg, #ff3232ff 0%, #1e40af 100%);
         border-radius: 16px;
         padding: 2.5rem;
         color: white;
@@ -79,7 +79,8 @@
         background: #f8fafc;
         padding: 0.5rem 1rem;
         border-radius: 8px;
-        min-width: 200px;
+        min-width: 150px;
+        max-width: 100%;
     }
     
     .status-badge {
@@ -126,12 +127,16 @@
     }
     
     .action-panel {
-        background: white;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 2px solid #e2e8f0;
         border-radius: 12px;
         padding: 2rem;
         margin-top: 2rem;
-        border: 1px solid #e2e8f0;
         box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .action-panel h5 {
+        color: #1e293b;
     }
     
     .payment-breakdown {
@@ -163,6 +168,155 @@
         border-radius: 20px;
         font-weight: 600;
         display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Approval Info Card Enhancement */
+    .approval-info-card {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 2px solid #86efac;
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    .approval-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .approval-icon {
+        width: 48px;
+        height: 48px;
+        background: #22c55e;
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .approval-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #065f46;
+        margin: 0;
+    }
+
+    .approval-subtitle {
+        font-size: 0.875rem;
+        color: #059669;
+        margin: 0;
+    }
+
+    /* Custom Inspection Tabs */
+    .nav-pills {
+        background: #f8fafc;
+        padding: 0.5rem;
+        border-radius: 12px;
+        gap: 0.5rem;
+    }
+
+    .nav-pills .nav-link {
+        border-radius: 8px;
+        padding: 0.75rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #64748b;
+        border: 2px solid transparent;
+        transition: all 0.2s;
+        background: transparent;
+    }
+
+    .nav-pills .nav-link:hover {
+        background: white;
+        color: #2563eb;
+        border-color: #e2e8f0;
+    }
+
+    .nav-pills .nav-link.active {
+        background: #2563eb;
+        color: white;
+        border-color: #2563eb;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .nav-pills .nav-link .badge {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 6px;
+    }
+
+    /* Tab Content */
+    .tab-content {
+        padding: 1.5rem 0;
+    }
+
+    /* Inspection Details Grid */
+    .inspection-details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .inspection-detail-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 1rem;
+        transition: all 0.2s;
+    }
+
+    .inspection-detail-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .inspection-label {
+        font-size: 0.75rem;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .inspection-value {
+        font-size: 1rem;
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    /* Notes and Damages Boxes */
+    .notes-box {
+        background: #f8fafc;
+        border-left: 4px solid #2563eb;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .damage-box {
+        background: #fef3c7;
+        border-left: 4px solid #f59e0b;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .box-title {
+        font-weight: 600;
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+        display: flex;
         align-items: center;
         gap: 0.5rem;
     }
@@ -226,6 +380,63 @@
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
+
+    /* Button Enhancements */
+    .btn-success {
+        background: #22c55e;
+        border-color: #22c55e;
+        font-weight: 600;
+        padding: 0.625rem 1.25rem;
+        transition: all 0.2s;
+    }
+
+    .btn-success:hover {
+        background: #16a34a;
+        border-color: #16a34a;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+    }
+
+    .btn-outline-danger {
+        font-weight: 600;
+        padding: 0.625rem 1.25rem;
+        transition: all 0.2s;
+    }
+
+    .btn-outline-danger:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .detail-value {
+            min-width: 100px;
+            text-align: left;
+        }
+        
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .inspection-details-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .nav-pills {
+            flex-direction: column;
+        }
+        
+        .nav-pills .nav-link {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .approval-header {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
 </style>
 
 <div class="container-fluid py-4">
@@ -256,41 +467,56 @@
         @endif
 
         <!-- Vehicle Showcase -->
-        <div class="vehicle-showcase">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h2 class="fw-bold mb-3">
-                        {{ $booking->car->brand }} {{ $booking->car->model }} {{ $booking->car->year }}
-                    </h2>
-                    <div class="mb-4">
-                        @php
-                            $statusConfig = [
-                                'pending' => ['class' => 'status-pending', 'icon' => 'fa-clock', 'label' => 'Pending Review'],
-                                'confirmed' => ['class' => 'status-confirmed', 'icon' => 'fa-check-circle', 'label' => 'Confirmed'],
-                                'active' => ['class' => 'status-active', 'icon' => 'fa-car', 'label' => 'Active'],
-                                'completed' => ['class' => 'status-completed', 'icon' => 'fa-flag-checkered', 'label' => 'Completed'],
-                                'cancelled' => ['class' => 'status-cancelled', 'icon' => 'fa-times-circle', 'label' => 'Cancelled']
-                            ];
-                            $config = $statusConfig[$booking->status] ?? ['class' => 'status-pending', 'icon' => 'fa-question', 'label' => $booking->status];
-                        @endphp
-                        <span class="status-badge {{ $config['class'] }}">
-                            <i class="fas {{ $config['icon'] }}"></i>
-                            {{ $config['label'] }}
-                        </span>
-                    </div>
-                    <div class="duration-badge">
-                        <i class="fas fa-calendar-alt"></i>
-                        {{ $booking->duration ?? \Carbon\Carbon::parse($booking->pickup_date)->diffInDays($booking->return_date) }} Day Rental
-                    </div>
-                </div>
-                <div class="col-md-4 text-center">
-                    <img src="{{ $booking->car->image }}" 
-                         alt="{{ $booking->car->brand }}" 
-                         class="img-fluid rounded shadow"
-                         style="max-height: 180px; border: 3px solid rgba(255,255,255,0.2);">
-                </div>
+<div class="vehicle-showcase">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h2 class="fw-bold mb-3">
+                {{ $booking->car->brand }} {{ $booking->car->model }} {{ $booking->car->year }}
+            </h2>
+            <div class="mb-4">
+                @php
+                    $statusConfig = [
+                        'pending' => ['class' => 'status-pending', 'icon' => 'fa-clock', 'label' => 'Pending Review'],
+                        'confirmed' => ['class' => 'status-confirmed', 'icon' => 'fa-check-circle', 'label' => 'Confirmed'],
+                        'active' => ['class' => 'status-active', 'icon' => 'fa-car', 'label' => 'Active'],
+                        'completed' => ['class' => 'status-completed', 'icon' => 'fa-flag-checkered', 'label' => 'Completed'],
+                        'cancelled' => ['class' => 'status-cancelled', 'icon' => 'fa-times-circle', 'label' => 'Cancelled']
+                    ];
+                    $config = $statusConfig[$booking->status] ?? ['class' => 'status-pending', 'icon' => 'fa-question', 'label' => $booking->status];
+                @endphp
+                <span class="status-badge {{ $config['class'] }}">
+                    <i class="fas {{ $config['icon'] }}"></i>
+                    {{ $config['label'] }}
+                </span>
+            </div>
+            <div class="duration-badge">
+                <i class="fas fa-calendar-alt"></i>
+                {{ $booking->duration ?? \Carbon\Carbon::parse($booking->pickup_date)->diffInDays($booking->return_date) }} Day Rental
             </div>
         </div>
+        <div class="col-md-4 text-center">
+            @if($booking->car->image)
+                @if(filter_var($booking->car->image, FILTER_VALIDATE_URL))
+                    <img src="{{ $booking->car->image }}" 
+                         alt="{{ $booking->car->brand }} {{ $booking->car->model }}" 
+                         class="img-fluid rounded shadow"
+                         style="max-height: 200px; width: auto; border: 3px solid rgba(255,255,255,0.3); object-fit: contain;">
+                @else
+                    <img src="{{ asset('storage/' . $booking->car->image) }}" 
+                         alt="{{ $booking->car->brand }} {{ $booking->car->model }}" 
+                         class="img-fluid rounded shadow"
+                         style="max-height: 200px; width: auto; border: 3px solid rgba(255,255,255,0.3); object-fit: contain;">
+                @endif
+            @else
+                <div class="d-flex flex-column align-items-center justify-content-center" 
+                     style="height: 200px; background: rgba(255,255,255,0.1); border-radius: 12px; border: 3px solid rgba(255,255,255,0.3);">
+                    <i class="fas fa-car" style="font-size: 4rem; opacity: 0.5;"></i>
+                    <p class="mt-3 mb-0" style="opacity: 0.7;">No Image Available</p>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
 
         <!-- Customer Information -->
         <div class="detail-card">
@@ -339,6 +565,77 @@
                 </div>
             </div>
         </div>
+
+        <!-- Approval Information -->
+        @if($booking->status !== 'pending' && $booking->approved_by)
+        <div class="detail-card approval-info-card">
+            <div class="approval-header">
+                <div class="approval-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <h5 class="approval-title">Booking Approved</h5>
+                    <p class="approval-subtitle">This booking has been reviewed and approved</p>
+                </div>
+            </div>
+            
+            <div class="inspection-details-grid">
+                <div class="inspection-detail-item">
+                    <div class="inspection-label">
+                        <i class="fas fa-user-check"></i> Approved By
+                    </div>
+                    <div class="inspection-value">
+                        {{ $booking->approvedBy->name ?? 'N/A' }}
+                        @if($booking->approvedBy)
+                            <span class="badge bg-info ms-2" style="font-size: 0.7rem;">
+                                {{ ucfirst($booking->approvedBy->usertype) }}
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                
+                <div class="inspection-detail-item">
+                    <div class="inspection-label">
+                        <i class="fas fa-calendar-check"></i> Approval Date
+                    </div>
+                    <div class="inspection-value">
+                        {{ $booking->approved_at ? $booking->approved_at->format('d M Y, h:i A') : 'N/A' }}
+                    </div>
+                </div>
+                
+                @if($booking->approved_at)
+                <div class="inspection-detail-item">
+                    <div class="inspection-label">
+                        <i class="fas fa-clock"></i> Time Elapsed
+                    </div>
+                    <div class="inspection-value">
+                        {{ $booking->approved_at->diffForHumans() }}
+                    </div>
+                </div>
+                @endif
+                
+                <div class="inspection-detail-item">
+                    <div class="inspection-label">
+                        <i class="fas fa-info-circle"></i> Current Status
+                    </div>
+                    <div class="inspection-value">
+                        @php
+                            $statusColors = [
+                                'confirmed' => 'success',
+                                'active' => 'primary',
+                                'completed' => 'info',
+                                'cancelled' => 'danger'
+                            ];
+                            $color = $statusColors[$booking->status] ?? 'secondary';
+                        @endphp
+                        <span class="badge bg-{{ $color }}">
+                            {{ ucfirst($booking->status) }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
 
         <!-- Rental Details -->
         <div class="detail-card">
@@ -456,6 +753,259 @@
             </div>
         </div>
 
+        <!-- Vehicle Inspection -->
+        <div class="detail-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0" style="color: #2563eb;">
+                    <i class="fas fa-clipboard-check me-2"></i>Vehicle Inspection
+                </h5>
+                
+                @php
+                    $allInspections = $booking->inspections;
+                    $pickupInspection = $allInspections->first();
+                    $returnInspection = $allInspections->count() > 1 ? $allInspections->last() : null;
+                @endphp
+                
+                <!-- Overall Status Badge -->
+                @if($pickupInspection && $returnInspection)
+                    <span class="badge bg-success px-3 py-2">
+                        <i class="fas fa-check-double me-1"></i>Both Inspections Completed
+                    </span>
+                @elseif($pickupInspection && !$returnInspection)
+                    <span class="badge bg-warning px-3 py-2">
+                        <i class="fas fa-hourglass-half me-1"></i>On-Going
+                    </span>
+                @else
+                    <span class="badge bg-secondary px-3 py-2">
+                        <i class="fas fa-clock me-1"></i>Inspection Pending
+                    </span>
+                @endif
+            </div>
+
+            <!-- Inspection Tabs -->
+            <ul class="nav nav-pills mb-4" id="inspectionTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active d-flex align-items-center gap-2" 
+                            id="pickup-tab" 
+                            data-bs-toggle="pill" 
+                            data-bs-target="#pickup-inspection" 
+                            type="button" 
+                            role="tab">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Pickup Inspection
+                        @if($pickupInspection)
+                            <span class="badge bg-success ms-2">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        @endif
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link d-flex align-items-center gap-2" 
+                            id="return-tab" 
+                            data-bs-toggle="pill" 
+                            data-bs-target="#return-inspection" 
+                            type="button" 
+                            role="tab">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Return Inspection
+                        @if($returnInspection)
+                            <span class="badge bg-success ms-2">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        @endif
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="inspectionTabsContent">
+                <!-- Pickup Inspection Tab -->
+                <div class="tab-pane fade show active" id="pickup-inspection" role="tabpanel">
+                    @if($pickupInspection)
+                        <!-- Display Completed Pickup Inspection -->
+                        <div class="alert alert-success border-0" style="background: #d1fae5;">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fas fa-check-circle" style="color: #059669; font-size: 1.5rem;"></i>
+                                <div style="color: #065f46;">
+                                    <strong>Pickup Inspection Completed</strong>
+                                    <br>
+                                    <small>{{ $pickupInspection->inspected_at->format('d M Y, h:i A') }} by {{ $pickupInspection->inspector_name }}</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Display Inspection Details -->
+                        <div class="inspection-details-grid">
+                            <div class="inspection-detail-item">
+                                <div class="inspection-label">
+                                    <i class="fas fa-car-side"></i> Exterior
+                                </div>
+                                <div class="inspection-value">{{ $pickupInspection->exterior_condition }}</div>
+                            </div>
+                            
+                            <div class="inspection-detail-item">
+                                <div class="inspection-label">
+                                    <i class="fas fa-couch"></i> Interior
+                                </div>
+                                <div class="inspection-value">{{ $pickupInspection->interior_condition ?? 'N/A' }}</div>
+                            </div>
+                            
+                            <div class="inspection-detail-item">
+                                <div class="inspection-label">
+                                    <i class="fas fa-tachometer-alt"></i> Mileage
+                                </div>
+                                <div class="inspection-value">{{ number_format($pickupInspection->mileage_start ?? 0) }} km</div>
+                            </div>
+                            
+                            <div class="inspection-detail-item">
+                                <div class="inspection-label">
+                                    <i class="fas fa-gas-pump"></i> Fuel Level
+                                </div>
+                                <div class="inspection-value">{{ $pickupInspection->fuel_level }}</div>
+                            </div>
+                        </div>
+
+                        @if($pickupInspection->damages)
+                        <div class="damage-box">
+                            <div class="box-title">
+                                <i class="fas fa-exclamation-triangle text-warning"></i>
+                                <span>Damages Noted</span>
+                            </div>
+                            <p class="mb-0" style="color: #92400e;">{{ $pickupInspection->damages }}</p>
+                        </div>
+                        @endif
+
+                        @if($pickupInspection->additional_notes)
+                        <div class="notes-box">
+                            <div class="box-title">
+                                <i class="fas fa-sticky-note text-primary"></i>
+                                <span>Additional Notes</span>
+                            </div>
+                            <p class="mb-0" style="color: #475569;">{{ $pickupInspection->additional_notes }}</p>
+                        </div>
+                        @endif
+                    @else
+                        <!-- Pickup Inspection Form -->
+                        <div class="alert alert-info border-0 mb-4" style="background: #dbeafe;">
+                            <div class="d-flex align-items-start gap-3">
+                                <i class="fas fa-info-circle" style="color: #2563eb; font-size: 1.25rem; margin-top: 2px;"></i>
+                                <div style="color: #1e40af;">
+                                    <strong>Pickup Inspection Required</strong>
+                                    <p class="mb-0 mt-1 small">Complete this inspection before releasing the vehicle to the customer. Document the vehicle's condition at pickup.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        @include('staff.bookings.partials.return-inspection-form', ['booking' => $booking, 'type' => 'pickup'])
+                    @endif
+                </div>
+
+                <!-- Return Inspection Tab -->
+                <div class="tab-pane fade" id="return-inspection" role="tabpanel">
+                    @if($returnInspection)
+                        <!-- Display Completed Return Inspection -->
+                        <div class="alert alert-success border-0" style="background: #d1fae5;">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fas fa-check-circle" style="color: #059669; font-size: 1.5rem;"></i>
+                                <div style="color: #065f46;">
+                                    <strong>Return Inspection Completed</strong>
+                                    <br>
+                                    <small>{{ $returnInspection->inspected_at->format('d M Y, h:i A') }} by {{ $returnInspection->inspector_name }}</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Display Inspection Details -->
+                        <div class="inspection-details-grid">
+                            <div class="inspection-detail-item">
+                                <div class="inspection-label">
+                                    <i class="fas fa-car-side"></i> Exterior
+                                </div>
+                                <div class="inspection-value">{{ $returnInspection->exterior_condition }}</div>
+                            </div>
+                            
+                            <div class="inspection-detail-item">
+                                <div class="inspection-label">
+                                    <i class="fas fa-couch"></i> Interior
+                                </div>
+                                <div class="inspection-value">{{ $returnInspection->interior_condition ?? 'N/A' }}</div>
+                            </div>
+                            
+                            <div class="inspection-detail-item">
+                                <div class="inspection-label">
+                                    <i class="fas fa-tachometer-alt"></i> Return Mileage
+                                </div>
+                                <div class="inspection-value">{{ number_format($returnInspection->mileage_return ?? 0) }} km</div>
+                            </div>
+                            
+                            <div class="inspection-detail-item">
+                                <div class="inspection-label">
+                                    <i class="fas fa-gas-pump"></i> Fuel Level
+                                </div>
+                                <div class="inspection-value">{{ $returnInspection->fuel_level }}</div>
+                            </div>
+                            
+                            @if($returnInspection->cleanliness)
+                            <div class="inspection-detail-item">
+                                <div class="inspection-label">
+                                    <i class="fas fa-sparkles"></i> Cleanliness
+                                </div>
+                                <div class="inspection-value">{{ $returnInspection->cleanliness }}</div>
+                            </div>
+                            @endif
+                        </div>
+
+                        @if($returnInspection->damages)
+                        <div class="damage-box">
+                            <div class="box-title">
+                                <i class="fas fa-exclamation-triangle text-warning"></i>
+                                <span>Damages Noted</span>
+                            </div>
+                            <p class="mb-0" style="color: #92400e;">{{ $returnInspection->damages }}</p>
+                        </div>
+                        @endif
+
+                        @if($returnInspection->additional_notes)
+                        <div class="notes-box">
+                            <div class="box-title">
+                                <i class="fas fa-sticky-note text-primary"></i>
+                                <span>Additional Notes</span>
+                            </div>
+                            <p class="mb-0" style="color: #475569;">{{ $returnInspection->additional_notes }}</p>
+                        </div>
+                        @endif
+                    @else
+                        @if(!$pickupInspection)
+                            <!-- Must complete pickup first -->
+                            <div class="alert alert-warning border-0" style="background: #fef3c7;">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="fas fa-exclamation-triangle" style="color: #d97706; font-size: 1.25rem; margin-top: 2px;"></i>
+                                    <div style="color: #92400e;">
+                                        <strong>Pickup Inspection Required First</strong>
+                                        <p class="mb-0 mt-1 small">You must complete the pickup inspection before you can perform the return inspection.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <!-- Return Inspection Form -->
+                            <div class="alert alert-warning border-0 mb-4" style="background: #fef3c7;">
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="fas fa-sign-in-alt" style="color: #d97706; font-size: 1.25rem; margin-top: 2px;"></i>
+                                    <div style="color: #92400e;">
+                                        <strong>Return Inspection Required</strong>
+                                        <p class="mb-0 mt-1 small">Complete this inspection when the customer returns the vehicle. Compare the condition with the pickup inspection.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @include('staff.bookings.partials.return-inspection-form', ['booking' => $booking, 'type' => 'return'])
+                        @endif
+                    @endif
+                </div>
+            </div>
+        </div>
+
         <!-- Additional Information -->
         @if($booking->remarks)
         <div class="detail-card">
@@ -528,7 +1078,6 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <!-- Use the correct route -->
                 <form id="rejectBookingForm" method="POST" action="{{ route('staff.bookings.cancel', $booking->id) }}">
                     @csrf                    
                     <div class="alert alert-warning border-0 d-flex align-items-start gap-3 mb-4" style="background: #fef3c7; border-radius: 8px;">
@@ -598,7 +1147,7 @@ function setReason(reason) {
     document.getElementById('rejection_reason').value = reason;
 }
 
-// Open rejection modal - simplified version
+// Open rejection modal
 function openRejectModal(bookingId, bookingReference) {
     document.getElementById('rejectBookingModalLabel').innerHTML = `
         <i class="fas fa-times-circle"></i>

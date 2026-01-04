@@ -1,77 +1,286 @@
-{{-- resources/views/staff/cars/create.blade.php --}}
+@extends('layouts.staff')
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Car - Hasta Staff</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        .header-gradient {
-            background: linear-gradient(135deg, #E53935 0%, #D32F2F 100%);
+@section('title', 'Add New Vehicle')
+@section('page-title', 'Add New Vehicle')
+
+@section('content')
+<style>
+    :root {
+        --primary: #dc2626;
+        --primary-light: rgba(220, 38, 38, 0.1);
+        --success: #22c55e;
+        --info: #3b82f6;
+        --purple: #8b5cf6;
+        --dark: #1e293b;
+        --gray: #64748b;
+        --light: #f1f5f9;
+        --white: #ffffff;
+        --border: #e2e8f0;
+    }
+
+    body {
+        background: var(--light) !important;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--gray);
+        font-weight: 500;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: all 0.2s;
+        margin-bottom: 1.5rem;
+    }
+
+    .back-button:hover {
+        color: var(--primary);
+        gap: 0.75rem;
+    }
+
+    .content-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .vehicle-type-selector {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: var(--light);
+        border-radius: 12px;
+    }
+
+    .type-option {
+        flex: 1;
+        padding: 1.25rem;
+        border-radius: 8px;
+        border: 2px solid var(--border);
+        background: var(--white);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+    .type-option:hover {
+        border-color: var(--primary);
+        transform: translateY(-2px);
+    }
+
+    .type-option.active {
+        border-color: var(--primary);
+        background: var(--primary-light);
+    }
+
+    .type-option.active.motorcycle {
+        border-color: var(--purple);
+        background: rgba(139, 92, 246, 0.1);
+    }
+
+    .type-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .type-label {
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 1rem;
+    }
+
+    .image-upload-section {
+        background: var(--light);
+        border-radius: 12px;
+        padding: 3rem;
+        text-align: center;
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed var(--border);
+        transition: all 0.3s;
+    }
+
+    .image-upload-section:hover {
+        border-color: var(--primary);
+        background: rgba(220, 38, 38, 0.02);
+    }
+
+    .image-preview {
+        max-width: 100%;
+        max-height: 350px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    .upload-placeholder {
+        font-size: 6rem;
+        color: var(--border);
+        margin-bottom: 1.5rem;
+    }
+
+    .upload-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        margin-top: 1rem;
+    }
+
+    .upload-button:hover {
+        background: #b91c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+
+    .form-section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .required {
+        color: var(--primary);
+    }
+
+    .form-input, .form-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        color: var(--dark);
+        background: var(--white);
+        transition: all 0.2s;
+    }
+
+    .form-input:focus, .form-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .button-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #b91c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: var(--white);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+    }
+
+    .btn-secondary:hover {
+        background: var(--primary-light);
+        color: var(--primary);
+    }
+
+    .alert {
+        padding: 1rem 1.25rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+    }
+
+    .alert-error {
+        background: rgba(220, 38, 38, 0.1);
+        border: 1px solid rgba(220, 38, 38, 0.2);
+        color: #991b1b;
+    }
+
+    @media (max-width: 768px) {
+        .grid-2 {
+            grid-template-columns: 1fr;
         }
-    </style>
-</head>
-<body class="bg-gray-100">
+        
+        .button-group {
+            grid-template-columns: 1fr;
+        }
 
-<!-- Header -->
-<header class="header-gradient text-white shadow-lg">
-    <div class="container mx-auto px-4 py-4">
-        <div class="flex justify-between items-center">
-            <a href="{{ route('home') }}" class="flex items-center">
-                <h1 class="text-2xl font-bold tracking-wider">HASTA</h1>
-            </a>
+        .vehicle-type-selector {
+            flex-direction: column;
+        }
+    }
+</style>
 
-            <nav class="hidden md:flex items-center gap-6">
-                <a href="{{ route('home') }}" class="hover:text-gray-200 transition">
-                    <i class="fas fa-home text-xl"></i>
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-bell text-xl"></i>
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-th text-xl"></i>
-                </a>
-                <a href="{{ route('staff.cars.index') }}" class="bg-red-400 bg-opacity-50 px-4 py-2 rounded-lg hover:bg-opacity-70 transition">
-                    <i class="fas fa-car"></i> Vehicle Management
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-clipboard-list text-xl"></i>
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-clock text-xl"></i>
-                </a>
-                <a href="#" class="hover:text-gray-200 transition">
-                    <i class="fas fa-cog text-xl"></i>
-                </a>
-            </nav>
-
-            <div class="flex items-center gap-4">
-                <button class="bg-orange-500 hover:bg-orange-600 px-6 py-2 rounded-lg text-white font-semibold transition">
-                    Login
-                </button>
-                <img src="https://ui-avatars.com/api/?name=Staff&background=FF6B35&color=fff" 
-                     alt="Profile" 
-                     class="w-12 h-12 rounded-full border-2 border-white">
-            </div>
-        </div>
-    </div>
-</header>
-
-<!-- Main Content -->
-<div class="container mx-auto px-4 py-8">
+<div class="container-fluid py-4">
     
     <!-- Back Button -->
-    <a href="{{ route('staff.cars.index') }}" class="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6">
-        <i class="fas fa-chevron-left text-3xl"></i>
+    <a href="{{ route('staff.cars.index') }}" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        Back to Vehicles
     </a>
 
     <!-- Error Messages -->
     @if($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
-            <ul class="list-disc list-inside">
+        <div class="alert alert-error">
+            <strong><i class="fas fa-exclamation-circle"></i> Please fix the following errors:</strong>
+            <ul class="mt-2 ml-4 list-disc">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -79,173 +288,350 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="row g-4">
         
         <!-- Left Side - Image Upload -->
-        <div class="bg-white rounded-3xl shadow-lg p-8">
-            <div class="bg-gray-50 rounded-2xl p-8 mb-6 flex items-center justify-center" style="min-height: 350px;">
-                <div id="imagePreviewContainer">
-                    <i class="fas fa-car text-gray-300 text-9xl" id="carImageIcon"></i>
-                    <img id="carImagePreview" src="" alt="Car Preview" class="hidden max-w-full max-h-80 object-contain">
+        <div class="col-lg-5">
+            <div class="content-card">
+                <h3 class="form-section-title">Vehicle Image</h3>
+                
+                <div class="image-upload-section">
+                    <div id="imagePlaceholder">
+                        <i class="fas fa-car upload-placeholder" id="placeholderIcon"></i>
+                        <p class="text-gray-500 text-sm">Upload vehicle image</p>
+                    </div>
+                    <img id="imagePreview" class="image-preview" style="display: none;">
                 </div>
-            </div>
-            
-            <label for="imageUpload" class="block w-full">
-                <div class="border-2 border-orange-500 text-orange-500 px-6 py-3 rounded-lg text-center cursor-pointer hover:bg-orange-50 transition">
-                    <i class="fas fa-camera mr-2"></i> Upload Picture
-                </div>
+
+                <label for="imageUpload" class="upload-button" style="width: 100%; margin-top: 1.5rem; justify-content: center;">
+                    <i class="fas fa-camera"></i>
+                    Choose Image
+                </label>
                 <input type="file" 
                        id="imageUpload" 
-                       name="image" 
                        accept="image/*" 
-                       class="hidden"
-                       form="createCarForm"
+                       class="d-none"
                        onchange="previewImage(event)">
-            </label>
-            <p class="text-sm text-gray-500 text-center mt-2">JPG, PNG (Max 2MB)</p>
+
+                <p class="text-center text-gray-500" style="font-size: 0.75rem; margin-top: 0.75rem;">
+                    Accepted formats: JPG, PNG, JPEG (Max 5MB)
+                </p>
+            </div>
         </div>
 
-        <!-- Right Side - Form -->
-        <div class="bg-white rounded-3xl shadow-lg p-8">
-            <h2 class="text-3xl font-bold mb-6">Add New Car</h2>
+        <!-- Right Side - Vehicle Form -->
+        <div class="col-lg-7">
+            <div class="content-card">
+                <h3 class="form-section-title mb-3">Add New Vehicle</h3>
 
-            <form action="{{ route('staff.cars.store') }}" method="POST" enctype="multipart/form-data" id="createCarForm">
-                @csrf
-
-                <!-- Hidden image input -->
-                <input type="file" name="image" id="actualImageInput" class="hidden">
-
-                <!-- Plate Number -->
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Plate Number <span class="text-red-500">*</span></label>
-                    <input type="text" 
-                           name="plateNo" 
-                           value="{{ old('plateNo') }}"
-                           placeholder="e.g., ABC1234"
-                           required
-                           class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                <!-- Vehicle Type Selector -->
+                <div class="vehicle-type-selector">
+                    <div class="type-option active" id="carOption" onclick="selectType('car')">
+                        <div class="type-icon"><i class="fas fa-car" style="color: var(--info);"></i></div>
+                        <div class="type-label">Car</div>
+                    </div>
+                    <div class="type-option motorcycle" id="motorcycleOption" onclick="selectType('motorcycle')">
+                        <div class="type-icon"><i class="fas fa-motorcycle" style="color: var(--purple);"></i></div>
+                        <div class="type-label">Motorcycle</div>
+                    </div>
                 </div>
 
-                <!-- Brand -->
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Brand <span class="text-red-500">*</span></label>
-                    <select name="brand" 
-                            required
-                            class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <option value="">Select Brand</option>
-                        <option value="PERODUA" {{ old('brand') == 'PERODUA' ? 'selected' : '' }}>PERODUA</option>
-                        <option value="PROTON" {{ old('brand') == 'PROTON' ? 'selected' : '' }}>PROTON</option>
-                        <option value="TOYOTA" {{ old('brand') == 'TOYOTA' ? 'selected' : '' }}>TOYOTA</option>
-                        <option value="HONDA" {{ old('brand') == 'HONDA' ? 'selected' : '' }}>HONDA</option>
-                        <option value="NISSAN" {{ old('brand') == 'NISSAN' ? 'selected' : '' }}>NISSAN</option>
-                        <option value="MAZDA" {{ old('brand') == 'MAZDA' ? 'selected' : '' }}>MAZDA</option>
-                    </select>
-                </div>
+                <form action="{{ route('staff.cars.store') }}" method="POST" enctype="multipart/form-data" id="createForm">
+                    @csrf
 
-                <!-- Model -->
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Model</label>
-                    <input type="text" 
-                           name="model" 
-                           value="{{ old('model') }}"
-                           placeholder="e.g., AXIA"
-                           class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
+                    <!-- Hidden inputs -->
+                    <input type="file" name="image" id="actualImageInput" class="d-none">
+                    <input type="hidden" name="vehicle_type" id="vehicleType" value="{{ request('type', 'car') }}">
 
-                <!-- Year -->
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Year</label>
-                    <input type="number" 
-                           name="year" 
-                           value="{{ old('year', date('Y')) }}"
-                           min="2000" 
-                           max="{{ date('Y') + 1 }}"
-                           placeholder="2024"
-                           class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
+                    <!-- Brand & Model -->
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-building text-primary"></i> Brand <span class="required">*</span>
+                            </label>
+                            <select name="brand" required class="form-select" id="brandSelect">
+                                <option value="">Select Brand</option>
+                                <!-- Car Brands -->
+                                <optgroup label="Car Brands" id="carBrands">
+                                    <option value="Perodua">Perodua</option>
+                                    <option value="Proton">Proton</option>
+                                    <option value="Toyota">Toyota</option>
+                                    <option value="Honda">Honda</option>
+                                    <option value="Nissan">Nissan</option>
+                                    <option value="Mazda">Mazda</option>
+                                    <option value="Mitsubishi">Mitsubishi</option>
+                                </optgroup>
+                                <!-- Motorcycle Brands -->
+                                <optgroup label="Motorcycle Brands" id="motorcycleBrands" style="display: none;">
+                                    <option value="Honda">Honda</option>
+                                    <option value="Yamaha">Yamaha</option>
+                                    <option value="SYM">SYM</option>
+                                    <option value="Modenas">Modenas</option>
+                                    <option value="Kawasaki">Kawasaki</option>
+                                    <option value="Suzuki">Suzuki</option>
+                                </optgroup>
+                            </select>
+                        </div>
 
-                <!-- Car Type -->
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Car Type</label>
-                    <select name="carType" 
-                            class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <option value="">Select Type</option>
-                        <option value="sedan" {{ old('carType') == 'sedan' ? 'selected' : '' }}>Sedan</option>
-                        <option value="hatchback" {{ old('carType') == 'hatchback' ? 'selected' : '' }}>Hatchback</option>
-                        <option value="mpv" {{ old('carType') == 'mpv' ? 'selected' : '' }}>MPV</option>
-                        <option value="suv" {{ old('carType') == 'suv' ? 'selected' : '' }}>SUV</option>
-                        <option value="minivan" {{ old('carType') == 'minivan' ? 'selected' : '' }}>Minivan</option>
-                    </select>
-                </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-car text-primary"></i> Model <span class="required">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="model" 
+                                   value="{{ old('model') }}"
+                                   required
+                                   placeholder="e.g., Myvi, Axia"
+                                   class="form-input">
+                        </div>
+                    </div>
 
-                <!-- Transmission -->
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Transmission</label>
-                    <select name="transmission" 
-                            class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <option value="automatic" {{ old('transmission', 'automatic') == 'automatic' ? 'selected' : '' }}>Automatic</option>
-                        <option value="manual" {{ old('transmission') == 'manual' ? 'selected' : '' }}>Manual</option>
-                    </select>
-                </div>
+                    <!-- Year & License Plate -->
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-calendar text-primary"></i> Year <span class="required">*</span>
+                            </label>
+                            <input type="number" 
+                                   name="year" 
+                                   value="{{ old('year', date('Y')) }}"
+                                   min="2000" 
+                                   max="{{ date('Y') + 1 }}"
+                                   required
+                                   placeholder="{{ date('Y') }}"
+                                   class="form-input">
+                        </div>
 
-                <!-- Daily Rate -->
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Daily Rate (RM) <span class="text-red-500">*</span></label>
-                    <input type="number" 
-                           name="daily_rate" 
-                           value="{{ old('daily_rate') }}"
-                           step="0.01"
-                           min="0"
-                           placeholder="120.00"
-                           required
-                           class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-id-card text-primary"></i> License Plate <span class="required">*</span>
+                            </label>
+                            <input type="text" 
+                                   name="license_plate" 
+                                   value="{{ old('license_plate') }}"
+                                   required
+                                   placeholder="e.g., ABC 1234"
+                                   class="form-input"
+                                   style="text-transform: uppercase;">
+                        </div>
+                    </div>
 
-                <!-- Availability -->
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-medium mb-2">Availability</label>
-                    <select name="is_available" 
-                            class="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <option value="1" {{ old('is_available', 1) == 1 ? 'selected' : '' }}>Available</option>
-                        <option value="0" {{ old('is_available') == 0 ? 'selected' : '' }}>Not Available</option>
-                    </select>
-                </div>
+                    <!-- Category & Transmission -->
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-shapes text-primary"></i> Category
+                            </label>
+                            <select name="category" class="form-select" id="categorySelect">
+                                <option value="">Select Category</option>
+                                <option value="Sedan">Sedan</option>
+                                <option value="Hatchback">Hatchback</option>
+                                <option value="MPV">MPV</option>
+                                <option value="SUV">SUV</option>
+                                <option value="Minivan">Minivan</option>
+                            </select>
+                        </div>
 
-                <!-- Buttons -->
-                <div class="flex gap-3">
-                    <a href="{{ route('staff.cars.index') }}" 
-                       class="flex-1 px-6 py-3 rounded-lg border-2 border-orange-500 text-orange-500 text-center font-semibold hover:bg-orange-50 transition">
-                        Cancel
-                    </a>
-                    <button type="submit" 
-                            class="flex-1 px-6 py-3 rounded-lg bg-orange-500 text-white font-semibold hover:bg-orange-600 transition">
-                        <i class="fas fa-plus mr-2"></i> Add Car
-                    </button>
-                </div>
-            </form>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-cog text-primary"></i> Transmission <span class="required">*</span>
+                            </label>
+                            <select name="transmission" required class="form-select">
+                                <option value="Automatic" selected>Automatic</option>
+                                <option value="Manual">Manual</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Fuel Type & Engine/Passengers -->
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-gas-pump text-primary"></i> Fuel Type
+                            </label>
+                            <select name="fuel_type" class="form-select">
+                                <option value="">Select Fuel Type</option>
+                                <option value="Petrol" selected>Petrol</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Hybrid">Hybrid</option>
+                                <option value="Electric">Electric</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="passengersField">
+                            <label class="form-label">
+                                <i class="fas fa-users text-primary"></i> Passengers
+                            </label>
+                            <input type="number" 
+                                   name="passengers" 
+                                   value="{{ old('passengers', 5) }}"
+                                   min="1" 
+                                   max="15"
+                                   placeholder="5"
+                                   class="form-input">
+                        </div>
+
+                        <div class="form-group" id="engineField" style="display: none;">
+                            <label class="form-label">
+                                <i class="fas fa-tachometer-alt text-primary"></i> Engine Capacity (cc)
+                            </label>
+                            <input type="number" 
+                                   name="engine_capacity" 
+                                   value="{{ old('engine_capacity', 150) }}"
+                                   min="50" 
+                                   max="1000"
+                                   placeholder="150"
+                                   class="form-input">
+                        </div>
+                    </div>
+
+                    <!-- Seats & Daily Rate -->
+                    <div class="grid-2">
+                        <div class="form-group" id="seatsField">
+                            <label class="form-label">
+                                <i class="fas fa-chair text-primary"></i> Seats
+                            </label>
+                            <input type="number" 
+                                   name="seats" 
+                                   value="{{ old('seats', 5) }}"
+                                   min="1" 
+                                   max="15"
+                                   placeholder="5"
+                                   class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-dollar-sign text-primary"></i> Daily Rate (RM) <span class="required">*</span>
+                            </label>
+                            <input type="number" 
+                                   name="daily_rate" 
+                                   value="{{ old('daily_rate') }}"
+                                   step="0.01"
+                                   min="0"
+                                   required
+                                   placeholder="120.00"
+                                   class="form-input">
+                        </div>
+                    </div>
+
+                    <!-- Air Conditioner & Availability -->
+                    <div class="grid-2">
+                        <div class="form-group" id="airConditionerField">
+                            <label class="form-label">
+                                <i class="fas fa-snowflake text-primary"></i> Air Conditioner
+                            </label>
+                            <select name="air_conditioner" class="form-select">
+                                <option value="1" selected>Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-toggle-on text-primary"></i> Availability <span class="required">*</span>
+                            </label>
+                            <select name="is_available" required class="form-select">
+                                <option value="1" selected>Available</option>
+                                <option value="0">Not Available</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="button-group">
+                        <a href="{{ route('staff.cars.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Add Vehicle
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
+@push('scripts')
 <script>
+    // Get URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialType = urlParams.get('type') || 'car';
+
+    // Initialize with URL parameter
+    if (initialType === 'motorcycle') {
+        selectType('motorcycle');
+    }
+
+    function selectType(type) {
+        const carOption = document.getElementById('carOption');
+        const motorcycleOption = document.getElementById('motorcycleOption');
+        const vehicleType = document.getElementById('vehicleType');
+        const placeholderIcon = document.getElementById('placeholderIcon');
+        const categorySelect = document.getElementById('categorySelect');
+        const passengersField = document.getElementById('passengersField');
+        const seatsField = document.getElementById('seatsField');
+        const engineField = document.getElementById('engineField');
+        const airConditionerField = document.getElementById('airConditionerField');
+        const carBrands = document.getElementById('carBrands');
+        const motorcycleBrands = document.getElementById('motorcycleBrands');
+        
+        if (type === 'car') {
+            carOption.classList.add('active');
+            motorcycleOption.classList.remove('active');
+            placeholderIcon.className = 'fas fa-car upload-placeholder';
+            categorySelect.disabled = false;
+            passengersField.style.display = 'block';
+            seatsField.style.display = 'block';
+            engineField.style.display = 'none';
+            airConditionerField.style.display = 'block';
+            carBrands.style.display = 'block';
+            motorcycleBrands.style.display = 'none';
+            vehicleType.value = 'car';
+        } else {
+            carOption.classList.remove('active');
+            motorcycleOption.classList.add('active');
+            placeholderIcon.className = 'fas fa-motorcycle upload-placeholder';
+            categorySelect.value = 'motorcycle';
+            categorySelect.disabled = true;
+            passengersField.style.display = 'none';
+            seatsField.style.display = 'none';
+            engineField.style.display = 'block';
+            airConditionerField.style.display = 'none';
+            carBrands.style.display = 'none';
+            motorcycleBrands.style.display = 'block';
+            vehicleType.value = 'motorcycle';
+        }
+    }
+
     function previewImage(event) {
         const file = event.target.files[0];
         if (file) {
-            // Check file size (2MB max)
-            if (file.size > 2 * 1024 * 1024) {
-                alert('File size must be less than 2MB');
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                event.target.value = '';
+                return;
+            }
+
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                alert('Please select a valid image file');
                 event.target.value = '';
                 return;
             }
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                const icon = document.getElementById('carImageIcon');
-                const preview = document.getElementById('carImagePreview');
+                const placeholder = document.getElementById('imagePlaceholder');
+                const preview = document.getElementById('imagePreview');
                 
-                icon.classList.add('hidden');
-                preview.classList.remove('hidden');
+                placeholder.style.display = 'none';
                 preview.src = e.target.result;
+                preview.style.display = 'block';
                 
                 // Copy file to actual form input
                 const dataTransfer = new DataTransfer();
@@ -255,7 +641,31 @@
             reader.readAsDataURL(file);
         }
     }
-</script>
 
-</body>
-</html>
+    // Auto-uppercase license plate
+    document.querySelector('input[name="license_plate"]').addEventListener('input', function(e) {
+        this.value = this.value.toUpperCase();
+    });
+
+    // Form validation
+    document.getElementById('createForm').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.style.borderColor = 'var(--primary)';
+            } else {
+                field.style.borderColor = 'var(--border)';
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields');
+        }
+    });
+</script>
+@endpush
+@endsection
