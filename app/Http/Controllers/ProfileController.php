@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Customer;  // make sure to import the Customer model
+use App\Models\Customer;
 
 class ProfileController extends Controller
 {
@@ -12,19 +12,28 @@ class ProfileController extends Controller
      */
     public function show()
     {
-        $user = auth()->user()->load('customer');  // load customer relation
+        $user = auth()->user()->load('customer');
         
         return view('profile.show', [
             'user' => $user,
         ]);
     }
 
+    public function notifications()
+    {
+        $user = auth()->user();
+        $notifications = $user->notifications()->latest()->get(); // assuming you use Laravel notifications
+
+        return view('profile.notifications', compact('notifications'));
+    }
+
+
     /**
      * Show the profile edit form
      */
     public function edit()
     {
-        $user = auth()->user()->load('customer');  // load customer relation
+        $user = auth()->user()->load('customer');
         return view('profile.edit', [
             'user' => $user,
         ]);
@@ -59,7 +68,6 @@ class ProfileController extends Controller
 
         // Prepare data for customers table
         $customerData = [
-            'users_id' => $user->id,
             'name' => $request->name,
             'ic' => $request->ic,
             'email' => $request->email,
@@ -69,8 +77,9 @@ class ProfileController extends Controller
         ];
 
         // Update or create customer linked to this user
+        // Use 'users_id' to match your database column name
         Customer::updateOrCreate(
-            ['users_id' => $user->id],
+            ['user_id' => $user->id],  
             $customerData
         );
 

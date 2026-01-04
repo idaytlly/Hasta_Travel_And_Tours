@@ -46,9 +46,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/validate-voucher', [BookingController::class, 'validateVoucher'])->name('voucher.validate');
     
     // Profile
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
     
     // Bookings
     Route::get('/bookings/cars/{id}/book', [BookingController::class, 'create'])->name('bookings.create');
@@ -64,6 +66,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/payment/{reference}/summary', [BookingController::class, 'paymentSummary'])->name('payment.summary');
     Route::post('/payment/{reference}/process', [BookingController::class, 'processPayment'])->name('payment.process');
     Route::get('/payment/{reference}/receipt', [BookingController::class, 'receipt'])->name('payment.receipt');
+
+        /*
+    |--------------------------------------------------------------------------
+    | Profile Extra Pages (Notification & Bookings)
+    |--------------------------------------------------------------------------
+    */
+
+    // 🔔 Notifications (Customer)
+    Route::get('/profile/notifications', function () {
+        return view('profile.notifications');
+    })->name('profile.notifications');
+
+    // 🚗 Current Booking (Customer)
+    Route::get('/bookings/current', [BookingController::class, 'current'])
+        ->name('bookings.current');
+
+    // 🕘 Booking History (Customer)
+    Route::get('/bookings/history', [BookingController::class, 'history'])
+        ->name('bookings.history');
+
 });
 
 // Staff Routes - WITH ROLE CHECK

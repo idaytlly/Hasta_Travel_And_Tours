@@ -227,6 +227,34 @@ class BookingController extends Controller
 
         return view('bookings.my-bookings', compact('activeBookings', 'historyBookings'));
     }
+        /**
+     * Show current (active) bookings
+     */
+    public function current()
+    {
+        $bookings = Booking::with('car')
+            ->where('user_id', auth()->id())
+            ->whereIn('status', ['approved', 'ongoing'])
+            ->orderBy('pickup_date', 'asc')
+            ->get();
+
+        return view('bookings.current', compact('bookings'));
+    }
+
+    /**
+     * Show booking history (completed or cancelled)
+     */
+    public function history()
+    {
+        $bookings = Booking::with('car')
+            ->where('user_id', auth()->id())
+            ->whereIn('status', ['completed', 'cancelled'])
+            ->orderBy('pickup_date', 'desc')
+            ->get();
+
+        return view('bookings.history', compact('bookings'));
+    }
+
 
     /**
      * Customer cancels their booking
