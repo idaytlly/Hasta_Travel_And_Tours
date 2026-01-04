@@ -14,8 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -282,51 +280,12 @@ class BookingController extends Controller
             // Soft delete the booking
             $booking->delete();
 
-<<<<<<< Updated upstream
             // Notify staff about cancellation
             NotificationHelper::notifyAllStaff(
                 'booking',
                 'Booking Cancelled by Customer',
                 "{$booking->customer_name} cancelled booking #{$booking->booking_reference}. Reason: {$reason}",
                 route('staff.bookings.show', $booking->id),
-=======
-    $bookings = $query->orderBy('updated_at', 'desc')->get();
-
-    // Pass unread notifications to fix Blade error
-try {
-    $unreadNotifications = auth()->user()->unreadNotifications()->count();
-} catch (\Exception $e) {
-    $unreadNotifications = 0;
-}    return view('staff.manage-bookings', compact('bookings', 'unreadNotifications'));
-}
-
-
-    /**
-     * Staff: Process Cancellation from Modal
-     */
-    public function staffCancel(Request $request, $reference)
-    {
-        $booking = Booking::where('booking_reference', $reference)->firstOrFail();
-
-        if ($booking->car) {
-            $booking->car->update(['status' => 'available', 'is_available' => true]);
-        }
-
-        $reason = $request->reason;
-        if ($request->filled('remarks')) {
-            $reason .= ': ' . $request->remarks;
-        }
-
-        $booking->markAsCancelled($reason);
-
-        // 🔔 NOTIFICATION: Notify customer about staff cancellation
-        if ($booking->user) {
-            NotificationHelper::createBookingNotification(
-                $booking->user,
-                'Booking Cancelled',
-                "Your booking #{$booking->booking_reference} has been cancelled by staff. Reason: {$reason}",
-                route('bookings.show', $booking->booking_reference),
->>>>>>> Stashed changes
                 [
                     'booking_id' => $booking->id,
                     'booking_reference' => $booking->booking_reference,
