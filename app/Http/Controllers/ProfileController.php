@@ -7,7 +7,22 @@ use App\Models\Customer;  // make sure to import the Customer model
 
 class ProfileController extends Controller
 {
-        public function edit()
+    /**
+     * Show the profile view page
+     */
+    public function show()
+    {
+        $user = auth()->user()->load('customer');  // load customer relation
+        
+        return view('profile.show', [
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * Show the profile edit form
+     */
+    public function edit()
     {
         $user = auth()->user()->load('customer');  // load customer relation
         return view('profile.edit', [
@@ -15,6 +30,9 @@ class ProfileController extends Controller
         ]);
     }
 
+    /**
+     * Update the user's profile
+     */
     public function update(Request $request)
     {
         $user = auth()->user();
@@ -60,6 +78,5 @@ class ProfileController extends Controller
         $user->load('customer');
 
         return back()->with('success', 'Profile updated successfully');
-}
-
+    }
 }

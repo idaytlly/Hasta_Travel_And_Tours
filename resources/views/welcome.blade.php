@@ -787,7 +787,7 @@
 
                     @auth
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="{{ route('profile.edit') }}">Profile</a>
+                        <a class="nav-link nav-link-hasta" href="{{ route('profile.show') }}">Profile</a>
                     </li>
                     @endauth
                 </ul>
