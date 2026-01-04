@@ -54,19 +54,19 @@ class User extends Authenticatable
     // User can have one customer profile
     public function customer()
     {
-        return $this->hasOne(Customer::class, 'users_id', 'id');
+        return $this->hasOne(Customer::class, 'user_id', 'id');
     }
 
     // User can have one staff profile
     public function staff()
     {
-        return $this->hasOne(Staff::class, 'users_id', 'id');
+        return $this->hasOne(Staff::class, 'user_id', 'id');
     }
 
     // User can have one admin profile
     public function admin()
     {
-        return $this->hasOne(Admin::class, 'users_id', 'id');
+        return $this->hasOne(Admin::class, 'user_id', 'id');
     }
 
     // User can have many bookings
