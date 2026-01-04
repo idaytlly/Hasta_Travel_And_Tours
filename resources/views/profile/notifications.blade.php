@@ -396,154 +396,16 @@
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
 
-            <!-- NOTIFICATION BANNER -->
-            <div class="notification-banner mb-4" id="notificationBanner">
-                <div class="notification-content d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="notification-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-1 fw-bold">Booking Confirmed!</h6>
-                            <small>Your vehicle pickup is scheduled for Jan 15, 2026 at 10:00 AM</small>
-                        </div>
-                    </div>
-                    <button class="notification-close" onclick="document.getElementById('notificationBanner').style.display='none'">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
+    <h1>Notifications</h1>
+    <p>This page will show notifications for staff.</p>
 
-            <!-- PROFILE HEADER CARD -->
-            <div class="card shadow-lg border-0 rounded-4 mb-4">
-                <div class="card-header bg-white border-0 py-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h3 class="fw-bold mb-1" style="color:#e53935;">My Profile</h3>
-                            <p class="text-muted mb-0">View and manage your account information</p>
-                        </div>
-                        <a href="{{ route('profile.edit') }}" class="btn btn-login rounded-pill px-4">
-                            <i class="fas fa-edit me-2"></i>Edit Profile
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ACTION BUTTONS -->
-            <div class="card shadow-sm border-0 rounded-4 mb-4">
-                <div class="card-body p-3">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-
-                        <!-- Notification Button -->
-                        <a href="{{ route('profile.notifications') }}" class="btn btn-light position-relative px-4 rounded-pill">
-                            <i class="fas fa-bell me-2 text-danger"></i>
-                            Notifications
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                3
-                            </span>
-                        </a>
-
-                        <div class="d-flex gap-2">
-                            <!-- Current Booking -->
-                            <a href="{{ route('bookings.current') }}" class="btn btn-outline-danger rounded-pill px-4">
-                                <i class="fas fa-car-side me-2"></i>
-                                Current Booking
-                            </a>
-
-                            <!-- Booking History -->
-                            <a href="{{ route('bookings.history') }}" class="btn btn-outline-secondary rounded-pill px-4">
-                                <i class="fas fa-clock me-2"></i>
-                                Booking History
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- PERSONAL INFORMATION -->
-            <div class="card shadow-lg border-0 rounded-4 mb-4">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4" style="color:#e53935;">
-                        <i class="fas fa-user me-2"></i>Personal Information
-                    </h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="info-box">
-                                <div class="info-label">Full Name</div>
-                                <div class="info-value">Alia Athirah</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info-box">
-                                <div class="info-label">Identification Card</div>
-                                <div class="info-value">050924100200</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info-box">
-                                <div class="info-label">Email Address</div>
-                                <div class="info-value">aliaathirah005@gmail.com</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info-box">
-                                <div class="info-label">Phone Number</div>
-                                <div class="info-value">0107944614</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info-box">
-                                <div class="info-label">Driver License</div>
-                                <div class="info-value">11111</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ADDRESS INFORMATION -->
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-4" style="color:#e53935;">
-                        <i class="fas fa-map-marker-alt me-2"></i>Address Information
-                    </h5>
-                    <div class="row g-3">
-                        <div class="col-md-12">
-                            <div class="info-box">
-                                <div class="info-label">Street Address</div>
-                                <div class="info-value">841</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info-box">
-                                <div class="info-label">City</div>
-                                <div class="info-value">BAHAU</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info-box">
-                                <div class="info-label">State</div>
-                                <div class="info-value">NEGERI SEMBILAN</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="info-box">
-                                <div class="info-label">Postcode</div>
-                                <div class="info-value">72100</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        </div> 
     </div>
-</div>
+</div> 
+
 
 <!-- FOOTER -->
-<footer id="footer-hasta" class="footer-hasta">
+<footer id="footer-hasta" class="footer-hasta w-100">
     <div class="container">
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
@@ -596,7 +458,7 @@
                     <li><a href="#">Luxury</a></li>
                 </ul>
             </div>
-
+            
             <div class="col-lg-3 footer-links">
                 <h5>Newsletter</h5>
                 <p class="text-white-50 mb-3">Subscribe for updates and special offers</p>
@@ -655,3 +517,4 @@
 
 </body>
 </html>
+
