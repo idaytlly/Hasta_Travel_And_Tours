@@ -189,6 +189,10 @@ class BookingController extends Controller
                 ->with('success', 'Booking created successfully! Please complete payment to confirm.');
 
         } catch (\Exception $e) {
+             dd($e->getMessage());
+        }
+
+        /*catch (\Exception $e) {
             DB::rollBack();
             Log::error('Booking store error: ' . $e->getMessage(), [
                 'user_id' => auth()->id(),
@@ -197,8 +201,8 @@ class BookingController extends Controller
             
             return back()
                 ->with('error', 'Booking failed. Please try again or contact support.')
-                ->withInput();
-        }
+                ->withInput();*/
+        
     }
 
     /**
@@ -240,7 +244,7 @@ class BookingController extends Controller
     public function history()
     {
         $bookings = Booking::with('car')
-            ->where('user_id', auth()->id())
+            ->where('users_id', auth()->id())
             ->whereIn('status', ['completed', 'cancelled'])
             ->orderBy('pickup_date', 'desc')
             ->get();
@@ -252,53 +256,16 @@ class BookingController extends Controller
     /**
      * Customer cancels their booking
      */
-public function cancel(Request $request, $reference): RedirectResponse
+public function cancel($reference)
 {
+    DB::beginTransaction();
+
     try {
-        $booking = Booking::where('booking_reference', $reference)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
+        $booking = Booking::where('booking_reference', $reference)->firstOrFail();
 
-        // Prevent cancellation of completed bookings
-        if (in_array($booking->status, ['completed', 'active'])) {
-            return back()->with('error', 'You cannot cancel an active or completed booking.');
-        }
-
-        DB::beginTransaction();
-
-        $reason = $request->input('reason', 'Cancelled by customer');
-
-        // Update booking and car status
-        $booking->update([
-            'status' => 'cancelled',
-            'cancellation_reason' => $reason
-        ]);
-
-        if ($booking->car) {
-            $booking->car->update([
-                'status' => 'available',
-                'is_available' => true
-            ]);
-        }
-
-        // Soft delete the booking
-        $booking->delete();
-
-        DB::commit();
-
-            // Notify staff about cancellation
-            NotificationHelper::notifyAllStaff(
-                'booking',
-                'Booking Cancelled by Customer',
-                "{$booking->customer_name} cancelled booking #{$booking->booking_reference}. Reason: {$reason}",
-                route('staff.bookings.show', $booking->id),
-                [
-                    'booking_id' => $booking->id,
-                    'booking_reference' => $booking->booking_reference,
-                    'reason' => $reason
-                ]
-            );
-        }
+        // logic cancellation
+        $booking->status = 'cancelled';
+        $booking->save();
 
         DB::commit();
 
@@ -313,7 +280,7 @@ public function cancel(Request $request, $reference): RedirectResponse
         return back()->with('error', 'Failed to cancel booking. Please try again.');
     }
 }
-*/
+
 
     /**
      * Show booking details

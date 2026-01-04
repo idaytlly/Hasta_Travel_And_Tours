@@ -102,109 +102,68 @@ Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () 
     Route::patch('/bookings/{id}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'staffCancel'])->name('bookings.cancel');
     Route::post('/bookings/{id}/inspection', [BookingController::class, 'storeInspection'])->name('bookings.inspection.store');
-    
+ });  
     // Notifications
-    Route::prefix('notifications')->name('notifications.')->group(function () {
-        Route::get('/', function () {
-            try {
-                $user = auth()->user();
-                $filter = request('filter', 'all');
-                $query = $user->notifications();
-                
-                if ($filter === 'unread') {
-                    $query->whereNull('read_at');
-                } elseif ($filter === 'read') {
-                    $query->whereNotNull('read_at');
-                }
-                
-                $notifications = $query->latest()->paginate(20)->withQueryString();
-                $unreadCount = $user->unreadNotifications()->count();
-                
-                return view('staff.notifications.index', [
-                    'notifications' => $notifications,
-                    'unreadCount' => $unreadCount,
-                    'filter' => $filter
-                ]);
-            } catch (\Exception $e) {
-                \Log::error('Notifications error: ' . $e->getMessage());
-                $notifications = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
-                
-                return view('staff.notifications.index', [
-                    'notifications' => $notifications,
-                    'unreadCount' => 0,
-                    'filter' => 'all',
-                    'error' => 'Notifications system is not yet set up.'
-                ]);
+Route::prefix('notifications')->name('notifications.')->group(function () {
+
+    Route::get('/', function () {
+        try {
+            $user = auth()->user();
+            $filter = request('filter', 'all');
+            $query = $user->notifications();
+
+            if ($filter === 'unread') {
+                $query->whereNull('read_at');
+            } elseif ($filter === 'read') {
+                $query->whereNotNull('read_at');
             }
-        })->name('index');
-    
-        Route::post('/{id}/mark-as-read', function ($id) {
-            try {
-                $notification = auth()->user()->notifications()->findOrFail($id);
-                $notification->markAsRead();
-                return redirect()->back()->with('success', 'Notification marked as read');
-            } catch (\Exception $e) {
-                return redirect()->back()->with('error', 'Failed to mark notification as read');
-            }
-        })->name('mark-as-read');
-        
+
+            $notifications = $query->latest()->paginate(20)->withQueryString();
+            $unreadCount = $user->unreadNotifications()->count();
+
+        } catch (\Exception $e) {
+            \Log::error('Notifications error: ' . $e->getMessage());
+            $notifications = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
+            $unreadCount = 0;
+            $filter = 'all';
+        }
+
         return view('staff.notifications.index', [
             'notifications' => $notifications,
             'unreadCount' => $unreadCount,
-            'filter' => $filter  // Make sure this is always passed
+            'filter' => $filter
         ]);
     })->name('index');
-    
+
     Route::post('/{id}/mark-as-read', function ($id) {
         try {
             $notification = auth()->user()->notifications()->findOrFail($id);
             $notification->markAsRead();
-            
             return redirect()->back()->with('success', 'Notification marked as read');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to mark notification as read');
         }
     })->name('mark-as-read');
-    
-    
+
     Route::delete('/{id}', function ($id) {
         try {
             $notification = auth()->user()->notifications()->findOrFail($id);
             $notification->delete();
-            
             return redirect()->back()->with('success', 'Notification deleted');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete notification');
         }
     })->name('delete');
 
-    Route::get('/test-notification', function () {
-        // Send a test notification to the current user
-        auth()->user()->notify(new TestNotification());
-        
-        return redirect()->route('staff.notifications.index')
-            ->with('success', 'Test notification sent!');
-    })->name('test.notification')->middleware(['auth', 'staff.admin']);
-
-        Route::post('/mark-all-as-read', function () {
-            try {
-                auth()->user()->unreadNotifications->markAsRead();
-                return redirect()->back()->with('success', 'All notifications marked as read');
-            } catch (\Exception $e) {
-                return redirect()->back()->with('error', 'Failed to mark notifications as read');
-            }
-        })->name('mark-all-as-read');
-        
-        Route::delete('/{id}', function ($id) {
-            try {
-                $notification = auth()->user()->notifications()->findOrFail($id);
-                $notification->delete();
-                return redirect()->back()->with('success', 'Notification deleted');
-            } catch (\Exception $e) {
-                return redirect()->back()->with('error', 'Failed to delete notification');
-            }
-        })->name('delete');
-    });
+    Route::post('/mark-all-as-read', function () {
+        try {
+            auth()->user()->unreadNotifications->markAsRead();
+            return redirect()->back()->with('success', 'All notifications marked as read');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to mark notifications as read');
+        }
+    })->name('mark-all-as-read');
+});
 
     // Commissions
     Route::get('/commissions', [\App\Http\Controllers\Staff\CommissionController::class, 'index'])->name('commissions.index');
