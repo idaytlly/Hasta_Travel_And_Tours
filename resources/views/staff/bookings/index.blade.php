@@ -1,10 +1,6 @@
 @extends('layouts.staff')
-<<<<<<< Updated upstream
 
 @section('title', 'Booking Management')
-=======
-@@section('title', 'Booking Management')
->>>>>>> Stashed changes
 @section('page-title', 'Booking Management')
 
 @section('content')
@@ -584,26 +580,6 @@
 
 <div class="container-fluid py-4">
     
-    <!-- Page Header -->
-    <div class="page-header-card">
-        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
-            <div>
-                <h1 class="header-title">
-                    <i class="fas fa-calendar-check me-2"></i>Booking Management
-                </h1>
-                <p class="header-subtitle mb-0">Monitor and manage all rental reservations</p>
-            </div>
-            <div class="text-end">
-                <div style="font-size: 0.875rem; opacity: 0.9;">
-                    <i class="fas fa-clock me-1"></i>
-                    {{ now()->format('g:i A') }}
-                </div>
-                <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem;">
-                    {{ now()->format('l, M d, Y') }}
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Success Message -->
     @if(session('success'))
@@ -931,34 +907,6 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
             emptyState.remove();
         }
     }
-<<<<<<< Updated upstream
-=======
-
-visibleCount;
-
-    // Show/hide empty state
-    const bookingList = document.getElementById('bookingList');
-    if (visibleCount === 0 && searchTerm !== '') {
-        if (!document.getElementById('searchEmptyState')) {
-            const emptyState = document.createElement('div');
-            emptyState.id = 'searchEmptyState';
-            emptyState.className = 'empty-state';
-            emptyState.innerHTML = `
-                <div class="empty-icon">
-                    <i class="fas fa-search"></i>
-                </div>
-                <h3 class="empty-title">No Results Found</h3>
-                <p class="empty-text">Try adjusting your search terms</p>
-            `;
-            bookingList.appendChild(emptyState);
-        }
-    } else {
-        const emptyState = document.getElementById('searchEmptyState');
-        if (emptyState) {
-            emptyState.remove();
-        }
-    }
->>>>>>> Stashed changes
 });
 </script>
 @endsection

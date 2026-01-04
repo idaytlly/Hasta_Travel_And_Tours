@@ -212,24 +212,30 @@ class CarController extends Controller
 }
 
     /**
-     * Remove the specified car
+     * Delete car
      */
     public function destroy(Car $car)
     {
-        if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-            abort(403, 'Unauthorized');
+        try {
+            // Check if car has active bookings
+            if ($car->bookings()->whereIn('status', ['pending', 'confirmed', 'active'])->exists()) {
+                return back()->with('error', 'Cannot delete car with active bookings!');
+            }
+
+            // Delete image
+            if ($car->image) {
+                Storage::disk('public')->delete($car->image);
+            }
+
+            $carName = $car->name;
+            $car->delete();
+
+            return redirect()->route('staff.cars.index')  // Changed from staff.cars to staff.cars.index
+                ->with('success', "{$carName} deleted successfully!");
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to delete car: ' . $e->getMessage());
         }
-
-        // Delete image if exists
-        if ($car->image) {
-            Storage::disk('public')->delete($car->image);
-        }
-
-        $car->delete();
-
-        return redirect()
-            ->route('staff.cars')
-            ->with('success', 'Vehicle deleted successfully!');
     }
 
 }

@@ -10,8 +10,23 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\AdminController;
 
+// Home Route - Redirects based on authentication and role
+Route::get('/', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        
+        if ($user->usertype === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->usertype === 'staff') {
+            return redirect()->route('staff.dashboard');
+        }
+        return redirect()->route('customer.dashboard');
+    }
+    
+    return view('welcome');
+})->name('home');
+
 // Public Routes
-Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
 Route::get('/cars/{id}', [CarController::class, 'show'])->name('cars.show');
 Route::get('/contact-us', [ContactController::class, 'index'])->name('contactus');
@@ -26,24 +41,15 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisteredUserController::class, 'store']);
 });
 
-// Authenticated Routes
+// Authenticated Routes (Customer)
 Route::middleware('auth')->group(function () {
-    // FIXED: Dashboard redirects based on usertype
-    Route::get('/dashboard', function () {
-        $user = auth()->user();
-        
-        if ($user->usertype === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->usertype === 'staff') {
-            return redirect()->route('staff.dashboard');
-        } else {
-            // Show customer dashboard
-            return app(HomeController::class)->dashboard();
-        }
-    })->name('dashboard');
-    
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::post('/validate-voucher', [BookingController::class, 'validateVoucher'])->name('voucher.validate');
+    
+    // Customer Dashboard
+    Route::get('/customer/dashboard', function () {
+        return view('customer.dashboard');
+    })->name('customer.dashboard');
     
     // Profile
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -67,25 +73,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/payment/{reference}/process', [BookingController::class, 'processPayment'])->name('payment.process');
     Route::get('/payment/{reference}/receipt', [BookingController::class, 'receipt'])->name('payment.receipt');
 
-        /*
-    |--------------------------------------------------------------------------
-    | Profile Extra Pages (Notification & Bookings)
-    |--------------------------------------------------------------------------
-    */
-
-    // 🔔 Notifications (Customer)
-    Route::get('/profile/notifications', function () {
-        return view('profile.notifications');
-    })->name('profile.notifications');
-
-    // 🚗 Current Booking (Customer)
-    Route::get('/bookings/current', [BookingController::class, 'current'])
-        ->name('bookings.current');
-
-    // 🕘 Booking History (Customer)
-    Route::get('/bookings/history', [BookingController::class, 'history'])
-        ->name('bookings.history');
-
+    // Booking History
+    Route::get('/bookings/current', [BookingController::class, 'current'])->name('bookings.current');
+    Route::get('/bookings/history', [BookingController::class, 'history'])->name('bookings.history');
 });
 
     Route::prefix('staff')->middleware(['auth'])->group(function () {
@@ -93,13 +83,10 @@ Route::middleware('auth')->group(function () {
             ->name('staff.settings.profile');
     });
 // Staff Routes - WITH ROLE CHECK
-Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
-    // Check if user is staff or admin
-    /*if (auth()->check() && !in_array(auth()->user()->usertype, ['staff', 'admin'])) {
-        abort(403, 'Unauthorized access. Staff or admin privileges required.');
-    }*/
+Route::prefix('staff')->name('staff.')->middleware(['auth'])->group(function () {
     Route::view('/dashboard', 'staff.dashboard')->name('dashboard');
     
+    // Cars Management
     Route::get('/cars', [CarController::class, 'staffIndex'])->name('cars.index');
     Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
     Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
@@ -107,7 +94,7 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
     Route::put('/cars/{car}', [CarController::class, 'update'])->name('cars.update');
     Route::delete('/cars/{car}', [CarController::class, 'destroy'])->name('cars.destroy');
     
-     // Bookings - ALL with consistent naming
+    // Bookings Management
     Route::get('/bookings', [BookingController::class, 'staffIndex'])->name('bookings.index');
     //Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{id}', [BookingController::class, 'staffShow'])->name('bookings.show');
@@ -116,37 +103,50 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'staffCancel'])->name('bookings.cancel');
     Route::post('/bookings/{id}/inspection', [BookingController::class, 'storeInspection'])->name('bookings.inspection.store');
     
-
-   Route::prefix('notifications')->name('notifications.')->group(function () {
-    Route::get('/', function () {
-        $user = auth()->user();
-        
-        // Get filter with default value
-        $filter = request('filter', 'all');
-        
-        // Initialize with default values
-        $notifications = collect();
-        $unreadCount = 0;
-        
-        try {
-            // Try to get notifications if table exists
-            $query = $user->notifications();
-            
-            // Apply filter
-            if ($filter === 'unread') {
-                $query->whereNull('read_at');
-            } elseif ($filter === 'read') {
-                $query->whereNotNull('read_at');
+    // Notifications
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', function () {
+            try {
+                $user = auth()->user();
+                $filter = request('filter', 'all');
+                $query = $user->notifications();
+                
+                if ($filter === 'unread') {
+                    $query->whereNull('read_at');
+                } elseif ($filter === 'read') {
+                    $query->whereNotNull('read_at');
+                }
+                
+                $notifications = $query->latest()->paginate(20)->withQueryString();
+                $unreadCount = $user->unreadNotifications()->count();
+                
+                return view('staff.notifications.index', [
+                    'notifications' => $notifications,
+                    'unreadCount' => $unreadCount,
+                    'filter' => $filter
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Notifications error: ' . $e->getMessage());
+                $notifications = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
+                
+                return view('staff.notifications.index', [
+                    'notifications' => $notifications,
+                    'unreadCount' => 0,
+                    'filter' => 'all',
+                    'error' => 'Notifications system is not yet set up.'
+                ]);
             }
-            
-            $notifications = $query->latest()->paginate(20);
-            $unreadCount = $user->unreadNotifications()->count();
-            
-        } catch (\Exception $e) {
-            // If notifications table doesn't exist, use empty paginator
-            $notifications = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
-            \Log::error('Notifications error: ' . $e->getMessage());
-        }
+        })->name('index');
+    
+        Route::post('/{id}/mark-as-read', function ($id) {
+            try {
+                $notification = auth()->user()->notifications()->findOrFail($id);
+                $notification->markAsRead();
+                return redirect()->back()->with('success', 'Notification marked as read');
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Failed to mark notification as read');
+            }
+        })->name('mark-as-read');
         
         return view('staff.notifications.index', [
             'notifications' => $notifications,
@@ -166,15 +166,6 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
         }
     })->name('mark-as-read');
     
-    Route::post('/mark-all-as-read', function () {
-        try {
-            auth()->user()->unreadNotifications->markAsRead();
-            
-            return redirect()->back()->with('success', 'All notifications marked as read');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to mark notifications as read');
-        }
-    })->name('mark-all-as-read');
     
     Route::delete('/{id}', function ($id) {
         try {
@@ -194,90 +185,83 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
         return redirect()->route('staff.notifications.index')
             ->with('success', 'Test notification sent!');
     })->name('test.notification')->middleware(['auth', 'staff.admin']);
-});
 
-    Route::get('/test-notification', function () {
-    // Send a test notification to the current user
-    auth()->user()->notify(new TestNotification());
-    
-    return redirect()->route('staff.notifications.index')
-        ->with('success', 'Test notification sent!');
-})->name('test.notification')->middleware(['auth', 'staff.admin']);
-});
-       // Settings routes
+        Route::post('/mark-all-as-read', function () {
+            try {
+                auth()->user()->unreadNotifications->markAsRead();
+                return redirect()->back()->with('success', 'All notifications marked as read');
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Failed to mark notifications as read');
+            }
+        })->name('mark-all-as-read');
+        
+        Route::delete('/{id}', function ($id) {
+            try {
+                $notification = auth()->user()->notifications()->findOrFail($id);
+                $notification->delete();
+                return redirect()->back()->with('success', 'Notification deleted');
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Failed to delete notification');
+            }
+        })->name('delete');
+    });
+
+    // Commissions
+    Route::get('/commissions', [\App\Http\Controllers\Staff\CommissionController::class, 'index'])->name('commissions.index');
+    Route::get('/commissions/create', [\App\Http\Controllers\Staff\CommissionController::class, 'create'])->name('commissions.create');
+    Route::post('/commissions', [\App\Http\Controllers\Staff\CommissionController::class, 'store'])->name('commissions.store');
+
+    // Settings
     Route::prefix('settings')->name('settings.')->group(function () {
-        // View profile
         Route::get('/profile', function () {
-            $user = auth()->user();
-            return view('staff.settings.profile', ['user' => $user]);
+            return view('staff.settings.profile', ['user' => auth()->user()]);
         })->name('profile');
         
-        // Update profile
         Route::put('/profile', function () {
             $user = auth()->user();
-            
             $validated = request()->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'phone' => 'nullable|string|max:20',
                 'address' => 'nullable|string|max:255',
             ]);
-            
             $user->update($validated);
-            
-            return redirect()->route('staff.settings.profile')
-                ->with('success', 'Profile updated successfully!');
+            return redirect()->route('staff.settings.profile')->with('success', 'Profile updated successfully!');
         })->name('updateProfile');
         
-        // Update password
         Route::put('/password', function () {
             $user = auth()->user();
-            
             $validated = request()->validate([
                 'current_password' => 'required',
                 'password' => 'required|string|min:8|confirmed',
             ]);
             
-            // Verify current password
             if (!\Hash::check($validated['current_password'], $user->password)) {
                 return back()->withErrors(['current_password' => 'Current password is incorrect.']);
             }
             
-            // Update password
-            $user->update([
-                'password' => \Hash::make($validated['password'])
-            ]);
-            
-            return redirect()->route('staff.settings.profile')
-                ->with('success', 'Password updated successfully!');
+            $user->update(['password' => \Hash::make($validated['password'])]);
+            return redirect()->route('staff.settings.profile')->with('success', 'Password updated successfully!');
         })->name('updatePassword');
-        
-        // Add this for dashboard data endpoints
-        Route::get('/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboard.data');
-        Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData'])->name('dashboard.chart-data');
-    }); // <-- This closes the settings group
+    });
     
-    // REPORTS ROUTE - Add it HERE, outside settings but inside staff
+    // Reports
     Route::get('/reports', function () {
         return view('staff.reports.index');
     })->name('reports.index');
-    
 
 
-// Admin Routes - WITH ROLE CHECK
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-    // Check if user is admin
-    if (auth()->check() && auth()->user()->usertype !== 'admin') {
-        abort(403, 'Unauthorized access. Admin privileges required.');
-    }
-    
+// Admin Routes
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
+    // Bookings
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('bookings.index');
     Route::get('/bookings/{id}', [AdminController::class, 'showBooking'])->name('bookings.show');
     Route::patch('/bookings/{id}/status', [AdminController::class, 'updateStatus'])->name('bookings.updateStatus');
     Route::delete('/bookings/{id}', [AdminController::class, 'deleteBooking'])->name('bookings.delete');
     
+    // Cars
     Route::get('/cars', [AdminController::class, 'cars'])->name('cars.index');
     Route::get('/cars/create', [AdminController::class, 'createCar'])->name('cars.create');
     Route::post('/cars', [AdminController::class, 'storeCar'])->name('cars.store');
@@ -285,9 +269,16 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::put('/cars/{id}', [AdminController::class, 'updateCar'])->name('cars.update');
     Route::delete('/cars/{id}', [AdminController::class, 'destroyCar'])->name('cars.destroy');
     
+    // Users
     Route::get('/users', [AdminController::class, 'users'])->name('users.index');
     Route::get('/users/{id}', [AdminController::class, 'showUser'])->name('users.show');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
     
+    // Commissions
+    Route::get('/commissions', [\App\Http\Controllers\Admin\CommissionController::class, 'index'])->name('commissions.index');
+    Route::post('/commissions/{id}/approve', [\App\Http\Controllers\Admin\CommissionController::class, 'approve'])->name('commissions.approve');
+    Route::post('/commissions/{id}/reject', [\App\Http\Controllers\Admin\CommissionController::class, 'reject'])->name('commissions.reject');
+
+    // Reports
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
 });

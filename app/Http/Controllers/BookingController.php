@@ -14,8 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -288,60 +286,12 @@ public function cancel(Request $request, $reference): RedirectResponse
 
         DB::commit();
 
-        // Get bookings list safely (replace $query with proper query)
-        $bookings = Booking::where('user_id', auth()->id())
-            ->orderBy('updated_at', 'desc')
-            ->get();
-
-        // Count unread notifications safely
-        try {
-            $unreadNotifications = auth()->user()->unreadNotifications()->count();
-        } catch (\Exception $e) {
-            $unreadNotifications = 0;
-        }
-
-        return view('staff.manage-bookings', compact('bookings', 'unreadNotifications'));
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Booking cancellation error: ' . $e->getMessage());
-        return back()->with('error', 'Failed to cancel booking. Please try again.');
-    }
-}
-
-
- /**
- * Staff: Process Cancellation from Modal
- */
-/*
-public function staffCancel(Request $request, $reference)
-{
-    try {
-        DB::beginTransaction();
-
-        $booking = Booking::where('booking_reference', $reference)->firstOrFail();
-
-        if ($booking->car) {
-            $booking->car->update([
-                'status' => 'available',
-                'is_available' => true
-            ]);
-        }
-
-        $reason = $request->reason;
-        if ($request->filled('remarks')) {
-            $reason .= ': ' . $request->remarks;
-        }
-
-        $booking->markAsCancelled($reason);
-
-        // 🔔 Notify customer
-        if ($booking->user) {
-            NotificationHelper::createBookingNotification(
-                $booking->user,
-                'Booking Cancelled',
-                "Your booking #{$booking->booking_reference} has been cancelled by staff. Reason: {$reason}",
-                route('bookings.show', $booking->booking_reference),
+            // Notify staff about cancellation
+            NotificationHelper::notifyAllStaff(
+                'booking',
+                'Booking Cancelled by Customer',
+                "{$booking->customer_name} cancelled booking #{$booking->booking_reference}. Reason: {$reason}",
+                route('staff.bookings.show', $booking->id),
                 [
                     'booking_id' => $booking->id,
                     'booking_reference' => $booking->booking_reference,

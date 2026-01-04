@@ -15,27 +15,30 @@ class Car extends Model
     protected $table = 'cars';
 
     protected $fillable = [
-        'name',                    // Full car name (e.g., "Toyota Vios 1.5G")
-        'brand',                   // Car brand (e.g., "Toyota")
-        'model',                   // Car model (e.g., "Vios")
-        'year',                    // Manufacturing year
-        'registration_number',     // License plate number
-        'category',                // Car category (Sedan, SUV, etc.)
-        'color',                   // Car color
-        'transmission',            // manual/automatic
-        'fuel_type',               // petrol/diesel/hybrid/electric
-        'seats',                   // Number of seats
-        'passengers',              // Max passengers (usually same as seats)
-        'air_conditioner',         // Has AC or not
-        'daily_rate',              // Daily rental rate
-        'mileage',                 // Current mileage/odometer
-        'status',                  // available/rented/maintenance/booked
-        'is_available',            // Quick availability check
-        'image',                   // Car image path
-        'description',             // Car description
-        'features',                // Additional features (JSON or text)
-        'maintenance_records',     // Maintenance history (JSON)
-        'last_maintenance_date',   // Last maintenance date
+        'name',
+        'brand',
+        'model',
+        'year',
+        'registration_number',
+        'license_plate',           // ADD THIS
+        'vehicle_type',            // ADD THIS
+        'engine_capacity',         // ADD THIS
+        'category',
+        'color',
+        'transmission',
+        'fuel_type',
+        'seats',
+        'passengers',
+        'air_conditioner',
+        'daily_rate',
+        'mileage',
+        'status',
+        'is_available',
+        'image',
+        'description',
+        'features',
+        'maintenance_records',
+        'last_maintenance_date',
     ];
 
     protected $casts = [
@@ -44,6 +47,7 @@ class Car extends Model
         'year' => 'integer',
         'seats' => 'integer',
         'passengers' => 'integer',
+        'engine_capacity' => 'integer',  // ADD THIS
         'daily_rate' => 'decimal:2',
         'mileage' => 'integer',
         'maintenance_records' => 'array',
@@ -54,7 +58,6 @@ class Car extends Model
     ];
 
     protected $appends = ['formatted_daily_rate'];
-
     /*
     |--------------------------------------------------------------------------
     | Relationships
