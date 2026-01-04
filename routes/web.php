@@ -105,7 +105,6 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
     
      // Bookings - ALL with consistent naming
     Route::get('/bookings', [BookingController::class, 'staffIndex'])->name('bookings.index');
-    Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{id}', [BookingController::class, 'staffShow'])->name('bookings.show');
     Route::patch('/bookings/{id}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
