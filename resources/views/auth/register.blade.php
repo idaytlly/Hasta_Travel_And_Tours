@@ -193,9 +193,9 @@
 
         <div class="form-group">
             <label>Phone Number</label>
-            <input type="text" name="phone"
+            <input type="text" name="phone_no"
                    placeholder="e.g. 01XXXXXXXX"
-                   value="{{ old('phone') }}" required>
+                   value="{{ old('phone_no') }}" required>
         </div>
 
         <div class="form-group">

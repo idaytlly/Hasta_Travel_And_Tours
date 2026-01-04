@@ -17,7 +17,7 @@ class Customer extends Model
         'name',
         'ic',
         'email',
-        'phone',
+        'phone_no  ',
         'address',
         'licenceNo',
     ];

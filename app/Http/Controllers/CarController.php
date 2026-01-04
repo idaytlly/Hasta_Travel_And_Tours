@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Car;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
@@ -14,7 +14,7 @@ class CarController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Car::query();
+        $query = Vehicle::query();
 
         // Filter by brand if selected
         if ($request->filled('brand')) {
@@ -22,13 +22,13 @@ class CarController extends Controller
         }
 
         // Filter by category/type if selected
-        if ($request->filled('carType')) {
-            $query->where('carType', $request->carType);
+        if ($request->filled('vehicle_type')) {
+            $query->where('vehicle_type', $request->carType);
         }
 
-        $cars = $query->get();
+        $vehicle = $query->get();
 
-        return view('cars.index', compact('cars'));
+        return view('cars.index', compact('vehicle'));
     }
 
     /**
@@ -36,7 +36,7 @@ class CarController extends Controller
      */
     public function staffIndex(Request $request): View
     {
-        $query = Car::query();
+        $query = Vehicle::query();
 
         // Filter by brand if selected
         if ($request->filled('brand')) {
@@ -44,29 +44,29 @@ class CarController extends Controller
         }
 
         // Filter by type if selected (matches the 'type' parameter from your routes)
-        if ($request->filled('type')) {
-            $query->where('carType', $request->type);
+        if ($request->filled('vehicle_type')) {
+            $query->where('vehicle_type', $request->type);
         }
 
-        $cars = $query->latest()->get();
+        $vehicle = $query->latest()->get();
 
-        return view('staff.cars.index', compact('cars'));
+        return view('staff.cars.index', compact('vehicle'));
     }
 
     /**
      * Show car details
      */
-    public function show($id): View
+    public function show($plate_no): View
     {
-        $car = Car::findOrFail($id);
+        $vehicle = Vehicle::findOrFail($plate_no);
         
         // Get 3 other cars of the same brand, excluding current one
-        $otherCars = Car::where('brand', $car->brand)
-                        ->where('id', '!=', $id)
+        $otherCars = Vehicle::where('brand', $vehicle->brand)
+                        ->where('plate_no', '!=', $plate_no)
                         ->limit(3)
                         ->get();
 
-        return view('cars.show', compact('car', 'otherCars'));
+        return view('cars.show', compact('vehicle', 'otherCars'));
     }
 
     /**
@@ -112,7 +112,7 @@ class CarController extends Controller
         // Set default for air_conditioner if not present
         $validated['air_conditioner'] = $request->has('air_conditioner') ? true : false;
 
-        Car::create($validated);
+        Vehicle::create($validated);
 
         return redirect()
             ->route('staff.cars')
@@ -122,7 +122,7 @@ class CarController extends Controller
     /**
      * Show the form for editing the car
      */
-    public function edit(Car $car): View
+    public function edit(Vehicle $vehicle): View
     {
         if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
             abort(403, 'Unauthorized');
@@ -157,16 +157,16 @@ class CarController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             // Delete old image if exists
-            if ($car->image) {
-                Storage::disk('public')->delete($car->image);
+            if ($vehicle->image) {
+                Storage::disk('public')->delete($vehicle->image);
             }
-            $validated['image'] = $request->file('image')->store('cars', 'public');
+            $validated['image'] = $request->file('image')->store('vehicle', 'public');
         }
 
         // Set default for air_conditioner if not present
         $validated['air_conditioner'] = $request->has('air_conditioner') ? true : false;
 
-        $car->update($validated);
+        $vehicle->update($validated);
 
         return redirect()
             ->route('staff.cars')
@@ -176,18 +176,18 @@ class CarController extends Controller
     /**
      * Remove the specified car
      */
-    public function destroy(Car $car)
+    public function destroy(Vehicle $vehicle)
     {
         if (!in_array(auth()->user()->usertype, ['staff', 'admin'])) {
             abort(403, 'Unauthorized');
         }
 
         // Delete image if exists
-        if ($car->image) {
-            Storage::disk('public')->delete($car->image);
+        if ($vehicle->image) {
+            Storage::disk('public')->delete($vehicle->image);
         }
 
-        $car->delete();
+        $vehicle->delete();
 
         return redirect()
             ->route('staff.cars')

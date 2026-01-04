@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Car extends Model
+class Vehicle extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'cars';
+    protected $table = 'vehicle';
 
     protected $fillable = [
         'name',                    // Full car name (e.g., "Toyota Vios 1.5G")

@@ -9,8 +9,10 @@ class Voucher extends Model
 {
     use HasFactory;
 
+    protected $table = 'voucher';
+
     protected $fillable = [
-        'code',
+        'voucherCode',
         'discount_percentage',
         'is_active',
         'valid_from',

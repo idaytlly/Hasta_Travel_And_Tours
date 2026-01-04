@@ -63,7 +63,7 @@ class ProfileController extends Controller
             'name' => $request->name,
             'ic' => $request->ic,
             'email' => $request->email,
-            'phone' => $request->phone,
+            'phone_no' => $request->phone_no,
             'address' => trim("{$request->street}, {$request->city}, {$request->state}, {$request->postcode}", ", "),
             'licenceNo' => $request->license_no,
         ];

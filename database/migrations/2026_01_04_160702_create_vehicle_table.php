@@ -21,6 +21,7 @@ return new class extends Migration
             $table->double('daily_rate')->nullable();
             $table->integer('mileage')->nullable();
             $table->string('image')->nullable();
+            $table->string('fuel_type')->nullable();
             $table->string('air_conditioner')->nullable();
             $table->integer('passengers')->nullable();
             $table->integer('seats')->nullable();
@@ -41,6 +42,7 @@ return new class extends Migration
             $table->foreign('inspection_id')->references('inspection_id')->on('inspections');
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

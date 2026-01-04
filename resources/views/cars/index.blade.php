@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HASTA - Our Vehicles</title>
+    <title>HASTA - Our vehicles</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -317,7 +317,7 @@
                         <a class="nav-link nav-link-hasta " href="{{ route('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">Vehicles</a>
+                        <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">vehicles</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
@@ -384,7 +384,7 @@
 <div class="container mb-4 text-center">
     <div class="btn-group" role="group">
         <a href="{{ route('cars.index') }}" class="btn btn-category {{ is_null($currentCarType) ? 'active' : '' }}">
-            All Vehicles <i class="fas fa-car"></i>
+            All vehicles <i class="fas fa-car"></i>
         </a>
         <a href="{{ route('cars.index', ['carType' => 'Sedan']) }}" class="btn btn-category {{ $currentCarType === 'Sedan' ? 'active' : '' }}">
             Sedan
@@ -405,25 +405,25 @@
     <!-- CAR CARDS -->
     <div class="container mb-5">
         <div class="row g-4">
-            @forelse($cars as $car)
+            @forelse($vehicle as $vehicle)
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="car-card overflow-hidden">
                     <div class="bg-light text-center p-3">
-                        <img src="{{ $car->image }}" alt="{{ $car->brand }} {{ $car->model }}" class="img-fluid">
+                        <img src="{{ $vehicle->image }}" alt="{{ $vehicle->brand }} {{ $vehicle->model }}" class="img-fluid">
                     </div>
                     <div class="p-4">
-                        <h5 class="fw-bold">{{ $car->brand }} {{ $car->model }} {{ $car->year }}</h5>
-                        <p class="text-muted">{{ $car->transmission }}</p>
+                        <h5 class="fw-bold">{{ $vehicle->brand }} {{ $vehicle->model }} {{ $vehicle->year }}</h5>
+                        <p class="text-muted">{{ $vehicle->transmission }}</p>
                         <div class="d-flex align-items-baseline mb-3">
-                            <span class="text-danger fw-bold fs-4">RM{{ number_format($car->daily_rate, 0) }}</span>
+                            <span class="text-danger fw-bold fs-4">RM{{ number_format($vehicle->daily_rate, 0) }}</span>
                             <span class="text-muted ms-2">per day</span>
                         </div>
                         <div class="mb-3 text-muted small d-flex flex-wrap gap-2">
-                            <span class="badge bg-light text-dark"><i class="fas fa-cog text-warning"></i> {{ $car->transmission }}</span>
-                            <span class="badge bg-light text-dark"><i class="fas fa-gas-pump text-warning"></i> {{ $car->fuel_type }}</span>
-                            <span class="badge bg-light text-dark"><i class="fas fa-snowflake text-warning"></i> {{ $car->air_conditioner ? 'AC' : 'No AC' }}</span>
+                            <span class="badge bg-light text-dark"><i class="fas fa-cog text-warning"></i> {{ $vehicle->transmission }}</span>
+                            <span class="badge bg-light text-dark"><i class="fas fa-gas-pump text-warning"></i> {{ $vehicle->fuel_type }}</span>
+                            <span class="badge bg-light text-dark"><i class="fas fa-snowflake text-warning"></i> {{ $vehicle->air_conditioner ? 'AC' : 'No AC' }}</span>
                         </div>
-                        <a href="{{ route('cars.show', $car->id) }}" class="btn btn-warning w-100 text-white fw-bold">View Details</a>
+                        <a href="{{ route('cars.show', $vehicle->id) }}" class="btn btn-warning w-100 text-white fw-bold">View Details</a>
                     </div>
                 </div>
             </div>
@@ -471,7 +471,7 @@
                     <h5>Quick Links</h5>
                     <ul>
                         <li><a href="{{ route('home') }}">Home</a></li>
-                        <li><a href="{{ route('cars.index') }}">Vehicles</a></li>
+                        <li><a href="{{ route('cars.index') }}">vehicles</a></li>
                         <li><a href="#">About Us</a></li>
                         <li><a href="#">Contact</a></li>
                         <li><a href="#">FAQ</a></li>
@@ -479,7 +479,7 @@
                 </div>
 
                 <div class="col-6 col-lg-2 footer-links">
-                    <h5>Vehicles</h5>
+                    <h5>vehicles</h5>
                     <ul>
                         <li><a href="#">Sedan</a></li>
                         <li><a href="#">Hatchback</a></li>

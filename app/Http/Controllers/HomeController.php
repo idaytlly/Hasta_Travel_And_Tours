@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Car;
+use App\Models\Vehicle;
 
 class HomeController extends Controller
 {
@@ -11,10 +11,10 @@ class HomeController extends Controller
     public function index()
     {
         // Fetch cars from database
-        $cars = Car::all();
+        $vehicle = Vehicle::all();
 
         // Return the welcome view exactly as it is, no layout changes
-        return view('welcome', compact('cars'));
+        return view('welcome', compact('vehicle'));
     }
 
     // Dashboard page - redirect based on user type
