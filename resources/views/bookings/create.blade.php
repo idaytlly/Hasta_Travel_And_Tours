@@ -1,19 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Book {{ $car->full_name }} - HASTA</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Hasta Travel & Tours - Car Details</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        body { font-family: Arial, sans-serif; background: #f5f5f5; }
-        .header { background: #d84444; padding: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .header-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { background: white; color: #d84444; padding: 8px 20px; font-weight: 700; font-size: 1.5rem; border-radius: 4px; letter-spacing: 2px; }
+        :root {
+            --primary: #e53935;
+            --primary-dark: #c62828;
+            --primary-light: #ffebee;
+            --dark: #1a1a2e;
+            --text-dark: #333;
+            --text-muted: #6c757d;
+            --bg-light: #f8f9fa;
+            --white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+            padding-top: 100px;
+        }
+
+        /* NAVBAR */
+        .navbar-hasta {
+            background: var(--white);
+            min-height: 70px;
+            max-height: 80px;
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .logo-image {
+            height: 120px;
+            width: 120px;
+            max-width: 150px;
+            object-fit: contain;
+        }
+
+        .nav-link-hasta {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            padding: 10px 20px !important;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link-hasta::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 25px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-link-hasta:hover::after {
+            opacity: 0.1;
+        }
+
+        .nav-link-hasta:hover {
+            color: var(--primary) !important;
+        }
+
+        .nav-link-hasta.active {
+            color: var(--white) !important;
+        }
+
+        .nav-link-hasta.active::after {
+            opacity: 1;
+        }
+
+       
         .main-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; background: white; min-height: calc(100vh - 180px); }
         .page-header { display: flex; align-items: center; padding: 30px 0 20px; gap: 15px; }
         .back-btn { width: 50px; height: 50px; background: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; }
@@ -64,31 +148,173 @@
         .alert { padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
         .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        
-        .footer { background: #d84444; color: white; padding: 40px 0; margin-top: 60px; }
-        .footer-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
-        .footer-top { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 40px; }
-        .footer-item { display: flex; gap: 15px; }
-        .footer-icon { width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-        .footer-title { font-weight: 700; margin-bottom: 8px; }
-        .footer-text { font-size: 14px; line-height: 1.6; }
-        .footer-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.2); }
-        .footer-logo { font-size: 32px; font-weight: 700; margin-bottom: 20px; }
-        .social-icons { display: flex; gap: 15px; }
-        .social-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; }
-        .social-icon:hover { background: rgba(255,255,255,0.2); }
-        .footer-section-title { font-weight: 700; margin-bottom: 15px; font-size: 18px; }
-        .footer-links { display: flex; flex-direction: column; gap: 10px; }
-        .footer-link { color: white; text-decoration: none; font-size: 14px; transition: all 0.3s; }
-        .footer-link:hover { padding-left: 5px; }
+
+                /* FOOTER */
+        .footer-hasta {
+            background: var(--dark);
+            color: var(--white);
+            padding: 80px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-brand {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+
+        .footer-text {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 25px;
+            max-width: 300px;
+        }
+
+        .footer-contact {
+            margin-bottom: 25px;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .footer-contact-item i {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-links h5 {
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links ul li a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+        }
+
+        @media (max-width: 768px) {
+            .car-title {
+                font-size: 1.5rem;
+            }
+            
+            .car-price {
+                font-size: 2rem;
+            }
+            
+            .specs-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-container">
-            <div class="logo">HASTA</div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-hasta">
+    <div class="container">
+        <a class="logo-text" href="{{ route('home') }}">
+            <img src="{{ asset('images/hasta logo.png') }}" alt="HASTA Logo" class="logo-image">
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('home') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">Vehicles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
+                </li>
+                @auth
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('profile.show') }}">Profile</a>
+                </li>
+                @endauth
+            </ul>
+
+            <div class="d-flex align-items-center gap-3">
+            @guest
+                <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px;">Login</a>
+                <a href="{{ route('register') }}" class="btn" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">Register</a>
+            @else
+                <span class="me-2">Welcome, <strong>{{ Auth::user()->name }}</strong></span>
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </button>
+                </form>
+            @endguest
+            </div>
         </div>
     </div>
+</nav>
 
     <div class="main-container">
         <div class="page-header">
@@ -415,774 +641,116 @@
         calculatePrices();
     </script>
 
-    <!-- Footer -->
-    <div class="footer">
-        <div class="footer-container">
-            <div class="footer-top">
-                <div class="footer-item">
-                    <div class="footer-icon">
+    <!-- FOOTER -->
+<footer id="footer-hasta" class="footer-hasta">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="footer-brand">HASTA</div>
+                <p class="footer-text">
+                    Your trusted partner for car rental services in Malaysia. Quality vehicles, affordable prices.
+                </p>
+                
+                <div class="footer-contact">
+                    <div class="footer-contact-item">
                         <i class="fas fa-map-marker-alt"></i>
+                        <span>Student Mall UTM, Skudai, 81300, Johor Bahru</span>
                     </div>
-                    <div>
-                        <div class="footer-title">Address</div>
-                        <div class="footer-text">
-                            Student Mall UTM<br>
-                            Skudai, 81300, Johor Bahru
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-item">
-                    <div class="footer-icon">
+                    <div class="footer-contact-item">
                         <i class="fas fa-envelope"></i>
+                        <span>hastatraveltours@gmail.com</span>
                     </div>
-                    <div>
-                        <div class="footer-title">Email</div>
-                        <div class="footer-text">hastatravel@gmail.com</div>
-                    </div>
-                </div>
-                <div class="footer-item">
-                    <div class="footer-icon">
+                    <div class="footer-contact-item">
                         <i class="fas fa-phone"></i>
+                        <span>011-1090 0700</span>
                     </div>
-                    <div>
-                        <div class="footer-title">Phone</div>
-                        <div class="footer-text">011-1090 0700</div>
-                    </div>
+                </div>
+
+                <div class="social-links">
+                    <a href="http://wasap.my/601110900700/nakkeretasewa"><i class="fab fa-whatsapp"></i></a>
+                    <a href="http://t.me/infoHastaCarRentalUTM"><i class="fab fa-telegram"></i></a>
+                    <a href="http://youtube.com/watch?v=41Vedbjxn_s"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/hastatraveltours?igsh=MXR0ZjYyM3c3Znpsdg=="><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
 
-            <div class="footer-bottom">
-                <div>
-                    <div class="footer-logo">HASTA</div>
-                    <div class="social-icons">
-                        <div class="social-icon"><i class="fab fa-facebook-f"></i></div>
-                        <div class="social-icon"><i class="fab fa-instagram"></i></div>
-                        <div class="social-icon"><i class="fab fa-twitter"></i></div>
-                        <div class="social-icon"><i class="fab fa-youtube"></i></div>
-                    </div>
-                </div>
-                <div>
-                    <div class="footer-section-title">Useful Links</div>
-                    <div class="footer-links">
-                        <a href="#" class="footer-link">About us</a>
-                        <a href="#" class="footer-link">Contact us</a>
-                        <a href="#" class="footer-link">Gallery</a>
-                        <a href="#" class="footer-link">Blog</a>
-                        <a href="#" class="footer-link">F.A.Q</a>
-                    </div>
-                </div>
-                <div>
-                    <div class="footer-section-title">Vehicles</div>
-                    <div class="footer-links">
-                        <a href="#" class="footer-link">Sedan</a>
-                        <a href="#" class="footer-link">Hatchback</a>
-                        <a href="#" class="footer-link">MPV</a>
-                        <a href="#" class="footer-link">Minivan</a>
-                        <a href="#" class="footer-link">SUV</a>
-                    </div>
-                </div>
+            <div class="col-6 col-lg-2 offset-lg-1 footer-links">
+                <h5>Quick Links</h5>
+                <ul>
+                    <li><a href="{{ route('home') }}">Home</a></li>
+                    <li><a href="{{ route('cars.index') }}">Vehicles</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="{{ route('contactus') }}">Contact</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div class="col-6 col-lg-2 footer-links">
+                <h5>Vehicles</h5>
+                <ul>
+                    <li><a href="#">Sedan</a></li>
+                    <li><a href="#">Hatchback</a></li>
+                    <li><a href="#">MPV</a></li>
+                    <li><a href="#">SUV</a></li>
+                    <li><a href="#">Luxury</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 footer-links">
+                <h5>Newsletter</h5>
+                <p class="text-white-50 mb-3">Subscribe for updates and special offers</p>
+                <form class="d-flex gap-2">
+                    <input type="email" class="form-control" placeholder="Your email" style="border-radius: 10px;">
+                    <button type="submit" class="btn" style="background: var(--primary); color: white; border-radius: 10px;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
             </div>
         </div>
+
+        <div class="footer-bottom">
+            <p class="mb-0">&copy; {{ date('Y') }} Hasta Travel & Tours. All Rights Reserved.</p>
+        </div>
     </div>
-=======
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
-        
-        /* Header */
-        .header { background: #d84444; padding: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .header-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { background: white; color: #d84444; padding: 8px 20px; font-weight: 700; font-size: 1.5rem; border-radius: 4px; letter-spacing: 2px; }
-        .nav-icons { display: flex; gap: 8px; align-items: center; }
-        .nav-icon { background: rgba(255,255,255,0.15); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-        .nav-icon.active { background: rgba(255,255,255,0.3); }
-        .nav-icon i { color: white; font-size: 18px; }
-        
-        /* Main Content */
-        .main-container { max-width: 1400px; margin: 20px auto; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); min-height: calc(100vh - 200px); }
-        .page-header { display: flex; align-items: center; padding-bottom: 30px; gap: 20px; border-bottom: 1px solid #eee; margin-bottom: 30px; }
-        .back-btn { width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.3s; }
-        .back-btn:hover { background: #d84444; transform: translateX(-3px); }
-        .back-btn i { color: white; }
-        .page-title { font-size: 28px; font-weight: 700; }
+</footer>
 
-        /* Form Layout */
-        .form-layout { display: grid; grid-template-columns: 450px 1fr; gap: 60px; }
-        .car-info { position: sticky; top: 20px; }
-        .car-image { width: 100%; border-radius: 12px; margin-bottom: 25px; object-fit: cover; }
-        .car-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .spec-item { display: flex; align-items: center; gap: 10px; font-size: 14px; background: #f9f9f9; padding: 12px; border-radius: 8px; }
-        
-        /* Form Styling */
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #555; }
-        .form-control { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .form-control:focus { outline: none; border-color: #d84444; box-shadow: 0 0 0 3px rgba(216, 68, 68, 0.1); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        
-        .deposit-box { background: #fff4f4; border: 1px dashed #d84444; border-radius: 8px; padding: 15px; margin: 25px 0; color: #d84444; font-weight: 600; }
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-        /* Final section */
-        .final-section { margin-top: 30px; padding-top: 30px; border-top: 2px solid #f5f5f5; }
-        .final-price-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .price-label { font-size: 16px; color: #777; }
-        .final-price { font-size: 40px; font-weight: 800; color: #d84444; }
-        .btn-pay { background: #ff6b3d; color: white; border: none; padding: 18px 60px; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%; }
-        .btn-pay:hover:not(:disabled) { background: #e65a2b; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,107,61,0.3); }
-        .btn-pay:disabled { background: #ccc; cursor: not-allowed; }
-
-        @media (max-width: 1024px) {
-            .form-layout { grid-template-columns: 1fr; }
-            .car-info { position: static; }
+<script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar-hasta');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
         }
-    </style>
-</head>
-<body>
+    });
 
-    <div class="header">
-        <div class="header-container">
-            <div class="logo">HASTA</div>
-            <div class="nav-icons">
-                <div class="nav-icon"><i class="fas fa-home"></i></div>
-                <div class="nav-icon"><i class="fas fa-bell"></i></div>
-                <div class="nav-icon active"><i class="fas fa-car"></i></div>
-                <div class="nav-icon"><i class="fas fa-history"></i></div>
-                <div class="nav-icon"><i class="fas fa-cog"></i></div>
-            </div>
-        </div>
-    </div>
+    // Animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
 
-    <div class="main-container">
-        <div class="page-header">
-            <a href="{{ route('cars.show', $car->id) }}" class="back-btn">
-                <i class="fas fa-chevron-left"></i>
-            </a>
-            <h1 class="page-title">{{ $car->full_name }}</h1>
-        </div>
-
-        <form action="{{ route('bookings.payment-summary') }}" method="POST" id="bookingForm">
-            @csrf
-            <input type="hidden" name="car_id" value="{{ $car->id }}">
-            <input type="hidden" name="total_price" id="hiddenTotalPrice" value="0">
-            <input type="hidden" name="duration" id="hiddenDuration" value="0">
-
-            <div class="form-layout">
-                <div class="car-info">
-                    <img src="{{ asset($car->image) }}" alt="{{ $car->full_name }}" class="car-image">
-                    <div class="car-specs">
-                        <div class="spec-item"><i class="fas fa-snowflake" style="color: #00bcd4;"></i> <span>A/C</span></div>
-                        <div class="spec-item"><i class="fas fa-users" style="color: #4caf50;"></i> <span>{{ $car->passengers }} Seats</span></div>
-                        <div class="spec-item"><i class="fas fa-gas-pump" style="color: #ff9800;"></i> <span>{{ $car->fuel_type }}</span></div>
-                        <div class="spec-item"><i class="fas fa-cog" style="color: #607d8b;"></i> <span>{{ $car->transmission }}</span></div>
-                    </div>
-                    
-                    <div class="deposit-box">
-                        <i class="fas fa-info-circle"></i> Security Deposit: RM 100 (Refundable)
-                    </div>
-                </div>
-
-                <div class="booking-form">
-                    <div class="form-group">
-                        <label class="form-label">Pick-Up Location</label>
-                        <input type="text" name="pickup_location" class="form-control" placeholder="Enter location" value="{{ old('pickup_location') }}" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Drop-Off Location</label>
-                        <input type="text" name="dropoff_location" class="form-control" placeholder="Enter location" value="{{ old('dropoff_location') }}" required>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Pickup Date</label>
-                            <input type="date" name="pickup_date" id="pickup_date" class="form-control" min="{{ date('Y-m-d') }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Pickup Time</label>
-                            <input type="time" name="pickup_time" class="form-control" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Return Date</label>
-                            <input type="date" name="return_date" id="return_date" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Return Time</label>
-                            <input type="time" name="return_time" class="form-control" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Duration (Days)</label>
-                            <input type="text" id="duration" class="form-control" placeholder="---" readonly style="background: #eee;">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Voucher Code</label>
-                            <select name="voucher" class="form-control">
-                                <option value="">No Voucher</option>
-                                @foreach($vouchers as $voucher)
-                                    <option value="{{ $voucher->code }}">{{ $voucher->code }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="final-section">
-                        <div class="final-price-wrapper">
-                            <span class="price-label">Total Estimated Price:</span>
-                            <div class="final-price" id="totalPrice">RM 0</div>
-                        </div>
-                        
-                        <div class="form-group" style="margin-bottom: 25px;">
-                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                                <input type="checkbox" id="terms" required style="width: 18px; height: 18px;">
-                                <span style="font-size: 14px;">I accept the <a href="#" style="color: #d84444;">Terms and Conditions</a></span>
-                            </label>
-                        </div>
-
-                        <button type="submit" class="btn-pay" id="payBtn" disabled>Proceed to Payment</button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <script>
-        const dailyRate = {{ $car->daily_rate }};
-        const pickupInput = document.getElementById('pickup_date');
-        const returnInput = document.getElementById('return_date');
-        const durationDisplay = document.getElementById('duration');
-        const priceDisplay = document.getElementById('totalPrice');
-        const payBtn = document.getElementById('payBtn');
-        
-        const hiddenTotal = document.getElementById('hiddenTotalPrice');
-        const hiddenDur = document.getElementById('hiddenDuration');
-
-        function updateSummary() {
-            if (pickupInput.value && returnInput.value) {
-                const start = new Date(pickupInput.value);
-                const end = new Date(returnInput.value);
-                
-                // Set min for return date to be at least pickup date
-                returnInput.min = pickupInput.value;
-
-                const diffTime = end - start;
-                const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                if (days > 0) {
-                    const total = days * dailyRate;
-                    durationDisplay.value = days;
-                    priceDisplay.textContent = 'RM ' + total.toLocaleString();
-                    
-                    // Update hidden inputs
-                    hiddenTotal.value = total;
-                    hiddenDur.value = days;
-                    payBtn.disabled = false;
-                } else {
-                    resetFields();
-                }
-            } else {
-                resetFields();
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
             }
-        }
+        });
+    }, observerOptions);
 
-        function resetFields() {
-            durationDisplay.value = '---';
-            priceDisplay.textContent = 'RM 0';
-            hiddenTotal.value = 0;
-            hiddenDur.value = 0;
-            payBtn.disabled = true;
-        }
+    document.querySelectorAll('.car-card, .feature-box, .testimonial-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
 
-        pickupInput.addEventListener('change', updateSummary);
-        returnInput.addEventListener('change', updateSummary);
-    </script>
+    
+</script>
 
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-top">
-                <div class="footer-item">
-                    <div class="footer-icon"><i class="fas fa-phone"></i></div>
-                    <div>
-                        <div class="footer-title">Call Us</div>
-                        <div class="footer-text">+60 12-345 6789</div>
-                    </div>
-                </div>
-                <div class="footer-item">
-                    <div class="footer-icon"><i class="fas fa-envelope"></i></div>
-                    <div>
-                        <div class="footer-title">Email Us</div>
-                        <div class="footer-text">support@hasta.com</div>
-                    </div>
-                </div>
-                <div class="footer-item">
-                    <div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div>
-                    <div>
-                        <div class="footer-title">Visit Us</div>
-                        <div class="footer-text">Kuala Lumpur, Malaysia</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <div>
-                    <div class="footer-logo">HASTA</div>
-                    <div class="social-icons">
-                        <div class="social-icon"><i class="fab fa-facebook-f"></i></div>
-                        <div class="social-icon"><i class="fab fa-instagram"></i></div>
-                        <div class="social-icon"><i class="fab fa-twitter"></i></div>
-                    </div>
-                </div>
-                
-                <div class="footer-links">
-                    <div class="footer-section-title">Quick Links</div>
-                    <a href="#" class="footer-link">How it Works</a>
-                    <a href="#" class="footer-link">Our Fleet</a>
-                    <a href="#" class="footer-link">Insurance Policy</a>
-                </div>
-
-                <div class="footer-links">
-                    <div class="footer-section-title">Support</div>
-                    <a href="#" class="footer-link">Privacy Policy</a>
-                    <a href="#" class="footer-link">Terms & Conditions</a>
-                    <a href="#" class="footer-link">Contact Support</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <style>
-        /* Footer Styles */
-        .footer {
-            background: #d84444;
-            color: white;
-            padding: 60px 0 30px;
-            margin-top: 60px;
-        }
-        .footer-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .footer-top {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            margin-bottom: 40px;
-            padding-bottom: 40px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-        .footer-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .footer-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        .footer-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
-        .footer-text { font-size: 14px; color: rgba(255,255,255,0.8); }
-
-        .footer-bottom {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr;
-            gap: 60px;
-        }
-        .footer-logo {
-            display: inline-block;
-            background: white;
-            color: #d84444;
-            padding: 8px 25px;
-            font-weight: 800;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .social-icons { display: flex; gap: 10px; }
-        .social-icon {
-            width: 35px;
-            height: 35px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-        .social-icon:hover { background: white; color: #d84444; }
-
-        .footer-section-title { font-weight: 700; margin-bottom: 20px; }
-        .footer-links { display: flex; flex-direction: column; gap: 10px; }
-        .footer-link {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-        .footer-link:hover { color: white; transform: translateX(5px); }
-
-        @media (max-width: 768px) {
-            .footer-top, .footer-bottom { grid-template-columns: 1fr; gap: 30px; }
-        }
-    </style>
->>>>>>> Stashed changes
-=======
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
-        
-        /* Header */
-        .header { background: #d84444; padding: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .header-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { background: white; color: #d84444; padding: 8px 20px; font-weight: 700; font-size: 1.5rem; border-radius: 4px; letter-spacing: 2px; }
-        .nav-icons { display: flex; gap: 8px; align-items: center; }
-        .nav-icon { background: rgba(255,255,255,0.15); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-        .nav-icon.active { background: rgba(255,255,255,0.3); }
-        .nav-icon i { color: white; font-size: 18px; }
-        
-        /* Main Content */
-        .main-container { max-width: 1400px; margin: 20px auto; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); min-height: calc(100vh - 200px); }
-        .page-header { display: flex; align-items: center; padding-bottom: 30px; gap: 20px; border-bottom: 1px solid #eee; margin-bottom: 30px; }
-        .back-btn { width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.3s; }
-        .back-btn:hover { background: #d84444; transform: translateX(-3px); }
-        .back-btn i { color: white; }
-        .page-title { font-size: 28px; font-weight: 700; }
-
-        /* Form Layout */
-        .form-layout { display: grid; grid-template-columns: 450px 1fr; gap: 60px; }
-        .car-info { position: sticky; top: 20px; }
-        .car-image { width: 100%; border-radius: 12px; margin-bottom: 25px; object-fit: cover; }
-        .car-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .spec-item { display: flex; align-items: center; gap: 10px; font-size: 14px; background: #f9f9f9; padding: 12px; border-radius: 8px; }
-        
-        /* Form Styling */
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #555; }
-        .form-control { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        .form-control:focus { outline: none; border-color: #d84444; box-shadow: 0 0 0 3px rgba(216, 68, 68, 0.1); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        
-        .deposit-box { background: #fff4f4; border: 1px dashed #d84444; border-radius: 8px; padding: 15px; margin: 25px 0; color: #d84444; font-weight: 600; }
-
-        /* Final section */
-        .final-section { margin-top: 30px; padding-top: 30px; border-top: 2px solid #f5f5f5; }
-        .final-price-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .price-label { font-size: 16px; color: #777; }
-        .final-price { font-size: 40px; font-weight: 800; color: #d84444; }
-        .btn-pay { background: #ff6b3d; color: white; border: none; padding: 18px 60px; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%; }
-        .btn-pay:hover:not(:disabled) { background: #e65a2b; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,107,61,0.3); }
-        .btn-pay:disabled { background: #ccc; cursor: not-allowed; }
-
-        @media (max-width: 1024px) {
-            .form-layout { grid-template-columns: 1fr; }
-            .car-info { position: static; }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <div class="header-container">
-            <div class="logo">HASTA</div>
-            <div class="nav-icons">
-                <div class="nav-icon"><i class="fas fa-home"></i></div>
-                <div class="nav-icon"><i class="fas fa-bell"></i></div>
-                <div class="nav-icon active"><i class="fas fa-car"></i></div>
-                <div class="nav-icon"><i class="fas fa-history"></i></div>
-                <div class="nav-icon"><i class="fas fa-cog"></i></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="main-container">
-        <div class="page-header">
-            <a href="{{ route('cars.show', $car->id) }}" class="back-btn">
-                <i class="fas fa-chevron-left"></i>
-            </a>
-            <h1 class="page-title">{{ $car->full_name }}</h1>
-        </div>
-
-        <form action="{{ route('bookings.payment-summary') }}" method="POST" id="bookingForm">
-            @csrf
-            <input type="hidden" name="car_id" value="{{ $car->id }}">
-            <input type="hidden" name="total_price" id="hiddenTotalPrice" value="0">
-            <input type="hidden" name="duration" id="hiddenDuration" value="0">
-
-            <div class="form-layout">
-                <div class="car-info">
-                    <img src="{{ asset($car->image) }}" alt="{{ $car->full_name }}" class="car-image">
-                    <div class="car-specs">
-                        <div class="spec-item"><i class="fas fa-snowflake" style="color: #00bcd4;"></i> <span>A/C</span></div>
-                        <div class="spec-item"><i class="fas fa-users" style="color: #4caf50;"></i> <span>{{ $car->passengers }} Seats</span></div>
-                        <div class="spec-item"><i class="fas fa-gas-pump" style="color: #ff9800;"></i> <span>{{ $car->fuel_type }}</span></div>
-                        <div class="spec-item"><i class="fas fa-cog" style="color: #607d8b;"></i> <span>{{ $car->transmission }}</span></div>
-                    </div>
-                    
-                    <div class="deposit-box">
-                        <i class="fas fa-info-circle"></i> Security Deposit: RM 100 (Refundable)
-                    </div>
-                </div>
-
-                <div class="booking-form">
-                    <div class="form-group">
-                        <label class="form-label">Pick-Up Location</label>
-                        <input type="text" name="pickup_location" class="form-control" placeholder="Enter location" value="{{ old('pickup_location') }}" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Drop-Off Location</label>
-                        <input type="text" name="dropoff_location" class="form-control" placeholder="Enter location" value="{{ old('dropoff_location') }}" required>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Pickup Date</label>
-                            <input type="date" name="pickup_date" id="pickup_date" class="form-control" min="{{ date('Y-m-d') }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Pickup Time</label>
-                            <input type="time" name="pickup_time" class="form-control" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Return Date</label>
-                            <input type="date" name="return_date" id="return_date" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Return Time</label>
-                            <input type="time" name="return_time" class="form-control" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Duration (Days)</label>
-                            <input type="text" id="duration" class="form-control" placeholder="---" readonly style="background: #eee;">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Voucher Code</label>
-                            <select name="voucher" class="form-control">
-                                <option value="">No Voucher</option>
-                                @foreach($vouchers as $voucher)
-                                    <option value="{{ $voucher->code }}">{{ $voucher->code }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="final-section">
-                        <div class="final-price-wrapper">
-                            <span class="price-label">Total Estimated Price:</span>
-                            <div class="final-price" id="totalPrice">RM 0</div>
-                        </div>
-                        
-                        <div class="form-group" style="margin-bottom: 25px;">
-                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                                <input type="checkbox" id="terms" required style="width: 18px; height: 18px;">
-                                <span style="font-size: 14px;">I accept the <a href="#" style="color: #d84444;">Terms and Conditions</a></span>
-                            </label>
-                        </div>
-
-                        <button type="submit" class="btn-pay" id="payBtn" disabled>Proceed to Payment</button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <script>
-        const dailyRate = {{ $car->daily_rate }};
-        const pickupInput = document.getElementById('pickup_date');
-        const returnInput = document.getElementById('return_date');
-        const durationDisplay = document.getElementById('duration');
-        const priceDisplay = document.getElementById('totalPrice');
-        const payBtn = document.getElementById('payBtn');
-        
-        const hiddenTotal = document.getElementById('hiddenTotalPrice');
-        const hiddenDur = document.getElementById('hiddenDuration');
-
-        function updateSummary() {
-            if (pickupInput.value && returnInput.value) {
-                const start = new Date(pickupInput.value);
-                const end = new Date(returnInput.value);
-                
-                // Set min for return date to be at least pickup date
-                returnInput.min = pickupInput.value;
-
-                const diffTime = end - start;
-                const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                if (days > 0) {
-                    const total = days * dailyRate;
-                    durationDisplay.value = days;
-                    priceDisplay.textContent = 'RM ' + total.toLocaleString();
-                    
-                    // Update hidden inputs
-                    hiddenTotal.value = total;
-                    hiddenDur.value = days;
-                    payBtn.disabled = false;
-                } else {
-                    resetFields();
-                }
-            } else {
-                resetFields();
-            }
-        }
-
-        function resetFields() {
-            durationDisplay.value = '---';
-            priceDisplay.textContent = 'RM 0';
-            hiddenTotal.value = 0;
-            hiddenDur.value = 0;
-            payBtn.disabled = true;
-        }
-
-        pickupInput.addEventListener('change', updateSummary);
-        returnInput.addEventListener('change', updateSummary);
-    </script>
-
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-top">
-                <div class="footer-item">
-                    <div class="footer-icon"><i class="fas fa-phone"></i></div>
-                    <div>
-                        <div class="footer-title">Call Us</div>
-                        <div class="footer-text">+60 12-345 6789</div>
-                    </div>
-                </div>
-                <div class="footer-item">
-                    <div class="footer-icon"><i class="fas fa-envelope"></i></div>
-                    <div>
-                        <div class="footer-title">Email Us</div>
-                        <div class="footer-text">support@hasta.com</div>
-                    </div>
-                </div>
-                <div class="footer-item">
-                    <div class="footer-icon"><i class="fas fa-map-marker-alt"></i></div>
-                    <div>
-                        <div class="footer-title">Visit Us</div>
-                        <div class="footer-text">Kuala Lumpur, Malaysia</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <div>
-                    <div class="footer-logo">HASTA</div>
-                    <div class="social-icons">
-                        <div class="social-icon"><i class="fab fa-facebook-f"></i></div>
-                        <div class="social-icon"><i class="fab fa-instagram"></i></div>
-                        <div class="social-icon"><i class="fab fa-twitter"></i></div>
-                    </div>
-                </div>
-                
-                <div class="footer-links">
-                    <div class="footer-section-title">Quick Links</div>
-                    <a href="#" class="footer-link">How it Works</a>
-                    <a href="#" class="footer-link">Our Fleet</a>
-                    <a href="#" class="footer-link">Insurance Policy</a>
-                </div>
-
-                <div class="footer-links">
-                    <div class="footer-section-title">Support</div>
-                    <a href="#" class="footer-link">Privacy Policy</a>
-                    <a href="#" class="footer-link">Terms & Conditions</a>
-                    <a href="#" class="footer-link">Contact Support</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <style>
-        /* Footer Styles */
-        .footer {
-            background: #d84444;
-            color: white;
-            padding: 60px 0 30px;
-            margin-top: 60px;
-        }
-        .footer-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .footer-top {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            margin-bottom: 40px;
-            padding-bottom: 40px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-        .footer-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .footer-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        .footer-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
-        .footer-text { font-size: 14px; color: rgba(255,255,255,0.8); }
-
-        .footer-bottom {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr;
-            gap: 60px;
-        }
-        .footer-logo {
-            display: inline-block;
-            background: white;
-            color: #d84444;
-            padding: 8px 25px;
-            font-weight: 800;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .social-icons { display: flex; gap: 10px; }
-        .social-icon {
-            width: 35px;
-            height: 35px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-        .social-icon:hover { background: white; color: #d84444; }
-
-        .footer-section-title { font-weight: 700; margin-bottom: 20px; }
-        .footer-links { display: flex; flex-direction: column; gap: 10px; }
-        .footer-link {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-        .footer-link:hover { color: white; transform: translateX(5px); }
-
-        @media (max-width: 768px) {
-            .footer-top, .footer-bottom { grid-template-columns: 1fr; gap: 30px; }
-        }
-    </style>
->>>>>>> Stashed changes
 </body>
 </html>

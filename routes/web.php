@@ -88,12 +88,16 @@ Route::middleware('auth')->group(function () {
 
 });
 
+    Route::prefix('staff')->middleware(['auth'])->group(function () {
+        Route::get('/settings/profile', [\App\Http\Controllers\StaffController::class, 'profile'])
+            ->name('staff.settings.profile');
+    });
 // Staff Routes - WITH ROLE CHECK
 Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
     // Check if user is staff or admin
-    if (auth()->check() && !in_array(auth()->user()->usertype, ['staff', 'admin'])) {
+    /*if (auth()->check() && !in_array(auth()->user()->usertype, ['staff', 'admin'])) {
         abort(403, 'Unauthorized access. Staff or admin privileges required.');
-    }
+    }*/
     Route::view('/dashboard', 'staff.dashboard')->name('dashboard');
     
     Route::get('/cars', [CarController::class, 'staffIndex'])->name('cars.index');
@@ -105,56 +109,14 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
     
      // Bookings - ALL with consistent naming
     Route::get('/bookings', [BookingController::class, 'staffIndex'])->name('bookings.index');
-    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    //Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{id}', [BookingController::class, 'staffShow'])->name('bookings.show');
+    Route::get('bookings/cars/{car}/book', [BookingController::class, 'create'])->name('bookings.create');
     Route::patch('/bookings/{id}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'staffCancel'])->name('bookings.cancel');
     Route::post('/bookings/{id}/inspection', [BookingController::class, 'storeInspection'])->name('bookings.inspection.store');
     
 
-<<<<<<< Updated upstream
-    Route::prefix('notifications')->name('notifications.')->group(function () {
-        Route::get('/', function () {
-            try {
-                $user = auth()->user();
-                
-                // Get filter type
-                $filter = request('filter', 'all');
-                
-                // Build query - always paginate, never use get()
-                $query = $user->notifications();
-                
-                if ($filter === 'unread') {
-                    $query->whereNull('read_at');
-                } elseif ($filter === 'read') {
-                    $query->whereNotNull('read_at');
-                }
-                
-                // Always use paginate() to get a paginator
-                $notifications = $query->latest()->paginate(20)->withQueryString();
-                $unreadCount = $user->unreadNotifications()->count();
-                
-                return view('staff.notifications.index', [
-                    'notifications' => $notifications,
-                    'unreadCount' => $unreadCount,
-                    'filter' => $filter
-                ]);
-            } catch (\Exception $e) {
-                \Log::error('Notifications error: ' . $e->getMessage());
-                
-                // Return an empty paginator instead of a collection
-                $emptyPaginator = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath();
-                $notifications = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
-                
-                return view('staff.notifications.index', [
-                    'notifications' => $notifications,
-                    'unreadCount' => 0,
-                    'filter' => 'all',
-                    'error' => 'Notifications system is not yet set up. Please run: php artisan notifications:table && php artisan migrate'
-                ]);
-            }
-        })->name('index');
-=======
    Route::prefix('notifications')->name('notifications.')->group(function () {
     Route::get('/', function () {
         $user = auth()->user();
@@ -192,7 +154,6 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
             'filter' => $filter  // Make sure this is always passed
         ]);
     })->name('index');
->>>>>>> Stashed changes
     
     Route::post('/{id}/mark-as-read', function ($id) {
         try {
@@ -225,8 +186,6 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
             return redirect()->back()->with('error', 'Failed to delete notification');
         }
     })->name('delete');
-<<<<<<< Updated upstream
-=======
 
     Route::get('/test-notification', function () {
         // Send a test notification to the current user
@@ -236,7 +195,6 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
             ->with('success', 'Test notification sent!');
     })->name('test.notification')->middleware(['auth', 'staff.admin']);
 });
->>>>>>> Stashed changes
 
     Route::get('/test-notification', function () {
     // Send a test notification to the current user
@@ -304,7 +262,7 @@ Route::prefix('staff')->name('staff.')->middleware('auth')->group(function () {
         return view('staff.reports.index');
     })->name('reports.index');
     
-}); // This closes the main staff group
+
 
 // Admin Routes - WITH ROLE CHECK
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {

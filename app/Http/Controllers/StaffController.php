@@ -239,4 +239,9 @@ class StaffController extends Controller
         $this->checkAuth();
         return view('staff.notifications.index');
     }
+
+    public function profile()
+{
+    return view('staff.settings.profile');
+}
 }

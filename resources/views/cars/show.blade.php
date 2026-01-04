@@ -1,726 +1,872 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $car->full_name }} - HASTA</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Hasta Travel & Tours - Car Details</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
+        :root {
+            --primary: #e53935;
+            --primary-dark: #c62828;
+            --primary-light: #ffebee;
+            --dark: #1a1a2e;
+            --text-dark: #333;
+            --text-muted: #6c757d;
+            --bg-light: #f8f9fa;
+            --white: #fff;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+            padding-top: 100px;
         }
-        
-        /* Header */
-        .header {
-            background: #d84444;
+
+        /* NAVBAR */
+        .navbar-hasta {
+            background: var(--white);
+            min-height: 70px;
+            max-height: 80px;
             padding: 15px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
         }
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+
+        .logo-image {
+            height: 120px;
+            width: 120px;
+            max-width: 150px;
+            object-fit: contain;
         }
-        .logo {
-            background: white;
-            color: #d84444;
-            padding: 8px 20px;
-            font-weight: 700;
-            font-size: 1.5rem;
-            border-radius: 4px;
-            letter-spacing: 2px;
+
+        .nav-link-hasta {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            padding: 10px 20px !important;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            position: relative;
+            overflow: hidden;
         }
-        .nav-icons {
-            display: flex;
-            gap: 8px;
-            align-items: center;
+
+        .nav-link-hasta::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 25px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: -1;
         }
-        .nav-icon {
-            background: rgba(255,255,255,0.15);
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
+
+        .nav-link-hasta:hover::after {
+            opacity: 0.1;
         }
-        .nav-icon.active {
-            background: rgba(255,255,255,0.3);
+
+        .nav-link-hasta:hover {
+            color: var(--primary) !important;
         }
-        .nav-icon i {
-            color: white;
-            font-size: 20px;
+
+        .nav-link-hasta.active {
+            color: var(--white) !important;
         }
-        .btn-login {
-            background: #ff7c3e;
-            color: white;
-            border: none;
-            padding: 10px 30px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-left: 10px;
+
+        .nav-link-hasta.active::after {
+            opacity: 1;
         }
-        
-        /* Main Container */
+
+        /* MAIN CONTAINER */
         .main-container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 20px;
         }
-        
-        /* Car Header Card */
+
+        /* CAR HEADER CARD */
         .car-header-card {
             background: white;
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             margin-bottom: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
+
         .car-title-section {
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
+
         .back-icon {
-            width: 50px;
-            height: 50px;
-            background: black;
-            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-light);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
-        .back-icon i {
+
+        .back-icon:hover {
+            background: var(--primary);
             color: white;
-            font-size: 20px;
         }
+
         .car-title {
-            font-size: 32px;
+            font-size: 2rem;
             font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
         }
+
         .car-price {
-            font-size: 32px;
-            color: #d84444;
-            font-weight: 700;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
             margin-bottom: 30px;
         }
+
         .price-unit {
-            font-size: 16px;
-            color: #888;
+            font-size: 1rem;
+            color: var(--text-muted);
             font-weight: 400;
         }
+
         .car-image-section {
-            position: relative;
             text-align: center;
         }
+
         .car-main-image {
             width: 100%;
-            max-width: 700px;
+            max-width: 600px;
             height: auto;
-            margin: 0 auto;
+            object-fit: contain;
+            margin-bottom: 20px;
         }
+
         .car-thumbnails {
             display: flex;
-            justify-content: center;
             gap: 15px;
-            margin-top: 20px;
+            justify-content: center;
             align-items: center;
         }
+
+        .thumbnail {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .thumbnail:hover {
+            border-color: var(--primary);
+        }
+
         .nav-arrow {
-            width: 45px;
-            height: 45px;
-            border: 2px solid black;
+            width: 35px;
+            height: 35px;
+            background: var(--bg-light);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            background: white;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
+
         .nav-arrow:hover {
-            background: black;
-        }
-        .nav-arrow:hover i {
+            background: var(--primary);
             color: white;
         }
-        .nav-arrow i {
-            color: black;
-        }
-        .thumbnail {
-            width: 120px;
-            height: 90px;
-            border-radius: 10px;
-            object-fit: cover;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-        .thumbnail:hover {
-            border-color: #d84444;
-        }
-        
-        /* Specifications Section */
+
+        /* SPECS CARD */
         .specs-card {
             background: white;
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             margin-bottom: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
+
         .section-title {
-            font-size: 24px;
+            font-size: 1.8rem;
             font-weight: 700;
+            color: var(--text-dark);
             margin-bottom: 25px;
         }
+
         .specs-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
             margin-bottom: 40px;
         }
+
         .spec-box {
-            background: #f5f5f5;
-            padding: 25px;
+            background: var(--bg-light);
+            padding: 20px;
             border-radius: 12px;
             text-align: center;
+            transition: all 0.3s ease;
         }
+
+        .spec-box:hover {
+            background: var(--primary-light);
+            transform: translateY(-5px);
+        }
+
         .spec-icon {
-            font-size: 32px;
-            margin-bottom: 15px;
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
+
         .spec-label {
-            font-size: 14px;
-            color: #666;
+            font-size: 0.85rem;
+            color: var(--text-muted);
             margin-bottom: 5px;
         }
+
         .spec-value {
-            font-size: 16px;
+            font-size: 1.1rem;
             font-weight: 600;
-            color: #333;
+            color: var(--text-dark);
         }
-        
-        /* Equipment Section */
+
         .equipment-title {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-dark);
             margin-bottom: 20px;
         }
+
         .equipment-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 30px;
         }
+
         .equipment-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 15px;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
         }
+
         .check-icon {
-            width: 24px;
-            height: 24px;
-            background: #d84444;
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
-        }
-        .check-icon i {
             color: white;
-            font-size: 12px;
+            font-size: 0.8rem;
         }
-        
-        /* Book Now Button */
+
         .btn-book {
-            background: #ff6b3d;
+            background: var(--primary);
             color: white;
+            padding: 15px 50px;
+            border-radius: 12px;
             border: none;
-            padding: 15px 60px;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: 700;
+            font-weight: 600;
+            font-size: 1.1rem;
             cursor: pointer;
-            float: right;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
         }
+
         .btn-book:hover {
-            background: #ff5722;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255,107,61,0.3);
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(229, 57, 53, 0.3);
         }
-        
-        /* Other Cars Section */
+
+        /* OTHER CARS */
         .other-cars {
-            margin-top: 60px;
+            margin-top: 50px;
         }
+
         .other-cars-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
+
         .other-cars-title {
-            font-size: 32px;
+            font-size: 1.8rem;
             font-weight: 700;
+            color: var(--text-dark);
         }
+
         .view-all {
-            color: #333;
+            color: var(--primary);
             text-decoration: none;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            transition: all 0.3s ease;
         }
+
+        .view-all:hover {
+            color: var(--primary-dark);
+        }
+
         .cars-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
         }
+
         .car-card {
             background: white;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
         }
+
         .car-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
+
         .car-card-image {
             width: 100%;
             height: 200px;
             object-fit: cover;
         }
+
         .car-card-body {
             padding: 20px;
         }
+
         .car-card-title {
-            font-size: 18px;
+            font-size: 1.2rem;
             font-weight: 700;
+            color: var(--text-dark);
             margin-bottom: 5px;
         }
+
         .car-card-type {
-            color: #888;
-            font-size: 14px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
             margin-bottom: 15px;
         }
+
         .car-card-price {
-            color: #d84444;
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: 700;
+            color: var(--primary);
             margin-bottom: 15px;
         }
+
         .car-card-specs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            color: #666;
-        }
-        .car-card-spec {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .btn-view-details {
-            width: 100%;
-            background: #ff6b3d;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-view-details:hover {
-            background: #ff5722;
-        }
-        
-        /* Footer */
-        .footer {
-            background: #d84444;
-            color: white;
-            padding: 40px 0 20px;
-            margin-top: 60px;
-        }
-        .footer-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .footer-top {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        .footer-item {
-            display: flex;
-            gap: 15px;
-        }
-        .footer-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .footer-icon i {
-            font-size: 18px;
-        }
-        .footer-title {
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .footer-text {
-            font-size: 14px;
-            line-height: 1.6;
-            color: rgba(255,255,255,0.9);
-        }
-        .footer-bottom {
-            display: grid;
-            grid-template-columns: auto 1fr 1fr;
-            gap: 60px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-        }
-        .footer-logo {
-            background: white;
-            color: #d84444;
-            padding: 8px 20px;
-            font-weight: 700;
-            font-size: 1.3rem;
-            border-radius: 4px;
-            letter-spacing: 2px;
-            align-self: start;
-        }
-        .social-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .social-icon {
-            width: 35px;
-            height: 35px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .footer-section-title {
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-        .footer-links {
             display: flex;
             flex-direction: column;
             gap: 8px;
+            margin-bottom: 20px;
+            padding: 15px 0;
+            border-top: 1px solid #eee;
         }
-        .footer-link {
-            color: rgba(255,255,255,0.9);
+
+        .car-card-spec {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .car-card-spec i {
+            color: var(--primary);
+        }
+
+        .btn-view-details {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
             text-decoration: none;
-            font-size: 14px;
+            display: block;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
-        
-        @media (max-width: 1024px) {
-            .specs-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .cars-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+
+        .btn-view-details:hover {
+            background: var(--primary-dark);
+            color: white;
         }
+
+        /* FOOTER */
+        .footer-hasta {
+            background: var(--dark);
+            color: var(--white);
+            padding: 80px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-brand {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+
+        .footer-text {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 25px;
+            max-width: 300px;
+        }
+
+        .footer-contact {
+            margin-bottom: 25px;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .footer-contact-item i {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-links h5 {
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links ul li a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links ul li a:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+        }
+
         @media (max-width: 768px) {
+            .car-title {
+                font-size: 1.5rem;
+            }
+            
+            .car-price {
+                font-size: 2rem;
+            }
+            
             .specs-grid {
-                grid-template-columns: 1fr;
-            }
-            .cars-grid {
-                grid-template-columns: 1fr;
-            }
-            .equipment-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-container">
-            <div class="logo">HASTA</div>
-            <div class="nav-icons">
-                <div class="nav-icon">
-                    <i class="fas fa-home"></i>
-                </div>
-                <div class="nav-icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <div class="nav-icon">
-                    <i class="fas fa-th"></i>
-                </div>
-                <div class="nav-icon active">
-                    <i class="fas fa-car"></i>
-                </div>
-                <div class="nav-icon">
-                    <i class="fas fa-history"></i>
-                </div>
-                <div class="nav-icon">
-                    <i class="fas fa-cog"></i>
-                </div>
-                </div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-hasta">
+    <div class="container">
+        <a class="logo-text" href="{{ route('home') }}">
+            <img src="{{ asset('images/hasta logo.png') }}" alt="HASTA Logo" class="logo-image">
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('home') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">Vehicles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
+                </li>
+                @auth
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('profile.show') }}">Profile</a>
+                </li>
+                @endauth
+            </ul>
+
+            <div class="d-flex align-items-center gap-3">
+            @guest
+                <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px;">Login</a>
+                <a href="{{ route('register') }}" class="btn" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">Register</a>
+            @else
+                <span class="me-2">Welcome, <strong>{{ Auth::user()->name }}</strong></span>
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </button>
+                </form>
+            @endguest
+            </div>
         </div>
     </div>
+</nav>
 
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Car Header Card -->
-        <div class="car-header-card">
-            <div class="car-title-section">
-                <a href="{{ route('cars.index') }}" class="back-icon">
-                    <i class="fas fa-chevron-left"></i>
-                </a>
-                <h1 class="car-title">{{ $car->full_name }}</h1>
-            </div>
-            
-            <div class="car-price">
-                RM{{ number_format($car->daily_rate, 0) }}
-                <span class="price-unit">/ day</span>
-            </div>
-
-            <div class="car-image-section">
-                <img src="{{ $car->image }}" alt="{{ $car->full_name }}" class="car-main-image">
-                
-                <div class="car-thumbnails">
-                    <div class="nav-arrow">
-                        <i class="fas fa-chevron-left"></i>
-                    </div>
-                    <img src="{{ $car->image }}" alt="View 1" class="thumbnail">
-                    <img src="{{ $car->image }}" alt="View 2" class="thumbnail">
-                    <div class="nav-arrow">
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Specifications Card -->
-        <div class="specs-card">
-            <h2 class="section-title">Specifications</h2>
-            
-            <div class="specs-grid">
-                <div class="spec-box">
-                    <div class="spec-icon">🔧</div>
-                    <div class="spec-label">Gear Box</div>
-                    <div class="spec-value">{{ $car->transmission }}</div>
-                </div>
-                <div class="spec-box">
-                    <div class="spec-icon">⛽</div>
-                    <div class="spec-label">Fuel</div>
-                    <div class="spec-value">{{ $car->fuel_type }}</div>
-                </div>
-                <div class="spec-box">
-                    <div class="spec-icon">🚪</div>
-                    <div class="spec-label">Doors</div>
-                    <div class="spec-value">4</div>
-                </div>
-                <div class="spec-box">
-                    <div class="spec-icon">❄️</div>
-                    <div class="spec-label">Air Conditioner</div>
-                    <div class="spec-value">{{ $car->air_conditioner ? 'Yes' : 'No' }}</div>
-                </div>
-                <div class="spec-box">
-                    <div class="spec-icon">👥</div>
-                    <div class="spec-label">Seats</div>
-                    <div class="spec-value">{{ $car->passengers }}</div>
-                </div>
-                <div class="spec-box">
-                    <div class="spec-icon">📏</div>
-                    <div class="spec-label">Distance</div>
-                    <div class="spec-value">500</div>
-                </div>
-            </div>
-
-            <!-- Car Equipment -->
-            <h3 class="equipment-title">Car Equipment</h3>
-            <div class="equipment-grid">
-                <div class="equipment-item">
-                    <div class="check-icon">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <span>ABS</span>
-                </div>
-                <div class="equipment-item">
-                    <div class="check-icon">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <span>ABS</span>
-                </div>
-                <div class="equipment-item">
-                    <div class="check-icon">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <span>Air Bags</span>
-                </div>
-                <div class="equipment-item">
-                    <div class="check-icon">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <span>Air Bags</span>
-                </div>
-                <div class="equipment-item">
-                    <div class="check-icon">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <span>Cruise Control</span>
-                </div>
-                <div class="equipment-item">
-                    <div class="check-icon">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <span>Air Conditioner</span>
-                </div>
-            </div>
-
-            <a href="{{ route('bookings.create', $car->id) }}" class="btn-book">
-                Book Now
+<!-- Main Container -->
+<div class="main-container">
+    <!-- Car Header Card -->
+    <div class="car-header-card">
+        <div class="car-title-section">
+            <a href="{{ route('cars.index') }}" class="back-icon">
+                <i class="fas fa-chevron-left"></i>
             </a>
-            <div style="clear: both;"></div>
+            <h1 class="car-title">{{ $car->full_name }}</h1>
+        </div>
+        
+        <div class="car-price">
+            RM{{ number_format($car->daily_rate, 0) }}
+            <span class="price-unit">/ day</span>
         </div>
 
-        <!-- Other Cars Section -->
-        <div class="other-cars">
-            <div class="other-cars-header">
-                <h2 class="other-cars-title">Other cars</h2>
-                <a href="{{ route('cars.index') }}" class="view-all">
-                    View All <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-
-            <div class="cars-grid">
-                @foreach($otherCars as $otherCar)
-                <div class="car-card">
-                    <img src="{{ $otherCar->image }}" alt="{{ $otherCar->full_name }}" class="car-card-image">
-                    <div class="car-card-body">
-                        <div class="car-card-title">{{ $otherCar->full_name }}</div>
-                        <div class="car-card-type">{{ $otherCar->transmission }}</div>
-                        <div class="car-card-price">
-                            RM{{ number_format($otherCar->daily_rate, 0) }}
-                            <span style="font-size: 14px; color: #888;">per day</span>
-                        </div>
-                        <div class="car-card-specs">
-                            <div class="car-card-spec">
-                                <i class="fas fa-cog"></i> Automat
-                            </div>
-                            <div class="car-card-spec">
-                                <i class="fas fa-gas-pump"></i> RON 95
-                            </div>
-                            <div class="car-card-spec">
-                                <i class="fas fa-snowflake"></i> Air Conditioner
-                            </div>
-                        </div>
-                        <a href="{{ route('cars.show', $otherCar->id) }}" class="btn-view-details">
-                            View Details
-                        </a>
-                    </div>
+        <div class="car-image-section">
+            <img src="{{ asset('images/' . $car->image) }}" alt="{{ $car->full_name }}" class="car-main-image">
+            
+            <div class="car-thumbnails">
+                <div class="nav-arrow">
+                    <i class="fas fa-chevron-left"></i>
                 </div>
-                @endforeach
+                <img src="{{ asset('images/' . $car->image) }}" alt="View 1" class="thumbnail">
+                <img src="{{ asset('images/' . $car->image) }}" alt="View 2" class="thumbnail">
+                <div class="nav-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <div class="footer-container">
-            <div class="footer-top">
-                <div class="footer-item">
-                    <div class="footer-icon">
+    <!-- Specifications Card -->
+    <div class="specs-card">
+        <h2 class="section-title">Specifications</h2>
+        
+        <div class="specs-grid">
+            <div class="spec-box">
+                <div class="spec-icon">🔧</div>
+                <div class="spec-label">Gear Box</div>
+                <div class="spec-value">{{ $car->transmission }}</div>
+            </div>
+            <div class="spec-box">
+                <div class="spec-icon">⛽</div>
+                <div class="spec-label">Fuel</div>
+                <div class="spec-value">{{ $car->fuel_type }}</div>
+            </div>
+            <div class="spec-box">
+                <div class="spec-icon">🚪</div>
+                <div class="spec-label">Doors</div>
+                <div class="spec-value">4</div>
+            </div>
+            <div class="spec-box">
+                <div class="spec-icon">❄️</div>
+                <div class="spec-label">Air Conditioner</div>
+                <div class="spec-value">{{ $car->air_conditioner ? 'Yes' : 'No' }}</div>
+            </div>
+            <div class="spec-box">
+                <div class="spec-icon">👥</div>
+                <div class="spec-label">Seats</div>
+                <div class="spec-value">{{ $car->passengers }}</div>
+            </div>
+            <div class="spec-box">
+                <div class="spec-icon">📏</div>
+                <div class="spec-label">Distance</div>
+                <div class="spec-value">500km</div>
+            </div>
+        </div>
+
+        <!-- Car Equipment -->
+        <h3 class="equipment-title">Car Equipment</h3>
+        <div class="equipment-grid">
+            <div class="equipment-item">
+                <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span>ABS</span>
+            </div>
+            <div class="equipment-item">
+                <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span>Air Bags</span>
+            </div>
+            <div class="equipment-item">
+                <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span>Cruise Control</span>
+            </div>
+            <div class="equipment-item">
+                <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span>Air Conditioner</span>
+            </div>
+            <div class="equipment-item">
+                <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span>Power Steering</span>
+            </div>
+            <div class="equipment-item">
+                <div class="check-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <span>Bluetooth</span>
+            </div>
+        </div>
+
+        <a href="{{ route('bookings.create', $car->id) }}" class="btn-book">
+            Book Now
+        </a>
+    </div>
+
+    <!-- Other Cars Section -->
+    <div class="other-cars">
+        <div class="other-cars-header">
+            <h2 class="other-cars-title">Other cars</h2>
+            <a href="{{ route('cars.index') }}" class="view-all">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="cars-grid">
+            @foreach($otherCars as $otherCar)
+            <div class="car-card">
+                <img src="{{ asset('images/' . $otherCar->image) }}" alt="{{ $otherCar->full_name }}" class="car-card-image">
+                <div class="car-card-body">
+                    <div class="car-card-title">{{ $otherCar->full_name }}</div>
+                    <div class="car-card-type">{{ $otherCar->transmission }}</div>
+                    <div class="car-card-price">
+                        RM{{ number_format($otherCar->daily_rate, 0) }}
+                        <span style="font-size: 14px; color: #888;">/ day</span>
+                    </div>
+                    <div class="car-card-specs">
+                        <div class="car-card-spec">
+                            <i class="fas fa-cog"></i> {{ $otherCar->transmission }}
+                        </div>
+                        <div class="car-card-spec">
+                            <i class="fas fa-gas-pump"></i> {{ $otherCar->fuel_type }}
+                        </div>
+                        <div class="car-card-spec">
+                            <i class="fas fa-snowflake"></i> Air Conditioner
+                        </div>
+                    </div>
+                    <a href="{{ route('cars.show', $otherCar->id) }}" class="btn-view-details">
+                        View Details
+                    </a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+
+    <!-- FOOTER -->
+<footer id="footer-hasta" class="footer-hasta">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <div class="footer-brand">HASTA</div>
+                <p class="footer-text">
+                    Your trusted partner for car rental services in Malaysia. Quality vehicles, affordable prices.
+                </p>
+                
+                <div class="footer-contact">
+                    <div class="footer-contact-item">
                         <i class="fas fa-map-marker-alt"></i>
+                        <span>Student Mall UTM, Skudai, 81300, Johor Bahru</span>
                     </div>
-                    <div>
-                        <div class="footer-title">Address</div>
-                        <div class="footer-text">
-                            Student Mall UTM<br>
-                            Skudai, 81300, Johor Bahru
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-item">
-                    <div class="footer-icon">
+                    <div class="footer-contact-item">
                         <i class="fas fa-envelope"></i>
+                        <span>hastatraveltours@gmail.com</span>
                     </div>
-                    <div>
-                        <div class="footer-title">Email</div>
-                        <div class="footer-text">hastatravel@gmail.com</div>
+                    <div class="footer-contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>011-1090 0700</span>
                     </div>
                 </div>
-                <div class="footer-item">
-                    <div class="footer-icon">
-                        <i class="fas fa-phone"></i>
-                    </div>
-                    <div>
-                        <div class="footer-title">Phone</div>
-                        <div class="footer-text">011-1090 0700</div>
-                    </div>
+
+                <div class="social-links">
+                    <a href="http://wasap.my/601110900700/nakkeretasewa"><i class="fab fa-whatsapp"></i></a>
+                    <a href="http://t.me/infoHastaCarRentalUTM"><i class="fab fa-telegram"></i></a>
+                    <a href="http://youtube.com/watch?v=41Vedbjxn_s"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/hastatraveltours?igsh=MXR0ZjYyM3c3Znpsdg=="><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
 
-            <div class="footer-bottom">
-                <div>
-                    <div class="footer-logo">HASTA</div>
-                    <div class="social-icons">
-                        <div class="social-icon"><i class="fab fa-facebook-f"></i></div>
-                        <div class="social-icon"><i class="fab fa-instagram"></i></div>
-                        <div class="social-icon"><i class="fab fa-twitter"></i></div>
-                        <div class="social-icon"><i class="fab fa-youtube"></i></div>
-                    </div>
-                </div>
-                <div>
-                    <div class="footer-section-title">Useful Links</div>
-                    <div class="footer-links">
-                        <a href="#" class="footer-link">About us</a>
-                        <a href="#" class="footer-link">Contact us</a>
-                        <a href="#" class="footer-link">Gallery</a>
-                        <a href="#" class="footer-link">Blog</a>
-                        <a href="#" class="footer-link">F.A.Q</a>
-                    </div>
-                </div>
-                <div>
-                    <div class="footer-section-title">Vehicles</div>
-                    <div class="footer-links">
-                        <a href="#" class="footer-link">Sedan</a>
-                        <a href="#" class="footer-link">Hatchback</a>
-                        <a href="#" class="footer-link">MPV</a>
-                        <a href="#" class="footer-link">Minivan</a>
-                        <a href="#" class="footer-link">SUV</a>
-                    </div>
-                </div>
+            <div class="col-6 col-lg-2 offset-lg-1 footer-links">
+                <h5>Quick Links</h5>
+                <ul>
+                    <li><a href="{{ route('home') }}">Home</a></li>
+                    <li><a href="{{ route('cars.index') }}">Vehicles</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="{{ route('contactus') }}">Contact</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div class="col-6 col-lg-2 footer-links">
+                <h5>Vehicles</h5>
+                <ul>
+                    <li><a href="#">Sedan</a></li>
+                    <li><a href="#">Hatchback</a></li>
+                    <li><a href="#">MPV</a></li>
+                    <li><a href="#">SUV</a></li>
+                    <li><a href="#">Luxury</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 footer-links">
+                <h5>Newsletter</h5>
+                <p class="text-white-50 mb-3">Subscribe for updates and special offers</p>
+                <form class="d-flex gap-2">
+                    <input type="email" class="form-control" placeholder="Your email" style="border-radius: 10px;">
+                    <button type="submit" class="btn" style="background: var(--primary); color: white; border-radius: 10px;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
             </div>
         </div>
+
+        <div class="footer-bottom">
+            <p class="mb-0">&copy; {{ date('Y') }} Hasta Travel & Tours. All Rights Reserved.</p>
+        </div>
     </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar-hasta');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.car-card, .feature-box, .testimonial-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+
+    
+</script>
+
 </body>
 </html>
