@@ -16,6 +16,8 @@ return [
         'driver' => 'session',
         'provider' => 'customers',
     ],
+
+    
     ],
 
     'providers' => [
