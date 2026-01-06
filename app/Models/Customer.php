@@ -2,26 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Customer extends Model
+class Customer extends Authenticatable
 {
-    protected $primaryKey = 'customerID';
+    use Notifiable;
 
-    public $incrementing = true;   // if your PK is auto-increment int
-
-    protected $keyType = 'int';
+    protected $primaryKey = 'matricNum';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
-        'users_id',
+        'matricNum',
         'name',
-        'ic',
         'email',
-        'phone_no  ',
-        'address',
-        'licenceNo',
+        'password',
     ];
 
-    // If your table name is not "customers", uncomment this:
-    // protected $table = 'customers';
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 }

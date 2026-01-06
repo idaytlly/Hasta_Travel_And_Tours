@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\Customer;
+use App\Models\Staff;
 
 class LoginController extends Controller
 {
@@ -15,45 +18,34 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
-            
-            $user = Auth::user();
-            if (in_array($user->role, ['staff', 'admin'])) {
-                return redirect()->intended(route('staff.dashboard'));
-            }
-            
-            return redirect()->intended('/');
+        // Try staff first
+        if (Auth::guard('staff')->attempt($request->only('email', 'password'))) {
+            return redirect()->route('staff.dashboard');
+        }
+
+        // Try customer
+        if (Auth::guard('customer')->attempt($request->only('email', 'password'))) {
+            return redirect()->route('home');
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Invalid credentials.'
         ])->onlyInput('email');
-    }
-
-     protected function redirectTo()
-    {
-        $user = Auth::user();
-        
-        // Check user role and redirect accordingly
-        if ($user->role === 'admin' || $user->role === 'staff') {
-            return route('staff.dashboard');
-        }
-        
-        // For regular users
-        return route('home');
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('staff')->logout();
+        Auth::guard('customer')->logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/');
     }
 }

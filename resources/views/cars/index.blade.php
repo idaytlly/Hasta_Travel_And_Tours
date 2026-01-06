@@ -317,10 +317,7 @@
                         <a class="nav-link nav-link-hasta " href="{{ route('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">vehicles</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
+                        <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
@@ -338,7 +335,7 @@
                     <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px; border: 2px solid #e53935; color: #e53935;">
                         Login
                     </a>
-                    <a href="{{ route('register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
+                    <a href="{{ route('auth.register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
                         Register
                     </a>
                 @else
@@ -471,15 +468,13 @@
                     <h5>Quick Links</h5>
                     <ul>
                         <li><a href="{{ route('home') }}">Home</a></li>
-                        <li><a href="{{ route('cars.index') }}">vehicles</a></li>
-                        <li><a href="#">About Us</a></li>
+                        <li><a href="{{ route('cars.index') }}">Vehicles</a></li>
                         <li><a href="#">Contact</a></li>
-                        <li><a href="#">FAQ</a></li>
                     </ul>
                 </div>
 
                 <div class="col-6 col-lg-2 footer-links">
-                    <h5>vehicles</h5>
+                    <h5>Vehicles</h5>
                     <ul>
                         <li><a href="#">Sedan</a></li>
                         <li><a href="#">Hatchback</a></li>

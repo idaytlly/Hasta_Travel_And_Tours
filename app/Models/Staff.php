@@ -1,34 +1,33 @@
 <?php
 
-// app/Models/Staff.php
-
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Staff extends Model
+class Staff extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
-    protected $table = 'staff';
-    protected $primaryKey = 'staffID';
+    protected $table = 'staff'; 
+    protected $primaryKey = 'staff_id';
 
     protected $fillable = [
-        'userID',
-        'staff_type',
-        'hire_date',
+        'name',
+        'email',
+        'phone_no',
+        'password',
+        'usertype',
+        // add other fields
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     protected $casts = [
-        'hire_date' => 'date',
+        'email_verified_at' => 'datetime',
     ];
-
-    /**
-     * Get the user that owns the staff profile.
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'userID', 'id');
-    }
 }

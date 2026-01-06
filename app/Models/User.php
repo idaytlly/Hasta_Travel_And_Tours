@@ -14,6 +14,10 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $table = 'customers';
+
+    protected $primaryKey = 'matricNum';
+    public $incrementing = false;
     /**
      * The attributes that are mass assignable.
      *
@@ -22,7 +26,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'phone',
+        'phone_no',
         'usertype',
         'password',
     ];
@@ -94,6 +98,6 @@ class User extends Authenticatable
     // Check if user is a customer
     public function isCustomer(): bool
     {
-        return $this->usertype === 'customer';
+        return $this->usertype === 'customers';
     }
 }

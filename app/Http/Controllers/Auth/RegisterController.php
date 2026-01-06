@@ -3,36 +3,31 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
-    public function showRegistrationForm()
+    public function showRegisterForm()
     {
         return view('auth.register');
     }
 
     public function register(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'phone_no' => 'nullable|string|max:20',
-            'password' => 'required|confirmed|min:8',
+        $request->validate([
+            'matricNum' => 'required|string|max:255|unique:customers,matricNum',
+            'email' => 'required|email|unique:customers,email',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone_no' => $validated['phone_no'] ?? null,
-            'password' => Hash::make($validated['password']),
-            'role' => 'customer',
+        Customer::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
         ]);
 
-        Auth::login($user);
-        return redirect('/')->with('success', 'Registration successful!');
+        return redirect()->route('login')->with('success', 'Account created successfully. Please login.');
     }
 }

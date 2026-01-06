@@ -357,9 +357,6 @@
                         <a class="nav-link nav-link-hasta " href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link nav-link-hasta active" href="{{ route('contactus') }}">Contact</a>
                     </li>
 
@@ -377,7 +374,7 @@
                     <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px; border: 2px solid #e53935; color: #e53935;">
                         Login
                     </a>
-                    <a href="{{ route('register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
+                    <a href="{{ route('auth.register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
                         Register
                     </a>
                 @else

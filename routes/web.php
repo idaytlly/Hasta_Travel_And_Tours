@@ -4,11 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -18,29 +20,30 @@ Route::get('/contact-us', [ContactController::class, 'index'])->name('contactus'
 Route::post('/contact-us', [ContactController::class, 'send'])->name('contactus.send');
 Route::view('/about-us', 'aboutus')->name('aboutus');
 
-// Guest Routes
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-    Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('/register', [RegisteredUserController::class, 'store']);
+// Guest routes
+Route::middleware('guest:customer')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
+    
+    Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('auth.register');
+    Route::post('/register', [RegisterController::class, 'register']);
+    
 });
 
-// Authenticated Routes
+
 Route::middleware('auth')->group(function () {
     // FIXED: Dashboard redirects based on usertype
-    Route::get('/dashboard', function () {
-        $user = auth()->user();
-        
-        if ($user->usertype === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->usertype === 'staff') {
-            return redirect()->route('staff.dashboard');
-        } else {
-            // Show customer dashboard
-            return app(HomeController::class)->dashboard();
-        }
+    Route::middleware('auth')->get('/dashboard', function () {
+    $user = auth()->user(); // default web guard
+    if ($user->usertype === 'admin') {
+        return redirect()->route('admin.dashboard');
+    } elseif ($user->usertype === 'staff') {
+        return redirect()->route('staff.dashboard');
+    } else {
+        return app(HomeController::class)->dashboard();
+    }
     })->name('dashboard');
+
     
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::post('/validate-voucher', [BookingController::class, 'validateVoucher'])->name('voucher.validate');

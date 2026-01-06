@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->string('matricNum')->primary();
-
             $table->string('name');
             $table->string('ic');
             $table->string('email')->unique();

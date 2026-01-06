@@ -522,7 +522,6 @@
                     <ul>
                         <li><a href="{{ route('home') }}">Home</a></li>
                         <li><a href="{{ route('staff.cars.index') }}">Vehicle Management</a></li>
-                        <li><a href="#">About Us</a></li>
                         <li><a href="{{ route('contactus') }}">Contact</a></li>
                         <li><a href="#">FAQ</a></li>
                     </ul>

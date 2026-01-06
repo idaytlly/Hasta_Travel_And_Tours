@@ -311,7 +311,7 @@
         </form>
 
         <div class="signup-link">
-            Don't have an account? <a href="{{ route('register') }}">Sign Up</a>
+            Don't have an account? <a href="{{ route('auth.register') }}">Sign Up</a>
         </div>
     </div>
 

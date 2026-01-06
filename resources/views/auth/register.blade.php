@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Hasta Car Rental</title>
+    <title>Register - Hasta Car Rental</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -169,8 +169,14 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('auth.register') }}">
         @csrf
+
+        <div class="form-group">
+            <label>Matric Number</label>
+            <input type="text" name="matricNum" placeholder="Enter your matric number"
+                   value="{{ old('matricNum') }}" required>
+        </div>
 
         <div class="form-group">
             <label>Name</label>
@@ -182,20 +188,6 @@
             <label>Email</label>
             <input type="email" name="email" placeholder="Enter your email"
                    value="{{ old('email') }}" required>
-        </div>
-
-        <div class="form-group">
-            <label>Identification Card (MyKad)</label>
-            <input type="text" name="ic" maxlength="12"
-                   placeholder="e.g. 010203040506"
-                   value="{{ old('ic') }}" required>
-        </div>
-
-        <div class="form-group">
-            <label>Phone Number</label>
-            <input type="text" name="phone_no"
-                   placeholder="e.g. 01XXXXXXXX"
-                   value="{{ old('phone_no') }}" required>
         </div>
 
         <div class="form-group">
