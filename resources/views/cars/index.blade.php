@@ -34,6 +34,7 @@
             overflow-x: hidden;
         }
 
+
         .navbar-hasta {
             background: var(--white);
             min-height: 70px;
@@ -140,6 +141,59 @@
             color: #fff !important;            
             border-color: var(--primary);     
         }
+
+
+        .brand-card { 
+            width: 120px;      
+            height: 80px;      
+            background: #fff;  
+            border-radius: 15px;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin: auto; 
+            overflow:hidden;
+        }
+        
+        .brand-card img{
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            display:block;
+        }
+
+        .brand-card:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .car-card { 
+            border-radius: 1.5rem; 
+            border: 1px solid #eee; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        .car-card img { max-height: 200px; object-fit: contain; }
+        .btn-category { 
+            border: 2px solid #c62828;
+            background :  #fff;
+            color: #c62828;
+            border-radius: 50px; 
+            padding: 10px 20px;
+            font-weight: bold; 
+            transition: all 0.3s ease;
+            
+        }
+
+        .btn-category.active, .btn-category:hover { 
+            background-color: #c62828; 
+            color: #fff; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #c62828; 
+        }
+
         .footer-hasta {
             background: var(--dark);
             color: var(--white);
@@ -260,15 +314,23 @@
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta active" href="{{ route('home') }}">Home</a>
+                        <a class="nav-link nav-link-hasta " href="{{ route('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta " href="{{ route('staff.cars.index') }}">Vehicles Management</a>
+                        <a class="nav-link nav-link-hasta active" href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta " href="{{ route('staff.bookings.index') }}">Booking Management</a>
+                        <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
                     </li>
 
+                    @auth
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-hasta" href="{{ route('profile.show') }}">Profile</a>
+                    </li>
+                    @endauth
                 </ul>
 
                 <div class="d-flex align-items-center gap-3">
@@ -294,6 +356,84 @@
             </div>
         </div>
     </nav>
+    <!-- BRAND LOGOS -->
+    <div class="container my-5">
+        <div class="row justify-content-center g-4">
+            @php
+                $brandLogos = [
+                    'toyota' => 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Toyota_EU.svg',
+                    'hyundai' => 'https://upload.wikimedia.org/wikipedia/commons/4/44/Hyundai_Motor_Company_logo.svg',
+                    'proton' => 'https://logos-world.net/wp-content/uploads/2022/12/Proton-Logo-500x281.png',
+                    'perodua' => 'https://cdn.worldvectorlogo.com/logos/perodua.svg'
+                ];
+            @endphp
+            @foreach($brandLogos as $name => $url)
+            <div class="col-6 col-sm-3 col-md-2 text-center">
+                <a href="{{ route('cars.index', ['brand' => $name]) }}" class="brand-card d-flex align-items-center justify-content-center">
+                    <img src="{{ $url }}" alt="{{ ucfirst($name) }}" class="img-fluid" style="max-height:60px;">
+                </a>
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+    @php
+    $currentCarType = request('carType');
+    @endphp
+
+<div class="container mb-4 text-center">
+    <div class="btn-group" role="group">
+        <a href="{{ route('cars.index') }}" class="btn btn-category {{ is_null($currentCarType) ? 'active' : '' }}">
+            All Vehicles <i class="fas fa-car"></i>
+        </a>
+        <a href="{{ route('cars.index', ['carType' => 'Sedan']) }}" class="btn btn-category {{ $currentCarType === 'Sedan' ? 'active' : '' }}">
+            Sedan
+        </a>
+        <a href="{{ route('cars.index', ['carType' => 'Hatchback']) }}" class="btn btn-category {{ $currentCarType === 'Hatchback' ? 'active' : '' }}">
+            Hatchback
+        </a>
+        <a href="{{ route('cars.index', ['carType' => 'MPV']) }}" class="btn btn-category {{ $currentCarType === 'MPV' ? 'active' : '' }}">
+            MPV
+        </a>
+        <a href="{{ route('cars.index', ['carType' => 'SUV']) }}" class="btn btn-category {{ $currentCarType === 'SUV' ? 'active' : '' }}">
+            SUV
+        </a>
+    </div>
+</div>
+
+
+    <!-- CAR CARDS -->
+    <div class="container mb-5">
+        <div class="row g-4">
+            @forelse($cars as $car)
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="car-card overflow-hidden">
+                    <div class="bg-light text-center p-3">
+                        <img src="{{ $car->image }}" alt="{{ $car->brand }} {{ $car->model }}" class="img-fluid">
+                    </div>
+                    <div class="p-4">
+                        <h5 class="fw-bold">{{ $car->brand }} {{ $car->model }} {{ $car->year }}</h5>
+                        <p class="text-muted">{{ $car->transmission }}</p>
+                        <div class="d-flex align-items-baseline mb-3">
+                            <span class="text-danger fw-bold fs-4">RM{{ number_format($car->daily_rate, 0) }}</span>
+                            <span class="text-muted ms-2">per day</span>
+                        </div>
+                        <div class="mb-3 text-muted small d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark"><i class="fas fa-cog text-warning"></i> {{ $car->transmission }}</span>
+                            <span class="badge bg-light text-dark"><i class="fas fa-gas-pump text-warning"></i> {{ $car->fuel_type }}</span>
+                            <span class="badge bg-light text-dark"><i class="fas fa-snowflake text-warning"></i> {{ $car->air_conditioner ? 'AC' : 'No AC' }}</span>
+                        </div>
+                        <a href="{{ route('cars.show', $car->id) }}" class="btn btn-warning w-100 text-white fw-bold">View Details</a>
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="col-12 text-center py-5">
+                <p class="text-muted fs-5 fw-bold">No vehicles found in this category.</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
     <!-- FOOTER -->
     <footer id="footer-hasta" class="footer-hasta">
         <div class="container">
@@ -366,6 +506,7 @@
             </div>
         </div>
     </footer>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>

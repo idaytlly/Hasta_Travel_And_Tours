@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us | Hasta Travel & Tours</title>
+    <title>Hasta Travel & Tours - My Profile</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 
     <style>
         :root {
@@ -143,12 +142,74 @@
             color: #fff !important;            
             border-color: var(--primary);     
         }
+
+        /* NOTIFICATION BANNER */
+        .notification-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px 25px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .notification-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .notification-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .notification-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .notification-close:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
         
         /* FOOTER */
         .footer-hasta {
             background: var(--dark);
             color: var(--white);
             padding: 80px 0 30px;
+            margin-top: 80px;
         }
 
         .footer-brand {
@@ -247,115 +308,104 @@
             color: rgba(255,255,255,0.6);
         }
 
-        .contact-section {
-            margin-bottom: 100px; /* adjust ikut nak jauh mana */
+        /* PROFILE INFO BOX */
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .info-box:hover {
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .info-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: var(--text-dark);
+            font-size: 1rem;
+            font-weight: 600;
         }
 
         /* RESPONSIVE */
-        @media (max-width: 991px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .hero-image {
-                justify-content: center;
-                padding-right: 0;
-                margin-top: 40px;
-            }
-            
-            .hero-image img {
-                max-width: 320px;
-                transform: scale(1);
-            }
-            
-            .hero-stats {
-                justify-content: center;
-            }
-        }
-
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2rem;
+            .notification-banner {
+                padding: 15px 20px;
             }
-            
-            .hero-buttons {
-                justify-content: center;
-            }
-            
-            .search-box {
-                padding: 20px;
-            }
-        }
-
-        /*TEXT*/
-        .about-text {
-        text-align: justify;
         }
     </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-hasta">
-        <div class="container">
-            <a class="logo-text" href="{{ route('home') }}">
-                <img src="{{ asset('images/hasta logo.png') }}" alt="HASTA Logo" class="logo-image">
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+<nav class="navbar navbar-expand-lg navbar-hasta">
+    <div class="container">
+        <a class="logo-text" href="{{ route('home') }}">
+            <img src="{{ asset('images/hasta logo.png') }}" alt="HASTA Logo" class="logo-image">
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-hasta " href="{{ route('home') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-hasta " href="{{ route('cars.index') }}">Vehicles</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-hasta " href="{{ route('aboutus') }}">About Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
-                    </li>
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('home') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('cars.index') }}">Vehicles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-hasta active" href="{{ route('profile.show') }}">Profile</a>
+                </li>
+            </ul>
 
-                    @auth
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="{{ route('profile.show') }}">Profile</a>
-                    </li>
-                    @endauth
-                </ul>
-
-
-
-                <div class="d-flex align-items-center gap-3">
-                @guest
-                    <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px; border: 2px solid #e53935; color: #e53935;">
-                        Login
-                    </a>
-                    <a href="{{ route('register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
-                        Register
-                    </a>
-                @else
-                    <span class="me-2">Welcome, <strong>{{ Auth::user()->name }}</strong></span>
-                    
-                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
-                            <i class="fas fa-sign-out-alt me-1"></i> Logout
-                        </button>
-                    </form>
-                @endguest
-                    </div>
-                </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="me-2">Welcome, <strong>{{ Auth::user()->name }}</strong></span>
+                
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
+                        <i class="fas fa-sign-out-alt me-1"></i> Logout
+                    </button>
+                </form>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- FOOTER -->
-<footer id="footer-hasta" class="footer-hasta">
+<div class="container mt-5 pt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+
+    <h1>Notifications</h1>
+    <p>This page will show notifications for staff.</p>
+
+        </div> 
+    </div>
+</div> 
+
+
+<!-- FOOTER -->
+<footer id="footer-hasta" class="footer-hasta w-100">
     <div class="container">
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
@@ -408,7 +458,7 @@
                     <li><a href="#">Luxury</a></li>
                 </ul>
             </div>
-
+            
             <div class="col-lg-3 footer-links">
                 <h5>Newsletter</h5>
                 <p class="text-white-50 mb-3">Subscribe for updates and special offers</p>
@@ -467,3 +517,4 @@
 
 </body>
 </html>
+

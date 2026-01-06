@@ -10,8 +10,96 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- ABOUT BANNER -->
+    <section class="contact-banner">
+        <div class="overlay">
+            <div class="container text-center text-white">
+                <h1 class="fw-bold mb-3">About Us</h1>
+                <p class="lead">
+                    Empowering student mobility with reliable and affordable travel solutions
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- YOUTUBE + ABOUT SECTION -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="row justify-content-center align-items-center">
+
+                <!-- Video Column -->
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="fw-bold mb-4 text-center">Get to Know Hasta Travel & Tours</h2>
+                    <div class="ratio ratio-16x9 rounded-4 shadow" style="max-width: 100%; margin: 0 auto;">
+                        <iframe 
+                            src="https://www.youtube.com/embed/9rXJ20kheYI?autoplay=1&mute=1"
+                            title="Hasta Travel & Tours"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+
+                <!-- About Text Column -->
+                <div class="col-lg-6">
+                    <p class="about-text">
+                        <strong>Hasta Travel & Tours Sdn. Bhd.</strong> was established in 2020
+                        with a mission to provide reliable, affordable, and student-focused mobility solutions.
+                    </p>
+
+                    <p class="about-text">
+                        The company began as an initiative to support transportation needs of students and staff
+                        at Universiti Teknologi Malaysia (UTM) Skudai. By leveraging technology and student-driven
+                        operations, Hasta has grown into a trusted campus-based car rental service.
+                    </p>
+
+                    <p class="about-text">
+                        Beyond car rentals, Hasta is expanding into travel and tourism services, including
+                        Singapore travel packages, airport transfers, and short getaway solutions.
+                    </p>
+
+                    <p class="about-text">
+                        With a strong belief in accessibility, community empowerment, and service excellence,
+                        Hasta aims to become a comprehensive mobility and travel partner for students and young professionals.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
 
     <style>
+        .contact-banner {
+            position: relative;
+            background: url('{{ asset("images/hasta.jpg") }}') center/cover no-repeat;
+            height: 350px; /* boleh adjust ikut kehendak */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 70px; /* jarakkan dari navbar tetap */
+        }
+
+        .contact-banner .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5); /* overlay supaya text jelas */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-banner h2 {
+            position: relative;
+            z-index: 2;
+            color: #fff;
+
+        }
+
         :root {
             --primary: #e53935;
             --primary-dark: #c62828;
@@ -315,7 +403,7 @@
                         <a class="nav-link nav-link-hasta " href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta " href="{{ route('aboutus') }}">About Us</a>
+                        <a class="nav-link nav-link-hasta active" href="{{ route('aboutus') }}">About Us</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
@@ -354,7 +442,42 @@
         </div>
     </nav>
 
-    <!-- FOOTER -->
+    <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar-hasta');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.car-card, .feature-box, .testimonial-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+    
+    </script>
+
+<!-- FOOTER -->
 <footer id="footer-hasta" class="footer-hasta">
     <div class="container">
         <div class="row">

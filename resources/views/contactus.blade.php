@@ -3,15 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us | Hasta Travel & Tours</title>
+    <title>Contact Us | Hasta Travel & Tours</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- CONTACT BANNER -->
+    <section class="contact-banner py-5" style="background-color: #1a1a2e;">
+    <div class="container">
+            <div class="row align-items-center">
+                <!-- Text Column -->
+                <div class="col-lg-6 col-md-12 text-start text-white">
+                    <!-- Title -->
+                    <!--<h2 class="display-4 fw-bold">Contact Us</h2> -->
+                    
+                    <!-- Description -->
+                    <p class="lead mt-3">
+                        Have any question? Feel free to contact us and let’s get in touch by following, liking, and sharing our social media for more info and upcoming promotions or updates.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
 
     <style>
+        .contact-banner {
+            position: relative;
+            background: url('{{ asset("images/contactus.jpg") }}') center/cover no-repeat;
+            height: 350px; /* boleh adjust ikut kehendak */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 70px; /* jarakkan dari navbar tetap */
+        }
+
+        .contact-banner .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5); /* overlay supaya text jelas */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-banner h2 {
+            position: relative;
+            z-index: 2;
+            color: #fff;
+
+        }
+
         :root {
             --primary: #e53935;
             --primary-dark: #c62828;
@@ -286,11 +333,6 @@
                 padding: 20px;
             }
         }
-
-        /*TEXT*/
-        .about-text {
-        text-align: justify;
-        }
     </style>
 </head>
 <body>
@@ -315,10 +357,10 @@
                         <a class="nav-link nav-link-hasta " href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta " href="{{ route('aboutus') }}">About Us</a>
+                        <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
+                        <a class="nav-link nav-link-hasta active" href="{{ route('contactus') }}">Contact</a>
                     </li>
 
                     @auth
@@ -354,7 +396,109 @@
         </div>
     </nav>
 
-    <!-- FOOTER -->
+    <script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar-hasta');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.car-card, .feature-box, .testimonial-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+
+    
+</script>
+
+            <!-- CONTACT FORM SECTION -->
+            <section class="contact-section container mt-5 pt-5 mb-10">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10">
+
+                        <p class="text-center text-muted mb-5">
+                            Get in touch with us by email or phone. We'd love to hear from you!
+                        </p>
+
+            <!-- Info -->
+            <div class="mb-4 text-center">
+                <p>Email: <a href="hastatraveltours@gmail.com"><strong>hastatraveltours@gmail.com</strong></a></p>
+                <p>Phone: <a href="tel:01110900700"><strong>011-10900700</strong></a></p>
+                <p><strong>LOT 1, STUDENT MALL, LINGKARAN ILMU UNIVERSITI TEKNOLOGI MALAYSIA SKUDAI, 81300 Johor Bahru, Johor, Malaysia</strong></p>
+            </div>
+
+            <!-- Card Wrapper -->
+            <div class="card shadow p-4">
+                <h5 class="card-title text-center mb-4">Contact Form</h5>
+
+                <form action="{{ route('contactus.send') }}" method="POST">
+                    @csrf
+
+                    <div class="mb-3">
+                        <label for="enquiry_type" class="form-label">Please Select Enquiry Type</label>
+                        <select class="form-select" id="enquiry_type" name="enquiry_type" required>
+                            <option value="" disabled selected>Select type</option>
+                            <option value="booking">Booking</option>
+                            <option value="feedback">Feedback</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter your phone number">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="booking_number" class="form-label">Booking Number (If available)</label>
+                        <input type="text" class="form-control" id="booking_number" name="booking_number">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="comments" class="form-label">Comments and Enquiry</label>
+                        <textarea class="form-control" id="comments" name="comments" rows="5" required></textarea>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-login px-5">Submit</button>
+                    </div>
+
+                </form>
+            </div> <!-- end card -->
+
+
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
 <footer id="footer-hasta" class="footer-hasta">
     <div class="container">
         <div class="row">
