@@ -31,6 +31,7 @@
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-light);
             overflow-x: hidden;
+            padding-top: 110px;
         }
 
         /* NAVBAR */
@@ -291,9 +292,9 @@
 
         /* SEARCH BOX */
         .search-section {
-            margin-top: -60px;
+            margin-top: -40px;
             position: relative;
-            z-index: 10;
+            z-index: 5;
         }
 
         .search-box {
@@ -779,9 +780,6 @@
                         <a class="nav-link nav-link-hasta " href="{{ route('cars.index') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-hasta" href="{{ route('aboutus') }}">About Us</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link nav-link-hasta" href="{{ route('contactus') }}">Contact</a>
                     </li>
 
@@ -795,70 +793,29 @@
 
 
                 <div class="d-flex align-items-center gap-3">
-                @guest
-                    <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px; border: 2px solid #e53935; color: #e53935;">
-                        Login
-                    </a>
-                    <a href="{{ route('register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
-                        Register
-                    </a>
-                @else
-                    <span class="me-2">Welcome, <strong>{{ Auth::user()->name }}</strong></span>
-                    
-                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
-                            <i class="fas fa-sign-out-alt me-1"></i> Logout
-                        </button>
-                    </form>
-                @endguest
+                     @if(Auth::guard('customer')->check())
+                        <h6>Welcome, {{ Auth::guard('customer')->user()->name }}</h6>
+
+                        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-secondary" style="border-radius: 30px; padding: 8px 20px;">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </button>
+                        </form>
+                    @else
+                        <h6>Welcome, Guest</h6>
+                        <a href="{{ route('login') }}" class="btn btn-outline-danger" style="padding: 10px 25px; border-radius: 30px; border: 2px solid #e53935; color: #e53935;">
+                            Login
+                        </a>
+                        <a href="{{ route('auth.register') }}" class="btn btn-login" style="background: #e53935; color: white; padding: 10px 25px; border-radius: 30px;">
+                            Register
+                        </a>
+                    @endif
                     </div>
                 </div>
             </div>
         </div>
     </nav>
-
-<!-- HERO SECTION -->
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <div class="hero-content">
-                    <h1 class="hero-title">
-                        Drive Your <span>Dream Car</span> Today!
-                    </h1>
-                    <p class="hero-subtitle">
-                        We believe your rental car should enhance your trip, not just be a part of it. Experience premium car rental services with HASTA.
-                    </p>
-                    
-                    <div class="hero-buttons">
-                        <a href="{{ route('cars.index') }}" class="btn-hero-primary">
-                            <i class="fas fa-car"></i> Browse Cars
-                        </a>
-                        <a href="#" class="btn-hero-outline">
-                            <i class="fas fa-play-circle"></i> Watch Video
-                        </a>
-                    </div>
-
-                    <div class="hero-stats">
-                        <div class="stat-item">
-                            <div class="stat-number">500+</div>
-                            <div class="stat-label">Happy Customers</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">50+</div>
-                            <div class="stat-label">Premium Cars</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">10+</div>
-                            <div class="stat-label">Years Experience</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- SEARCH BOX -->
 <section class="search-section">
@@ -869,9 +826,9 @@
                     <div class="col-md-3">
                         <label class="form-label"><i class="fas fa-map-marker-alt text-danger me-2"></i>Pick-up Location</label>
                         <select class="form-select" name="location">
-                            <option>Johor Bahru</option>
-                            <option>Kuala Lumpur</option>
-                            <option>Penang</option>
+                            <option>Hasta Office</option>
+                            <option>Kolej</option>
+                            <option>Faculty</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -975,7 +932,7 @@
                             </div>
 
                             @guest
-                                <a href="{{ route('register') }}" class="btn btn-book">
+                                <a href="{{ route('auth.register') }}" class="btn btn-book">
                                     <i class="fas fa-calendar-check me-2"></i>Book Now
                                 </a>
                             @else
@@ -1035,148 +992,6 @@
     </div>
 </section>
 
-<!-- WHY CHOOSE US -->
-<section class="why-section">
-    <div class="container">
-        <div class="section-title">
-            <h2>Why Choose <span class="accent">HASTA</span>?</h2>
-            <p>We provide the best car rental experience in Malaysia</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-box">
-                    <div class="feature-icon">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <h4>Best Prices</h4>
-                    <p>Competitive rates with no hidden fees. Get the best value for your money.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-box">
-                    <div class="feature-icon">
-                        <i class="fas fa-car-side"></i>
-                    </div>
-                    <h4>Quality Cars</h4>
-                    <p>Well-maintained vehicles that are regularly serviced and cleaned.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-box">
-                    <div class="feature-icon">
-                        <i class="fas fa-headset"></i>
-                    </div>
-                    <h4>24/7 Support</h4>
-                    <p>Round-the-clock customer service to assist you anytime.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-box">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h4>Fully Insured</h4>
-                    <p>All our vehicles come with comprehensive insurance coverage.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section class="py-5">
-    <div class="container py-5">
-        <div class="section-title">
-            <h2>What Our <span class="accent">Customers</span> Say</h2>
-            <p>Real reviews from real customers</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="testimonial-card">
-                    <div class="stars mb-3">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="testimonial-text">
-                        "Excellent service! The car was clean and well-maintained. Will definitely rent again!"
-                    </p>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer">
-                        <div>
-                            <h5>Ahmad Rizal</h5>
-                            <span>Business Traveler</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="testimonial-card">
-                    <div class="stars mb-3">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p class="testimonial-text">
-                        "Very affordable prices and the booking process was super easy. Highly recommended!"
-                    </p>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer">
-                        <div>
-                            <h5>Sarah Lim</h5>
-                            <span>Family Vacation</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="testimonial-card">
-                    <div class="stars mb-3">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                    </div>
-                    <p class="testimonial-text">
-                        "Great experience from start to finish. The team is very professional and helpful."
-                    </p>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Customer">
-                        <div>
-                            <h5>Raj Kumar</h5>
-                            <span>Weekend Trip</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA SECTION -->
-<section class="cta-section">
-    <div class="container">
-        <h2>Ready to Hit the Road?</h2>
-        <p>Book your car today and enjoy the freedom of the open road!</p>
-        @guest
-            <a href="{{ route('register') }}" class="btn-cta">
-                <i class="fas fa-user-plus me-2"></i>Get Started Now
-            </a>
-        @else
-            <a href="{{ route('cars.index') }}" class="btn-cta">
-                <i class="fas fa-car me-2"></i>Browse Cars
-            </a>
-        @endguest
-    </div>
-</section>
-
 <!-- FOOTER -->
 <footer id="footer-hasta" class="footer-hasta">
     <div class="container">
@@ -1215,9 +1030,7 @@
                 <ul>
                     <li><a href="{{ route('home') }}">Home</a></li>
                     <li><a href="{{ route('cars.index') }}">Vehicles</a></li>
-                    <li><a href="#">About Us</a></li>
                     <li><a href="{{ route('contactus') }}">Contact</a></li>
-                    <li><a href="#">FAQ</a></li>
                 </ul>
             </div>
 
