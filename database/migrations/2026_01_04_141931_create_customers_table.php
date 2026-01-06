@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('postcode')->nullable();
-            $table->string('license_no');
+            $table->string('license_no')->nullable();
             $table->string('emergency_phoneNo')->unique()->nullable();
             $table->string('emergency_name')->nullable();
             $table->tinyText('emergency_relationship')->nullable();
