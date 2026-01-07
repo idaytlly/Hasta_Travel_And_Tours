@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - HASTA</title>
+    <title>Register | Hasta Travel And Tours</title>
     <style>
         * {
             margin: 0;
@@ -166,7 +166,7 @@
         .register-button {
             width: 100%;
             padding: 16px;
-            background: #ff5722;
+            background: #EC592B;
             color: white;
             border: none;
             border-radius: 8px;
