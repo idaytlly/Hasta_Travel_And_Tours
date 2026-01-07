@@ -75,6 +75,94 @@
     background-color: #F0785B;
     border-color: #F0785B;
 }
+
+/* Car Cards */
+.car-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+}
+
+.car-card:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.car-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+}
+
+.car-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.car-type {
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.car-price {
+    color: #F0785B;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.car-price small {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+.car-features {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.car-features span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn-view-details {
+    background: #F0785B;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.btn-view-details:hover {
+    background: #e06849;
+    color: white;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    font-weight: 700;
+    font-size: 2rem;
+}
+
 </style>
 
 <!-- Beige Section -->
@@ -160,5 +248,66 @@
         </div>
     </div>
 </div>
+
+<!-- Car Listings -->
+    <div class="section-header">
+        <h2>Choose the car that suits you</h2>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- Car 1 -->
+        <div class="col-md-4">
+            <div class="car-card">
+                <img src="images/car1.jpeg" alt="Car">
+                <h3 class="car-name">Perodua Axia 2018</h3>
+                <p class="car-type">Hatchback</p>
+                <div class="car-features">
+                    <span>⚙️ Automat</span>
+                    <span>👥 NON 95</span>
+                    <span>❄️ Air Conditioner</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="car-price">RM120 <small>per day</small></div>
+                </div>
+                <button class="btn btn-view-details">View Details</button>
+            </div>
+        </div>
+
+        <!-- Car 2 -->
+        <div class="col-md-4">
+            <div class="car-card">
+                <img src="images/car2.jpg" alt="Car">
+                <h3 class="car-name">Perodua Bezza 2018</h3>
+                <p class="car-type">Sedan</p>
+                <div class="car-features">
+                    <span>⚙️ Automat</span>
+                    <span>👥 NON 95</span>
+                    <span>❄️ Air Conditioner</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="car-price">RM140 <small>per day</small></div>
+                </div>
+                <button class="btn btn-view-details">View Details</button>
+            </div>
+        </div>
+
+        <!-- Car 3 -->
+        <div class="col-md-4">
+            <div class="car-card">
+                <img src="images/car3.jpg" alt="Car">
+                <h3 class="car-name">Perodua Myvi 2015</h3>
+                <p class="car-type">Hatchback</p>
+                <div class="car-features">
+                    <span>⚙️ Automat</span>
+                    <span>👥 NON 95</span>
+                    <span>❄️ Air Conditioner</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="car-price">RM120 <small>per day</small></div>
+                </div>
+                <button class="btn btn-view-details">View Details</button>
+            </div>
+        </div>
+</div>  
 
 @endsection
