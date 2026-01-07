@@ -2,21 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>@yield('title', 'Hasta Car Rental')</title>
+    <title>Home Page | Hasta Travel And Tours</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
-    {{-- Navbar --}}
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('guest.home') }}">HASTA</a>
-            <div class="ms-auto">
-                <a href="{{ route('login') }}" class="btn btn-outline-dark me-2">Login</a>
-                <a href="{{ route('register') }}" class="btn btn-dark">Register</a>
-            </div>
+
+    <style>
+        .navbar-custom {
+        background-color: #CB3737; /* merah gelap */
+        padding-top: 1.0rem;       /* tambah ruang atas */
+        padding-bottom: 1.0rem;    /* tambah ruang bawah */
+        }
+
+        .btn-login {
+        color: white; /* text */
+        background-color: #D3D3D3; /* kelabu cair */
+        border: 1.2px solid #000; /* border hitam */
+        font-weight: bold; /* bold text */
+        }
+
+        .btn-login:hover {
+            background-color: #C0C0C0; /* kelabu lebih gelap on hover */
+            color: #000;
+        }
+
+        .btn-register {
+            color: white; /* text */
+            background-color: #FF6347; /* tomato red */
+            border: 1.2px solid #000; /* border hitam */
+            font-weight: bold; /* bold text */
+        }
+
+        .btn-register:hover {
+            background-color: #E5533D; /* tomato lebih gelap */
+        }
+    </style>
+
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm">
+    <div class="container">
+
+        {{-- Logo --}}
+        <div class="navbar-brand d-flex align-items-center">
+            <img 
+                src="{{ asset('images/logo_hasta.jpeg') }}" 
+                alt="Hasta Travel & Tours" 
+                height="40"
+            >
         </div>
+
+        {{-- Login / Register --}}
+        <div class="ms-auto">
+            <a href="{{ route('login') }}" class="btn btn-login me-2">Login</a>
+            <a href="{{ route('register') }}" class="btn btn-register">Register</a>
+        </div>
+
+
+    </div>
     </nav>
+
+
+
 
     {{-- Page Content --}}
     <main>
@@ -48,18 +94,9 @@
                 </div>
 
                 <div class="col-md-3">
-                    <h6 class="fw-bold">TOP CITIES</h6>
-                    <ul class="list-unstyled">
-                        <li>Kuala Lumpur</li>
-                        <li>Johor</li>
-                        <li>Penang</li>
-                    </ul>
-                </div>
-
-                <div class="col-md-3">
                     <h6 class="fw-bold">NEED A HELPING HAND?</h6>
                     <p class="mb-1">📞 +60 3 6419 5001</p>
-                    <p class="mb-1">✉ support@wahdah.my</p>
+                    <p class="mb-1">✉ hastatraveltours@gmail.com</p>
                 </div>
 
             </div>
