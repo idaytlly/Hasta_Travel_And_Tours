@@ -7,18 +7,28 @@ use Illuminate\Notifications\Notifiable;
 
 class Customer extends Authenticatable
 {
-    use Notifiable;
-
-    protected $table = 'customers';
-
     protected $fillable = [
-        'name',
-        'matricNum',
         'email',
-        'password'
+        'password',
+        // profile fields
+        'matricNum',
+        'name',
+        'ic',
+        'phone_no',
+        'address',
+        'state',
+        'city',
+        'postcode',
+        'license_no',
+        'emergency_phoneNo',
+        'emergency_name',
+        'emergency_relationship',
     ];
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 }
+?>
+

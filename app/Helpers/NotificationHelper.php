@@ -3,14 +3,14 @@
 namespace App\Helpers;
 
 use App\Models\Notification;
-use App\Models\User;
+use App\Models\Customer;
 
 class NotificationHelper
 {
     /**
      * Create a new booking notification.
      */
-    public static function createBookingNotification(User $user, string $title, string $message, ?string $link = null, ?array $data = null): Notification
+    public static function createBookingNotification(Customer $user, string $title, string $message, ?string $link = null, ?array $data = null): Notification
     {
         return Notification::create([
             'user_id' => $user->id,
@@ -25,7 +25,7 @@ class NotificationHelper
     /**
      * Create a new inspection notification.
      */
-    public static function createInspectionNotification(User $user, string $title, string $message, ?string $link = null, ?array $data = null): Notification
+    public static function createInspectionNotification(Customer $user, string $title, string $message, ?string $link = null, ?array $data = null): Notification
     {
         return Notification::create([
             'user_id' => $user->id,

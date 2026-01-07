@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Home | Hasta Travel And Tours</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -32,48 +31,116 @@
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-light);
             overflow-x: hidden;
-            padding-top: 110px;
+            padding-top: 70px;
         }
 
+        /* MINIMALIST NAVBAR */
         .navbar-custom {
             background-color: #CB3737;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 0.75rem 0;
+            transition: all 0.3s ease;
         }
 
-        .navbar-brand img {
-            filter: none;
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e53935;
+            text-decoration: none;
+            letter-spacing: 1px;
         }
 
-        .btn-login {
+        .navbar-brand:hover {
+            color: #c62828;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-link-custom {
             color: white;
-            background-color: #962E0F;
-            border: 1px solid #0000;
+            text-decoration: none;
             font-weight: 500;
-            padding: 8px 20px;
-            border-radius: 8px;
-            transition: all 0.2s;
+            font-size: 0.95rem;
+            position: relative;
+            transition: color 0.3s ease;
         }
 
-        .btn-login:hover {
-            background-color: #f9fafb;
-            border-color: #0000;
-            color: #1f2937;
+        .nav-link-custom:hover {
+            color: #500403ff;
         }
 
-        .btn-register {
-            color: white;
-            background-color: #F0785B;
+        .nav-link-custom::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #e53935;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link-custom:hover::after {
+            width: 100%;
+        }
+
+        .nav-link-custom.active {
+            color: #e53935;
+        }
+
+        .nav-link-custom.active::after {
+            width: 100%;
+        }
+
+        .profile-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
             border: none;
-            font-weight: 500;
-            padding: 8px 20px;
-            border-radius: 8px;
-            transition: all 0.2s;
         }
 
-        .btn-register:hover {
-            background-color: #e06849;
+        .profile-btn:hover {
+            background-color: #e53935;
             color: white;
+        }
+
+        .profile-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* Mobile Toggle */
+        .navbar-toggler {
+            border: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            position: relative;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        .navbar-toggler span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background-color: #333;
+            margin: 5px 0;
+            transition: all 0.3s ease;
         }
 
         /* FOOTER */
@@ -179,66 +246,63 @@
             color: rgba(255,255,255,0.6);
         }
 
-         /* RESPONSIVE */
+        /* RESPONSIVE */
         @media (max-width: 991px) {
-            .hero-title {
-                font-size: 2.5rem;
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem 0;
             }
-            
-            .hero-image {
-                justify-content: center;
-                padding-right: 0;
-                margin-top: 40px;
-            }
-            
-            .hero-image img {
-                max-width: 320px;
-                transform: scale(1);
-            }
-            
-            .hero-stats {
-                justify-content: center;
+
+            .navbar-collapse {
+                margin-top: 1rem;
             }
         }
 
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2rem;
-            }
-            
-            .hero-buttons {
-                justify-content: center;
-            }
-            
-            .search-box {
-                padding: 20px;
+            body {
+                padding-top: 60px;
             }
         }
-
     </style>
 
+    <!-- MINIMALIST NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
-    <div class="container">
-        {{-- Logo --}}
-        <div class="navbar-brand">
-            <img 
-                src="{{ asset('images/logo_hasta.jpeg') }}" 
-                alt="Hasta Travel & Tours" 
-                height="40"
-            >
-        </div>
+        <div class="container">
+             {{-- Logo --}}
+            <div class="navbar-brand">
+                <img 
+                    src="{{ asset('images/logo_hasta.jpeg') }}" 
+                    alt="Hasta Travel & Tours" 
+                    height="40"
+                >
+            </div>
 
-        {{-- Login / Register --}}
-        <div class="ms-auto d-flex gap-2">
-            <a href="{{ route('login') }}" class="btn btn-login">Login</a>
-            <a href="{{ route('register') }}" class="btn btn-register">Register</a>
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- Nav Links -->
+            <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
+                <div class="nav-links">
+                    <a href="{{ route('customer.home') }}" class="nav-link-custom">Home</a>
+                    <a href="#" class="nav-link-custom">Fleet</a>
+                </div>
+            </div>
+
+            <!-- Profile Icon -->
+            <a href="#" class="profile-btn d-none d-lg-flex">
+                <i class="fas fa-user"></i>
+            </a>
         </div>
-    </div>
     </nav>
 
     {{-- Page Content --}}
     <main>
-    @yield('content')
+        @yield('content')
     </main>
 
     {{-- Footer --}}
@@ -312,5 +376,6 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

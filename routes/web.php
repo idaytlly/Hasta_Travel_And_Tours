@@ -1,15 +1,20 @@
 <?php
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\AuthenticatedSessionController;
 
-    Route::get('/', function () {
-        return view('guest.home');
-    })->name('guest.home');
+// Registration
+Route::get('/register', [RegisterController::class, 'create'])->name('register');
+Route::post('/register', [RegisterController::class, 'store']);
 
-    Route::get('/login', function () {
-        return view('auth.login');
-    })->name('login');
+// Login
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
-    Route::get('/register', function () {
-        return view('auth.register');
-    })->name('register');
+// Logout
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+Route::get('/customer/home', function () {
+    return view('customer.home');
+})->name('customer.home');
+
 ?>

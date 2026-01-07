@@ -2,8 +2,7 @@
 
 namespace App\Actions\Fortify;
 
-use App\Models\User;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
@@ -11,73 +10,37 @@ use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
     /**
-     * Validate and update the given user's profile information.
-     *
-     * @param  array<string, mixed>  $input
+     * Validate and update the customer's profile information.
      */
-    public function update(User $user, array $input): void
+    public function update(Customer $customer, array $input): void
     {
-        // Base validation
-        $rules = [
+        Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('customers')->ignore($customer->id),
+            ],
             'phone' => ['required', 'string', 'max:15'],
-        ];
+            'ic' => ['required', 'digits:12', Rule::unique('customers')->ignore($customer->id)],
+            'street' => ['nullable', 'string', 'max:255'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'state' => ['nullable', 'string', 'max:100'],
+            'postcode' => ['nullable', 'string', 'max:10'],
+            'license_no' => ['nullable', 'string', 'max:50'],
+        ])->validateWithBag('updateProfileInformation');
 
-        // Only for customers
-        if ($user->usertype === 'customer' || $user->usertype === 'user') {
-            $rules = array_merge($rules, [
-                'ic' => ['required','digits:12', Rule::unique('users')->ignore($user->id)],
-                'street' => ['nullable','string','max:255'],
-                'city' => ['nullable','string','max:100'],
-                'state' => ['nullable','string','max:100'],
-                'postcode' => ['nullable','string','max:10'],
-                'license_no' => ['nullable','string','max:50'],
-            ]);
-        }
-
-        Validator::make($input, $rules)->validateWithBag('updateProfileInformation');
-
-        // Update verified email if changed
-        if ($input['email'] !== $user->email && $user instanceof MustVerifyEmail) {
-            $this->updateVerifiedUser($user, $input);
-        } else {
-            // Fill common fields
-            $user->forceFill([
-                'name' => $input['name'],
-                'email' => $input['email'],
-                'phone' => $input['phone'],
-            ]);
-
-            // Fill customer-only fields
-            if ($user->usertype === 'customer' || $user->usertype === 'user') {
-                $user->forceFill([
-                    'ic' => $input['ic'],
-                    'street' => $input['street'] ?? null,
-                    'city' => $input['city'] ?? null,
-                    'state' => $input['state'] ?? null,
-                    'postcode' => $input['postcode'] ?? null,
-                    'license_no' => $input['license_no'] ?? null,
-                ]);
-            }
-
-            $user->save();
-        }
-    }
-
-    /**
-     * Update the given verified user's profile information.
-     *
-     * @param  array<string, string>  $input
-     */
-    protected function updateVerifiedUser(User $user, array $input): void
-    {
-        $user->forceFill([
+        $customer->forceFill([
             'name' => $input['name'],
             'email' => $input['email'],
-            'email_verified_at' => null,
+            'phone' => $input['phone'],
+            'ic' => $input['ic'],
+            'street' => $input['street'] ?? null,
+            'city' => $input['city'] ?? null,
+            'state' => $input['state'] ?? null,
+            'postcode' => $input['postcode'] ?? null,
+            'license_no' => $input['license_no'] ?? null,
         ])->save();
-
-        $user->sendEmailVerificationNotification();
     }
 }

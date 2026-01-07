@@ -2,37 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
-    public function showRegister()
+    // Show registration form
+    public function create()
     {
-        return view('customer.register');
+        return view('auth.register');
     }
 
-    public function register(Request $request)
+    // Handle registration form submission
+    public function store(Request $request)
     {
+        // Validate input
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'matricNum' => 'required|string|max:255',
-            'email'    => 'required|email|unique:customers,email',
-            'password' => 'required|min:8|confirmed',
+            'email' => 'required|string|email|max:255|unique:customers',
+            'password' => 'required|string|confirmed|min:8',
         ]);
 
+        // Create user
         $customer = Customer::create([
-            'name'     => $request->name,
-            'matricNum' => $request->matricNum,
-            'email'    => $request->email,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        // Auto login selepas register
-        Auth::guard('customer')->login($customer);
+        // Log in the user
+        auth()->login($customer);
 
-        return redirect('/customer/dashboard');
+        // Redirect after registration
+        return redirect()->route('customer.home'); // change to your desired route
     }
 }

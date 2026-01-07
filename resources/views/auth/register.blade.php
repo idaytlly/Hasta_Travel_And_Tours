@@ -251,33 +251,6 @@
         <form method="POST" action="{{ route('register') }}">
             @csrf
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="first_name">Name</label>
-                    <input 
-                        type="text" 
-                        id="name" 
-                        name="name" 
-                        placeholder="Enter your name" 
-                        value="{{ old('name') }}"
-                        required 
-                        autofocus
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="last_name">Matric Number</label>
-                    <input 
-                        type="text" 
-                        id="matricNum" 
-                        name="matricNum" 
-                        placeholder="e.g. A23CS0192" 
-                        value="{{ old('matricNum') }}"
-                        required
-                    >
-                </div>
-            </div>
-
             <div class="form-group">
                 <label for="email">Email address</label>
                 <input 
@@ -305,7 +278,7 @@
                 <label for="password_confirmation">Confirm Password</label>
                 <input 
                     type="password" 
-                    id="password_confirmation" 
+                    id="password" 
                     name="password_confirmation" 
                     placeholder="Confirm Password" 
                     required

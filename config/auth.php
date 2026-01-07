@@ -19,6 +19,11 @@ return [
     */
     'guards' => [
 
+        'web' => [ 
+        'driver' => 'session',
+        'provider' => 'users',
+        ],
+
         'customer' => [
             'driver' => 'session',
             'provider' => 'customers',
@@ -38,6 +43,11 @@ return [
     */
     'providers' => [
 
+        'users' => [ // 🔥 WAJIB UNTUK FORTIFY
+        'driver' => 'eloquent',
+        'model' => App\Models\Customer::class,
+        ],
+        
         'customers' => [
             'driver' => 'eloquent',
             'model' => App\Models\Customer::class,
