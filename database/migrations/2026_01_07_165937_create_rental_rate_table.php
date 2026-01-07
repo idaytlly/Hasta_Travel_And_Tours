@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('rate_id')->primary();
 
             $table->integer('hours');
-            $table->decimal('rate_price', 10, 2);
+            $table->double('rate_price');
 
             $table->timestamps();
 
