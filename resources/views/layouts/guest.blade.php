@@ -88,28 +88,28 @@
         }
     </style>
 
-    <nav class="navbar navbar-expand-lg navbar-custom">
-        <div class="container">
-            {{-- Logo --}}
-            <div class="navbar-brand">
-                <img 
-                    src="{{ asset('images/logo_hasta.jpeg') }}" 
-                    alt="Hasta Travel & Tours" 
-                    height="40"
-                >
-            </div>
-
-            {{-- Login / Register --}}
-            <div class="ms-auto d-flex gap-2">
-                <a href="{{ route('login') }}" class="btn btn-login">Login</a>
-                <a href="{{ route('register') }}" class="btn btn-register">Register</a>
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container">
+        {{-- Logo --}}
+        <div class="navbar-brand">
+            <img 
+                src="{{ asset('images/logo_hasta.jpeg') }}" 
+                alt="Hasta Travel & Tours" 
+                height="40"
+            >
         </div>
+
+        {{-- Login / Register --}}
+        <div class="ms-auto d-flex gap-2">
+            <a href="{{ route('login') }}" class="btn btn-login">Login</a>
+            <a href="{{ route('register') }}" class="btn btn-register">Register</a>
+        </div>
+    </div>
     </nav>
 
     {{-- Page Content --}}
-    <main>
-        @yield('content')
+    <main style="padding-top: 80px;">
+    @yield('content')
     </main>
 
     {{-- Footer --}}
