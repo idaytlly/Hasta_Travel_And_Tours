@@ -64,7 +64,7 @@
             height: 50px;
             background: #000;
             border-radius: 50%;
-            top: 25px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -72,7 +72,7 @@
         .profile-icon::after {
             content: '';
             position: absolute;
-            width: 100px;
+            width: 85px;
             height: 100px;
             background: #000;
             border-radius: 50%;
