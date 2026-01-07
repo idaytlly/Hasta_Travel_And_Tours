@@ -18,23 +18,11 @@ return new class extends Migration
             $table->string('model')->nullable();
             $table->string('year')->nullable();
             $table->string('category')->nullable();
-            $table->string('daily_rate')->nullable();
-            $table->string('mileage')->nullable();
             $table->string('image')->nullable();
-            $table->string('air_conditioner')->nullable();
-            $table->string('passengers')->nullable();
-            $table->string('seats')->nullable();
-            $table->string('fuel_type')->nullable();
-            $table->string('vehicle_type')->nullable();
-            $table->double('price_perDay')->nullable();
             $table->double('price_perHour')->nullable();
             $table->string('availability_status')->nullable();
-            $table->string('phone_no')->nullable();
 
             //FK
-            $table->string('matricNum')->nullable();
-            $table->foreign('matricNum')->references('matricNum')->on('customers');
-
             $table->string('staff_id')->nullable();
             $table->foreign('staff_id')->references('staff_id')->on('staff');
 
