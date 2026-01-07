@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+
+class Staff extends Authenticatable
+{
+    use Notifiable;
+
+    protected $table = 'staff';
+
+    protected $fillable = [
+        'email',
+        'password'
+    ];
+
+    protected $hidden = [
+        'password',
+    ];
+}

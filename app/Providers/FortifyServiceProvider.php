@@ -13,6 +13,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\RegisterResponse;
+
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -35,6 +38,10 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
+        Fortify::registerView(function () {
+            return view('auth.register');
+        });
+        
         // **Redirect after login**
         $this->app->instance(LoginResponse::class, new class implements \Laravel\Fortify\Contracts\LoginResponse {
             public function toResponse($request)

@@ -2,28 +2,45 @@
 
 return [
 
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Defaults
+    |--------------------------------------------------------------------------
+    */
     'defaults' => [
-        'guard' => 'web', // default guard for Laravel
-        'passwords' => 'users',
+        'guard' => 'customer',      // default login = customer
+        'passwords' => 'customers',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Guards
+    |--------------------------------------------------------------------------
+    */
     'guards' => [
-    'web' => [
-        'driver' => 'session',
-        'provider' => 'customers',  // default guard uses customers table
-    ],
-    'customer' => [
-        'driver' => 'session',
-        'provider' => 'customers',
+
+        'customer' => [
+            'driver' => 'session',
+            'provider' => 'customers',
+        ],
+
+        'staff' => [
+            'driver' => 'session',
+            'provider' => 'staff',
+        ],
+
     ],
 
-    
-    ],
-
+    /*
+    |--------------------------------------------------------------------------
+    | User Providers
+    |--------------------------------------------------------------------------
+    */
     'providers' => [
-        'admins' => [
+
+        'customers' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Admin::class,
+            'model' => App\Models\Customer::class,
         ],
 
         'staff' => [
@@ -31,29 +48,29 @@ return [
             'model' => App\Models\Staff::class,
         ],
 
-        'customers' => [ // <- provider for your Customer model
-            'driver' => 'eloquent',
-            'model' => App\Models\Customer::class,
-        ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Password Reset
+    |--------------------------------------------------------------------------
+    */
     'passwords' => [
-        'admins' => [
-            'provider' => 'admins',
+
+        'customers' => [
+            'provider' => 'customers',
             'table' => 'password_resets',
             'expire' => 60,
+            'throttle' => 60,
         ],
 
         'staff' => [
             'provider' => 'staff',
             'table' => 'password_resets',
             'expire' => 60,
+            'throttle' => 60,
         ],
 
-        'customers' => [
-            'provider' => 'customers',
-            'table' => 'password_resets',
-            'expire' => 60,
-        ],
     ],
+
 ];
