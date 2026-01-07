@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('vehicle', function (Blueprint $table) {
             $table->string('plate_no')->primary();
 
-            $table->string('brand')->nullable();
-            $table->string('model')->nullable();
-            $table->string('year')->nullable();
-            $table->string('category')->nullable();
+            $table->string('name')->nullable();
+            $table->string('vehicle_type')->nullable();
             $table->string('image')->nullable();
             $table->double('price_perHour')->nullable();
             $table->string('availability_status')->nullable();
