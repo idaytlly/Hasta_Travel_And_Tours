@@ -5,4 +5,11 @@ use Illuminate\Support\Facades\Route;
         return view('guest.home');
     })->name('guest.home');
 
+    Route::get('/login', function () {
+        return view('auth.login');
+    })->name('login');
+
+    Route::get('/register', function () {
+        return view('auth.register');
+    })->name('register');
 ?>

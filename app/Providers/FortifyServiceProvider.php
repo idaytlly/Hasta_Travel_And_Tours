@@ -39,7 +39,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
         Fortify::registerView(function () {
-            return view('auth.register');
+            return view('register');
         });
         
         // **Redirect after login**
