@@ -6,6 +6,10 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
+body {
+    padding-top: 70px; /* adjust based on your navbar height */
+}
+
 /* Beige Section - from header to end of card */
 .beige-section {
     background-color: #F2ECEB;
