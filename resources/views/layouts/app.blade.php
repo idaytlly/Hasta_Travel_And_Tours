@@ -98,27 +98,120 @@
             width: 100%;
         }
 
+        .profile-dropdown {
+            position: relative;
+        }
+
         .profile-btn {
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #f25c59ff 0%, #e06a6aff 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #333;
+            color: white;
             text-decoration: none;
             transition: all 0.3s ease;
-            border: none;
+            border: 3px solid rgba(229, 57, 53, 0.2);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(229, 57, 53, 0.3);
         }
 
         .profile-btn:hover {
-            background-color: #e53935;
-            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(229, 57, 53, 0.4);
+            border-color: rgba(229, 57, 53, 0.4);
         }
 
         .profile-btn i {
             font-size: 1.1rem;
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .dropdown-menu-custom.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header-custom {
+            padding: 20px;
+            background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .dropdown-header-custom .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .dropdown-header-custom .user-email {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .dropdown-item-custom {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .dropdown-item-custom:hover {
+            background-color: #f8f9fa;
+            border-left-color: #e53935;
+            padding-left: 25px;
+        }
+
+        .dropdown-item-custom i {
+            width: 20px;
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .dropdown-item-custom:hover i {
+            color: #e53935;
+        }
+
+        .dropdown-divider-custom {
+            height: 1px;
+            background-color: #e9ecef;
+            margin: 8px 0;
+        }
+
+        .dropdown-item-custom.logout {
+            color: #dc3545;
+        }
+
+        .dropdown-item-custom.logout i {
+            color: #dc3545;
+        }
+
+        .dropdown-item-custom.logout:hover {
+            background-color: #fff5f5;
+            border-left-color: #dc3545;
         }
 
         /* Mobile Toggle */
@@ -290,13 +383,50 @@
                 <div class="nav-links">
                     <a href="{{ route('customer.home') }}" class="nav-link-custom">Home</a>
                     <a href="#" class="nav-link-custom">Fleet</a>
+                    <a href="#" class="nav-link-custom">Rewards</a>
                 </div>
             </div>
 
-            <!-- Profile Icon -->
-            <a href="#" class="profile-btn d-none d-lg-flex">
-                <i class="fas fa-user"></i>
-            </a>
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown d-none d-lg-block">
+                <button class="profile-btn" onclick="toggleDropdown()">
+                    <i class="fas fa-user"></i>
+                </button>
+                
+                <div class="dropdown-menu-custom" id="profileDropdown">
+                    <div class="dropdown-header-custom">
+                        <div class="user-name">John Doe</div>
+                        <div class="user-email">john.doe@example.com</div>
+                    </div>
+                    
+                    <a href="#" class="dropdown-item-custom">
+                        <i class="fas fa-user-circle"></i>
+                        <span>My Profile</span>
+                    </a>
+                    
+                    <a href="#" class="dropdown-item-custom">
+                        <i class="fas fa-car"></i>
+                        <span>My Bookings</span>
+                    </a>
+                    
+                    <a href="#" class="dropdown-item-custom">
+                        <i class="fas fa-heart"></i>
+                        <span>Favorites</span>
+                    </a>
+                    
+                    <a href="#" class="dropdown-item-custom">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    
+                    <div class="dropdown-divider-custom"></div>
+                    
+                    <a href="#" class="dropdown-item-custom logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Log Out</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -371,11 +501,37 @@
             </div>
 
             <div class="footer-bottom">
-                <p class="mb-0">&copy; {{ date('Y') }} Hasta Travel & Tours. All Rights Reserved.</p>
+                <p class="mb-0">&copy; 2026 Hasta Travel & Tours. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Profile dropdown toggle
+        function toggleDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const profileBtn = document.querySelector('.profile-btn');
+            
+            if (!profileBtn.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        document.getElementById('profileDropdown')?.addEventListener('click', function(event) {
+            if (!event.target.classList.contains('dropdown-item-custom') && 
+                !event.target.closest('.dropdown-item-custom')) {
+                event.stopPropagation();
+            }
+        });
+    </script>
 </body>
 </html>
