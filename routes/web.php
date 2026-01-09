@@ -2,6 +2,11 @@
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AuthenticatedSessionController;
 
+//Guest
+Route::get('/', function () {
+    return view('guest.home');
+})->name('guest.home');
+
 // Registration
 Route::get('/register', [RegisterController::class, 'create'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
