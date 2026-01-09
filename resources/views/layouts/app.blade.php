@@ -399,7 +399,7 @@
                         <div class="user-email">john.doe@example.com</div>
                     </div>
                     
-                    <a href="#" class="dropdown-item-custom">
+                    <a href="{{ route('customer.profile') }}" class="dropdown-item-custom">
                         <i class="fas fa-user-circle"></i>
                         <span>My Profile</span>
                     </a>
