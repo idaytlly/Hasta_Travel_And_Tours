@@ -27,7 +27,14 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            height: 100%;
+        }
+
         body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-light);
             overflow-x: hidden;
@@ -431,11 +438,12 @@
     </nav>
 
     {{-- Page Content --}}
-    <main>
+    <main style="flex: 1 0 auto;">
         @yield('content')
     </main>
 
-    {{-- Footer --}}
+    {{-- Footer (hidden when a view defines the `noFooter` section) --}}
+    @unless (View::hasSection('noFooter'))
     <footer id="footer-hasta" class="footer-hasta">
         <div class="container">
             <div class="row">
@@ -505,6 +513,7 @@
             </div>
         </div>
     </footer>
+    @endunless
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     

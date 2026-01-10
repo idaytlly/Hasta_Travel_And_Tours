@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 
 class VehicleController extends Controller
 {
@@ -18,11 +19,11 @@ class VehicleController extends Controller
 
         // Filter by status
         if ($request->status && $request->status != 'all') {
-            $query->where('availabiltiy_status', $request->status);
+            $query->where('availability_status', $request->status);
         }
+        Paginator::useBootstrapFive();
 
-        $vehicles = $query->paginate(6);
-
+        $vehicles = $query->paginate(6)->withQueryString();
         return view('vehicles.index', compact('vehicles'));
     }
 

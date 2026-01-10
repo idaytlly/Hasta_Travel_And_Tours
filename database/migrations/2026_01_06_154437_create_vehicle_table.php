@@ -15,10 +15,15 @@ return new class extends Migration
             $table->string('plate_no')->primary();
 
             $table->string('name')->nullable();
+            $table->string('color')->nullable();
+            $table->integer('year')->nullable();
             $table->string('vehicle_type')->nullable();
             $table->string('image')->nullable();
             $table->double('price_perHour')->nullable();
+            $table->integer('passengers')->nullable();
+            $table->double('distance_travelled')->nullable();
             $table->string('availability_status')->nullable();
+
 
             //FK
             $table->string('staff_id')->nullable();

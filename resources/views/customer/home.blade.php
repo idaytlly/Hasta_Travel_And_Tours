@@ -31,11 +31,11 @@ body {
 /* Card */
 .search-card {
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     background: #ffffff;
-    padding: 24px;
-    max-width: 1100px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 16px;
+    max-width: 900px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
 }
 
 /* Form Labels & Inputs */
@@ -84,26 +84,32 @@ body {
 .car-card {
     background: white;
     border: 1px solid #e5e7eb;
-    border-radius: 5px;
-    padding: 0.8rem;
-    transition: all 0.3s;
+    border-radius: 6px;
+    padding: 0.6rem;
+    padding-top: 36px; /* space for the image to overflow */
+    transition: all 0.25s;
 }
 
-.car-card:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    transform: translateY(-5px);
-}
+    .car-card:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        transform: translateY(-5px);
+    }
 
-.car-card img {
-    width: 100%;
-    height: 130px;
-    object-fit: contain;
-    margin-bottom: 0.5rem;
-}
+    /* Standardize car thumbnail size so all cards look identical */
+    .car-card img {
+        width: 140px;
+        height: 100px;
+        object-fit: contain;
+        margin-bottom: 0.5rem;
+        margin-top: -20px; /* lift image slightly above the card */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
 
 .car-name {
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.95rem;
     margin-bottom: 0.2rem;
 }
 
@@ -116,7 +122,7 @@ body {
 .car-price {
     color: #CB3737;
     font-weight: 700;
-    font-size: 1.05rem;
+    font-size: 1rem;
 }
 
 .car-price small {
@@ -131,7 +137,7 @@ body {
     border: none;
     padding: 6px;
     justify-content: right;
-    font-size: 0.8rem
+    font-size: 0.8rem;
     width: 100%;
     transition: all 0.2s;
 }
@@ -153,6 +159,11 @@ body {
     font-size: 2rem;
 }
 
+/* Pagination / arrows size */
+.pagination .page-link {
+    padding: .25rem .5rem;
+    font-size: 0.9rem;
+}
 </style>
 
 <!-- Beige Section -->
@@ -167,12 +178,12 @@ body {
         <!-- Search Card -->
         <div class="d-flex justify-content-center">
             <div class="search-card">
-                <form>
+                <form action="{{ route('vehicles.index') }}" method="GET">
                     <div class="row g-2 align-items-end">
                         <!-- Pick-up Location -->
                         <div class="col-md-3">
                             <label class="form-label-custom">Pick-up Location</label>
-                            <select class="form-select form-control-custom">
+                            <select name="location" class="form-select form-control-custom">
                                 <option selected disabled>Choose location</option>
                                 <option>Hasta Office</option>
                                 <option>Faculty</option>
@@ -183,13 +194,13 @@ body {
                         <!-- Pick-up Date -->
                         <div class="col-md-2">
                             <label class="form-label-custom">Pick-up Date</label>
-                            <input type="date" class="form-control form-control-custom">
+                            <input type="date" name="pickup_date" class="form-control form-control-custom">
                         </div>
 
                         <!-- Pick-up Time -->
                         <div class="col-md-2">
                             <label class="form-label-custom">Time</label>
-                            <select class="form-select form-control-custom">
+                            <select name="pickup_time" class="form-select form-control-custom">
                                 <option>09:00 AM</option>
                                 <option>10:00 AM</option>
                                 <option>11:00 AM</option>
@@ -201,13 +212,13 @@ body {
                         <!-- Return Date -->
                         <div class="col-md-2">
                             <label class="form-label-custom">Return Date</label>
-                            <input type="date" class="form-control form-control-custom">
+                            <input type="date" name="return_date" class="form-control form-control-custom">
                         </div>
 
                         <!-- Return Time -->
                         <div class="col-md-2">
                             <label class="form-label-custom">Time</label>
-                            <select class="form-select form-control-custom">
+                            <select name="return_time" class="form-select form-control-custom">
                                 <option>09:00 AM</option>
                                 <option>10:00 AM</option>
                                 <option>11:00 AM</option>
@@ -226,7 +237,7 @@ body {
                         <!-- Checkbox -->
                         <div class="col-md-12 mt-2">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="returnLocation">
+                                <input class="form-check-input" type="checkbox" name="return_location" id="returnLocation">
                                 <label class="form-check-label text-muted" for="returnLocation" style="font-size: 0.875rem;">
                                     Return to another location
                                 </label>
@@ -271,7 +282,7 @@ body {
 
     <!-- Car 3 -->
     <div class="car-card" style="width: 350px;">
-        <img src="{{ asset('car_images/bezza.jpg') }}" alt="Car">
+        <img src="{{ asset('car_images/bezza1stgen.jpg') }}" alt="Car">
         <h3 class="car-name">Perodua Bezza 1st Gen</h3>
         <p class="car-type">Sedan</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
