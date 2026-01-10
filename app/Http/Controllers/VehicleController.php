@@ -29,7 +29,10 @@ class VehicleController extends Controller
 
     public function show(Vehicle $vehicle)
     {
-        return view('vehicles.show', compact('vehicle'));
+        // Also load some other vehicles to show as suggestions
+        $otherVehicles = Vehicle::where('plate_no', '!=', $vehicle->plate_no)->limit(6)->get();
+
+        return view('vehicles.show', compact('vehicle', 'otherVehicles'));
     }
  
 }

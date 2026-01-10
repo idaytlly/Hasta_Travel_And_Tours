@@ -23,6 +23,12 @@ class VehicleSeeder extends Seeder
                 'year' => 2018,
                 'vehicle_type' => 'Car',
                 'image' => 'car_images/axia1stgen.jpg',
+                'front_image' => 'car_images/axia1stgen_front.jpg',
+                'back_image' => 'car_images/axia1stgen_back.jpg',
+                'left_image' => 'car_images/axia1stgen_left.jpg',
+                'right_image' => 'car_images/axia1stgen_right.jpg',
+                'interior1_image' => 'car_images/axia1stgen_interior1.jpg',
+                'interior2_image' => 'car_images/axia1stgen_interior2.jpg',
                 'price_perHour' => 35.00,
                 'passengers' => 5,
                 'distance_travelled' => 12000,
@@ -182,6 +188,21 @@ class VehicleSeeder extends Seeder
                 'updated_at' => $now,
             ],
         ];
+
+        // Ensure every record has the same keys so the multi-insert uses a consistent column list
+        $columns = [
+            'plate_no','name','color','year','vehicle_type','image','front_image','back_image',
+            'left_image','right_image','interior1_image','interior2_image','price_perHour',
+            'passengers','distance_travelled','availability_status','staff_id','created_at','updated_at'
+        ];
+
+        foreach ($vehicles as &$v) {
+            foreach ($columns as $col) {
+                if (!array_key_exists($col, $v)) {
+                    $v[$col] = null;
+                }
+            }
+        }
 
         DB::table('vehicle')->insert($vehicles);
     }

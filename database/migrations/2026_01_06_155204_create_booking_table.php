@@ -35,10 +35,10 @@ return new class extends Migration
             $table->timestamp('late_charge_approved_at')->nullable();
             
             // Foreign keys
-            $table->string('customer_id');
+            $table->string('customer_id')->nullable();
             $table->foreign('customer_id')->references('customer_id')->on('customers')->onDelete('cascade');
 
-            $table->string('plate_no');
+            $table->string('plate_no')->nullable();
             $table->foreign('plate_no')->references('plate_no')->on('vehicle')->onDelete('cascade');
 
             $table->string('voucher_id')->nullable();
