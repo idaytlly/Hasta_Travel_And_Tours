@@ -15,23 +15,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone_no')->nullable();
             $table->string('password');
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
             $table->enum('role', ['admin', 'runner', 'staff'])->default('staff');
-=======
-            $table->enum('role', ['admin', 'manager', 'staff'])->default('staff');
->>>>>>> Stashed changes
-=======
-            $table->enum('role', ['admin', 'manager', 'staff'])->default('staff');
->>>>>>> Stashed changes
-=======
-            $table->enum('role', ['admin', 'manager', 'staff'])->default('staff');
->>>>>>> Stashed changes
-=======
-            $table->enum('role', ['admin', 'manager', 'staff'])->default('staff');
->>>>>>> Stashed changes
             $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();

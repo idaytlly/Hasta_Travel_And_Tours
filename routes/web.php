@@ -1,27 +1,42 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Customer\BookingController;
+use App\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Staff\BookingController as StaffBookingController;
 
 // ==================== GUEST ROUTES ====================
 Route::get('/', function () {
     return view('guest.home');
-})->name('guest.home');
+})->name('home');
 
-// Authentication routes (Laravel Fortify usually handles these)
-Route::middleware(['guest:web'])->group(function () {
-    Route::get('/login', function () {
-        return view('auth.login');
-    })->name('login');
+// ==================== AUTHENTICATION ROUTES ====================
+// SINGLE LOGIN PAGE USING AuthenticatedSessionController
+Route::middleware(['guest'])->group(function () {
+    // Show login form
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])
+        ->name('login');
     
+    // Handle login submission
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+        ->name('login.post');
+    
+    // Registration
     Route::get('/register', function () {
         return view('auth.register');
     })->name('register');
 });
 
-// ==================== CUSTOMER ROUTES ====================
+// Logout route
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
+// ==================== CUSTOMER PROTECTED ROUTES ====================
 Route::middleware(['auth:customer'])->group(function () {
+    // Customer Dashboard
+    Route::get('/customer/dashboard', function () {
+        return view('customer.dashboard');
+    })->name('customer.dashboard');
+    
     // Customer Bookings
     Route::prefix('customer/bookings')->name('customer.bookings.')->group(function () {
         Route::get('/', [BookingController::class, 'index'])->name('index');
@@ -34,8 +49,13 @@ Route::middleware(['auth:customer'])->group(function () {
     });
 });
 
-// ==================== STAFF ROUTES ====================
-Route::middleware(['staff.auth'])->prefix('staff')->name('staff.')->group(function () {
+// ==================== STAFF PROTECTED ROUTES ====================
+Route::middleware(['auth:staff'])->prefix('staff')->name('staff.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', function () {
+        return view('staff.dashboard');
+    })->name('staff.dashboard');
+    
     // Bookings Management
     Route::prefix('bookings')->name('bookings.')->group(function () {
         Route::get('/', [StaffBookingController::class, 'index'])->name('index');
@@ -57,18 +77,4 @@ Route::middleware(['staff.auth'])->prefix('staff')->name('staff.')->group(functi
         Route::get('/late-returns', [StaffBookingController::class, 'lateReturns'])->name('late-returns');
         Route::get('/export', [StaffBookingController::class, 'export'])->name('export');
     });
-});
-
-// ==================== CUSTOMER DASHBOARD ====================
-Route::middleware(['auth:customer'])->group(function () {
-    Route::get('/customer/dashboard', function () {
-        return view('customer.dashboard');
-    })->name('customer.dashboard');
-});
-
-// ==================== STAFF DASHBOARD ====================
-Route::middleware(['staff.auth'])->group(function () {
-    Route::get('/staff/dashboard', function () {
-        return view('staff.dashboard');
-    })->name('staff.dashboard');
 });
