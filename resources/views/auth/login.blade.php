@@ -222,103 +222,67 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="login-container">
-            <div class="login-header">
-                <h2>Login to Car Rental</h2>
-                <p class="text-muted">Choose your login type</p>
-            </div>
-            
-            @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-            
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-            
-            <div class="user-type-selector">
-                <button type="button" class="user-type-btn active" id="btn-customer" onclick="selectUserType('customer')">
-                    Customer Login
-                </button>
-                <button type="button" class="user-type-btn" id="btn-staff" onclick="selectUserType('staff')">
-                    Staff Login
-                </button>
-            </div>
-            
-            <div class="staff-login-info" id="staff-info">
-                <p class="mb-1"><strong>Staff Test Credentials:</strong></p>
-                <p class="mb-0">Username: <code>staff</code> | Password: <code>password123</code></p>
-            </div>
-            
-            <form method="POST" action="{{ route('login') }}" id="login-form">
-                @csrf
-                
-                <!-- Hidden field to identify user type -->
-                <input type="hidden" name="user_type" id="user_type" value="customer">
-                
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email/Username</label>
-                    <input type="text" class="form-control @error('email') is-invalid @enderror" 
-                           id="email" name="email" value="{{ old('email') }}" required autofocus>
-                    @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                           id="password" name="password" required>
-                    @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                    <label class="form-check-label" for="remember">Remember me</label>
-                </div>
-                
-                <button type="submit" class="btn btn-primary w-100" id="submit-btn">Login as Customer</button>
-            </form>
-            
-            <div class="text-center mt-3">
-                <a href="{{ route('register') }}">Create Account</a> | 
-                <a href="{{ route('guest.home') }}">Back to Home</a>
-            </div>
+    <div class="login-container">
+        <div class="logo">
+            <img src="{{ asset('images/logo_hasta.jpeg') }}" alt="Hasta Logo" height="40">
         </div>
+
+        <div class="profile-icon"></div>
+
+        <div class="welcome-text">
+            <h1>Welcome Back!</h1>
+            <p>Please enter your details.</p>
+        </div>
+
+        @if ($errors->any())
+            <div class="error-message">
+                @foreach ($errors->all() as $error)
+                    {{ $error }}
+                @endforeach
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="Enter your Email" 
+                    value="{{ old('email') }}"
+                    required 
+                    autofocus
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Enter Password" 
+                    required
+                >
+            </div>
+
+            <div class="form-options">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember Me</label>
+                </div>
+                <a href="{{ route('password.request') }}" class="forgot-password">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="login-button">Log In</button>
+
+            <div class="signup-link">
+                Don't have an account? <a href="{{ route('register') }}">Sign Up</a>
+            </div>
+        </form>
     </div>
-    
-    <script>
-        function selectUserType(type) {
-            // Update buttons
-            document.getElementById('btn-customer').classList.remove('active');
-            document.getElementById('btn-staff').classList.remove('active');
-            document.getElementById('btn-' + type).classList.add('active');
-            
-            // Update hidden field
-            document.getElementById('user_type').value = type;
-            
-            // Update submit button text
-            document.getElementById('submit-btn').textContent = 'Login as ' + 
-                (type === 'staff' ? 'Staff' : 'Customer');
-            
-            // Show/hide staff info
-            document.getElementById('staff-info').style.display = 
-                (type === 'staff') ? 'block' : 'none';
-            
-            // Update form action for staff (we'll handle this in controller)
-            // For now, same form action for both
-        }
-    </script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
