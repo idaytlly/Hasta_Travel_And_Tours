@@ -11,9 +11,22 @@ return new class extends Migration
     {
         Schema::create('rental_rate', function (Blueprint $table) {
             $table->string('rate_id')->primary();
+<<<<<<< Updated upstream
             $table->string('rate_name');
             $table->integer('hours');
             $table->decimal('rate_price');
+=======
+            $table->string('rate_type')->default('normal'); // normal, late_return, overtime
+            $table->integer('hours');
+            $table->double('rate_price');
+            
+            // Late return specific
+            $table->double('late_penalty_percentage')->nullable();
+            $table->integer('grace_period_minutes')->default(30);
+            
+            $table->string('plate_no')->nullable();
+            $table->foreign('plate_no')->references('plate_no')->on('vehicle')->onDelete('cascade');
+>>>>>>> Stashed changes
             
             // Late return specific
             $table->decimal('late_penalty_percentage', 5, 2)->nullable();

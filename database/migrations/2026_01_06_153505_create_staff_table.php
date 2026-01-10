@@ -18,7 +18,11 @@ return new class extends Migration
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             $table->enum('role', ['admin', 'runner', 'staff'])->default('staff');
+=======
+            $table->enum('role', ['admin', 'manager', 'staff'])->default('staff');
+>>>>>>> Stashed changes
 =======
             $table->enum('role', ['admin', 'manager', 'staff'])->default('staff');
 >>>>>>> Stashed changes
