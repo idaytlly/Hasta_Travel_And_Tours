@@ -6,10 +6,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 use Illuminate\Support\Facades\Cookie;
 
 class AuthenticatedSessionController extends Controller
 {
+=======
+use Illuminate\Support\Facades\Hash;
+use App\Models\Staff;
+use App\Models\Customer;
+
+class AuthenticatedSessionController extends Controller
+{
+    // Show the login form with both customer and staff options
+>>>>>>> Stashed changes
 =======
 use Illuminate\Support\Facades\Hash;
 use App\Models\Staff;
@@ -33,6 +43,7 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     public function store(Request $request)
     {
@@ -68,6 +79,8 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 =======
+=======
+>>>>>>> Stashed changes
     // Handle an incoming authentication request for both customer and staff
     public function store(Request $request)
     {
@@ -162,11 +175,15 @@ class AuthenticatedSessionController extends Controller
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->withInput($request->only('email', 'user_type'));
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 
     public function destroy(Request $request)
     {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         $userType = $request->cookie('staff_authenticated') ? 'staff' : 'customer';
         
@@ -184,6 +201,8 @@ class AuthenticatedSessionController extends Controller
         }
     }
 =======
+=======
+>>>>>>> Stashed changes
         // Determine which guard is active
         if (Auth::guard('staff')->check()) {
             // Staff logout
@@ -224,5 +243,8 @@ class AuthenticatedSessionController extends Controller
 
         return view('auth.login', ['user_type' => 'customer']);
     }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }

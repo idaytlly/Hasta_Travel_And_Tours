@@ -31,4 +31,29 @@ Route::get('/profile/edit', [CustomerProfileController::class, 'edit'])->name('c
 Route::post('/profile/update', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
 
 Route::resource('vehicles', VehicleController::class)->only(['index', 'show']);
+
+// Staff Booking Routes
+Route::middleware(['staff.auth'])->prefix('staff')->group(function () {
+    // Bookings
+    Route::get('/bookings', [Staff\BookingController::class, 'index'])->name('staff.bookings.index');
+    Route::get('/bookings/create', [Staff\BookingController::class, 'create'])->name('staff.bookings.create');
+    Route::post('/bookings', [Staff\BookingController::class, 'store'])->name('staff.bookings.store');
+    Route::get('/bookings/{id}', [Staff\BookingController::class, 'show'])->name('staff.bookings.show');
+    Route::get('/bookings/{id}/edit', [Staff\BookingController::class, 'edit'])->name('staff.bookings.edit');
+    Route::put('/bookings/{id}', [Staff\BookingController::class, 'update'])->name('staff.bookings.update');
+    Route::delete('/bookings/{id}', [Staff\BookingController::class, 'destroy'])->name('staff.bookings.destroy');
+    
+    // Booking Actions
+    Route::post('/bookings/{id}/approve', [Staff\BookingController::class, 'approve'])->name('staff.bookings.approve');
+    Route::post('/bookings/{id}/cancel', [Staff\BookingController::class, 'cancel'])->name('staff.bookings.cancel');
+    Route::post('/bookings/{id}/mark-active', [Staff\BookingController::class, 'markAsActive'])->name('staff.bookings.mark-active');
+    Route::post('/bookings/{id}/mark-returned', [Staff\BookingController::class, 'markAsReturned'])->name('staff.bookings.mark-returned');
+    Route::post('/bookings/{id}/approve-late-charges', [Staff\BookingController::class, 'approveLateCharges'])->name('staff.bookings.approve-late-charges');
+    Route::post('/bookings/{id}/extend', [Staff\BookingController::class, 'extendBooking'])->name('staff.bookings.extend');
+    
+    // Reports
+    Route::get('/bookings/late-returns', [Staff\BookingController::class, 'lateReturns'])->name('staff.bookings.late-returns');
+    Route::get('/bookings/export', [Staff\BookingController::class, 'export'])->name('staff.bookings.export');
+});
+
 ?>

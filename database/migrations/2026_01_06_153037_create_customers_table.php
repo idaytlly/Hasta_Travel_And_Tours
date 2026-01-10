@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             $table->string('matricNum')->primary();
 
             $table->string('name');
@@ -26,6 +27,8 @@ return new class extends Migration
             $table->string('emergency_name')->nullable();
             $table->tinyText('emergency_relationship')->nullable();
 =======
+=======
+>>>>>>> Stashed changes
             $table->id();
             $table->string('email')->unique();
             $table->string('password');
@@ -53,6 +56,9 @@ return new class extends Migration
             $table->string('emergency_relationship');
             
             $table->rememberToken();
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             $table->timestamps();
         });
