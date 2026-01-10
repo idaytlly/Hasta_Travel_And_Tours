@@ -5,16 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-use Illuminate\Support\Facades\Cookie;
-
-class AuthenticatedSessionController extends Controller
-{
-=======
 use Illuminate\Support\Facades\Hash;
 use App\Models\Staff;
 use App\Models\Customer;
@@ -22,43 +12,6 @@ use App\Models\Customer;
 class AuthenticatedSessionController extends Controller
 {
     // Show the login form with both customer and staff options
->>>>>>> Stashed changes
-=======
-use Illuminate\Support\Facades\Hash;
-use App\Models\Staff;
-use App\Models\Customer;
-
-class AuthenticatedSessionController extends Controller
-{
-    // Show the login form with both customer and staff options
->>>>>>> Stashed changes
-=======
-use Illuminate\Support\Facades\Hash;
-use App\Models\Staff;
-use App\Models\Customer;
-
-class AuthenticatedSessionController extends Controller
-{
-    // Show the login form with both customer and staff options
->>>>>>> Stashed changes
-=======
-use Illuminate\Support\Facades\Hash;
-use App\Models\Staff;
-use App\Models\Customer;
-
-class AuthenticatedSessionController extends Controller
-{
-    // Show the login form with both customer and staff options
->>>>>>> Stashed changes
-=======
-use Illuminate\Support\Facades\Hash;
-use App\Models\Staff;
-use App\Models\Customer;
-
-class AuthenticatedSessionController extends Controller
-{
-    // Show the login form with both customer and staff options
->>>>>>> Stashed changes
     public function create()
     {
         // If already authenticated, redirect to appropriate dashboard
@@ -73,53 +26,6 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    public function store(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'string'],
-            'password' => ['required', 'string'],
-        ]);
-
-        $userType = $request->input('user_type', 'customer');
-        
-        if ($userType === 'staff') {
-            // Staff authentication (simple version)
-            if ($credentials['email'] === 'staff' && $credentials['password'] === 'password123') {
-                // Set staff cookie and redirect to staff dashboard
-                return redirect()->route('staff.dashboard')
-                    ->cookie('staff_authenticated', 'true', 480); // 8 hours
-            }
-            
-            // If staff credentials fail
-            return back()->withErrors([
-                'email' => 'Invalid staff credentials.',
-            ])->onlyInput('email');
-        } else {
-            // Customer authentication (using Laravel's built-in)
-            if (Auth::attempt($credentials, $request->boolean('remember'))) {
-                $request->session()->regenerate();
-                return redirect()->intended(route('customer.home'));
-            }
-            
-            // If customer credentials fail
-            throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
-        }
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     // Handle an incoming authentication request for both customer and staff
     public function store(Request $request)
     {
@@ -136,7 +42,7 @@ class AuthenticatedSessionController extends Controller
             // Staff authentication
             return $this->authenticateStaff($request, $credentials, $remember);
         } else {
-            // Customer authentication (original code)
+            // Customer authentication
             return $this->authenticateCustomer($request, $credentials, $remember);
         }
     }
@@ -201,7 +107,7 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Authenticate customer user (original functionality)
+     * Authenticate customer user
      */
     protected function authenticateCustomer(Request $request, array $credentials, bool $remember)
     {
@@ -214,61 +120,24 @@ class AuthenticatedSessionController extends Controller
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->withInput($request->only('email', 'user_type'));
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     }
 
+    // Log the user out of the application
     public function destroy(Request $request)
     {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        $userType = $request->cookie('staff_authenticated') ? 'staff' : 'customer';
-        
-        if ($userType === 'staff') {
-            // Staff logout - clear cookie
-            return response()
-                ->redirectToRoute('login')
-                ->cookie(cookie()->forget('staff_authenticated'));
-        } else {
-            // Customer logout - Laravel default
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            return redirect('/');
-        }
-    }
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
         // Determine which guard is active
         if (Auth::guard('staff')->check()) {
             // Staff logout
             Auth::guard('staff')->logout();
             $redirectRoute = 'staff.login';
-        } else {
-            // Customer logout (default)
+        } elseif (Auth::guard('customer')->check()) {
+            // Customer logout
             Auth::guard('customer')->logout();
             $redirectRoute = 'guest.home';
+        } else {
+            // Default logout for web guard
+            Auth::logout();
+            $redirectRoute = '/';
         }
 
         $request->session()->invalidate();
@@ -300,17 +169,4 @@ class AuthenticatedSessionController extends Controller
 
         return view('auth.login', ['user_type' => 'customer']);
     }
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 }
