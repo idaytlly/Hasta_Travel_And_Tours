@@ -6,26 +6,38 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('staff', function (Blueprint $table) {
-            $table->string('staff_id')->primary();
-
+            $table->string('staff_id')->primary(); // This is already auto-incrementing like STF001
+            
             $table->string('name');
             $table->string('email')->unique();
             $table->string('phone_no')->nullable();
             $table->string('password');
-            $table->string('role')->nullable();
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+            $table->enum('role', ['admin', 'runner', 'staff'])->default('staff');
+=======
+            $table->enum('role', ['admin', 'manager', 'staff'])->default('staff');
+>>>>>>> Stashed changes
+=======
+            $table->enum('role', ['admin', 'manager', 'staff'])->default('staff');
+>>>>>>> Stashed changes
+=======
+            $table->enum('role', ['admin', 'manager', 'staff'])->default('staff');
+>>>>>>> Stashed changes
+=======
+            $table->enum('role', ['admin', 'manager', 'staff'])->default('staff');
+>>>>>>> Stashed changes
+            $table->boolean('is_active')->default(true);
+            $table->rememberToken();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('staff');
