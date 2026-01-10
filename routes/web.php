@@ -6,7 +6,7 @@ use App\Http\Controllers\Staff\BookingController as StaffBookingController;
 
 // ==================== GUEST ROUTES ====================
 Route::get('/', function () {
-    return view('home');
+    return view('guest.home');
 })->name('guest.home');
 
 // Authentication routes (Laravel Fortify usually handles these)
