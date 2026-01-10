@@ -37,26 +37,14 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',      // For general web authentication (usually customers)
-<<<<<<< Updated upstream
-=======
         ],
 
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
             'hash' => false,
->>>>>>> Stashed changes
         ],
 
-<<<<<<< Updated upstream
-=======
-        'api' => [
-            'driver' => 'token',
-            'provider' => 'users',
-            'hash' => false,
-        ],
-
->>>>>>> Stashed changes
         'customer' => [
             'driver' => 'session',
             'provider' => 'customers',  // Customer-specific guard
@@ -85,19 +73,10 @@ return [
     |
     */
     'providers' => [
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\Customer::class,  // Default user model (Customer)
         ],
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
         'customers' => [
             'driver' => 'eloquent',
