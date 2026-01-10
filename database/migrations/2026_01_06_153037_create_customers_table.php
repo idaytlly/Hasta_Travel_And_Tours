@@ -9,24 +9,33 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('customers', function (Blueprint $table) {
-            $table->id()->primary();
-
+            $table->id();
             $table->string('email')->unique();
             $table->string('password');
             
+            // Personal Information
+            $table->string('name');
+            $table->string('ic_number')->unique(); // IC or Passport number
+            $table->string('phone_no');
+            
+            // File Uploads (REQUIRED)
+            $table->string('ic_passport_image'); // Front of IC/Passport (Required)
+            $table->string('license_image'); // Driving License (Required)
+            $table->string('matric_card_image')->nullable(); // Matric Card (Optional)
+            
+            // Optional Matric Number
             $table->string('matricNum')->nullable()->unique();
-
-            $table->string('name')->nullable();
-            $table->string('ic')->unique()->nullable();
-            $table->string('phone_no')->nullable();
-            $table->text('address')->nullable();
-            $table->tinyText('state')->nullable();
-            $table->text('city')->nullable();
-            $table->integer('postcode')->nullable();
-            $table->string('license_no')->nullable();
-            $table->string('emergency_phoneNo')->nullable();
-            $table->string('emergency_name')->nullable();
-            $table->tinyText('emergency_relationship')->nullable();
+            
+            // License Information
+            $table->string('license_no');
+            $table->date('license_expiry');
+            
+            // Emergency Contact (REQUIRED)
+            $table->string('emergency_phoneNo');
+            $table->string('emergency_name');
+            $table->string('emergency_relationship');
+            
+            $table->rememberToken();
             $table->timestamps();
         });
     }

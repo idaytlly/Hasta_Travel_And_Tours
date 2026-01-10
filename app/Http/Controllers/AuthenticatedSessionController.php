@@ -8,10 +8,20 @@ use Illuminate\Validation\ValidationException;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 use Illuminate\Support\Facades\Cookie;
 
 class AuthenticatedSessionController extends Controller
 {
+=======
+use Illuminate\Support\Facades\Hash;
+use App\Models\Staff;
+use App\Models\Customer;
+
+class AuthenticatedSessionController extends Controller
+{
+    // Show the login form with both customer and staff options
+>>>>>>> Stashed changes
 =======
 use Illuminate\Support\Facades\Hash;
 use App\Models\Staff;
@@ -56,6 +66,7 @@ class AuthenticatedSessionController extends Controller
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     public function store(Request $request)
     {
         $credentials = $request->validate([
@@ -90,6 +101,8 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -190,6 +203,9 @@ class AuthenticatedSessionController extends Controller
         ])->withInput($request->only('email', 'user_type'));
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -199,6 +215,7 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request)
     {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -218,6 +235,8 @@ class AuthenticatedSessionController extends Controller
         }
     }
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -264,6 +283,9 @@ class AuthenticatedSessionController extends Controller
     }
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
