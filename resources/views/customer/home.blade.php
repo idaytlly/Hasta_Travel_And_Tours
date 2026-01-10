@@ -249,33 +249,33 @@ body {
     <div class="d-flex justify-content-center flex-wrap gap-5 mb-5">
     <!-- Car 1 -->
     <div class="car-card" style="width: 350px;">
-        <img src="images/car1.jpeg" alt="Car">
-        <h3 class="car-name">Perodua Axia 2018</h3>
+        <img src="{{ asset('car_images/axia.jpg') }}" alt="Car">
+        <h3 class="car-name">Perodua Axia 1st Gen</h3>
         <p class="car-type">Hatchback</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM120 <small>per day</small></div>
+            <div class="car-price">RM35.00 <small>per hour</small></div>
         </div>
         <button class="btn btn-view-details">View Details</button>
     </div>
 
     <!-- Car 2 -->
     <div class="car-card" style="width: 350px;">
-        <img src="images/car2.jpg" alt="Car">
-        <h3 class="car-name">Perodua Bezza 2018</h3>
-        <p class="car-type">Sedan</p>
+        <img src="{{ asset('car_images/myvi.jpg') }}" alt="Car">
+        <h3 class="car-name">Perodua Myvi 2nd Gen</h3>
+        <p class="car-type">Hatchback</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM140 <small>per day</small></div>
+            <div class="car-price">RM40.00 <small>per hour</small></div>
         </div>
         <button class="btn btn-view-details">View Details</button>
     </div>
 
     <!-- Car 3 -->
     <div class="car-card" style="width: 350px;">
-        <img src="images/car3.jpg" alt="Car">
-        <h3 class="car-name">Perodua Myvi 2015</h3>
-        <p class="car-type">Hatchback</p>
+        <img src="{{ asset('car_images/bezza.jpg') }}" alt="Car">
+        <h3 class="car-name">Perodua Bezza 1st Gen</h3>
+        <p class="car-type">Sedan</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM120 <small>per day</small></div>
+            <div class="car-price">RM40.00 <small>per hour</small></div>
         </div>
         <button class="btn btn-view-details">View Details</button>
     </div>

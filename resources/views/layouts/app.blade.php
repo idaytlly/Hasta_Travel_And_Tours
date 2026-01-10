@@ -382,7 +382,7 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarContent">
                 <div class="nav-links">
                     <a href="{{ route('customer.home') }}" class="nav-link-custom">Home</a>
-                    <a href="#" class="nav-link-custom">Fleet</a>
+                    <a href="{{ route('vehicles.index') }}" class="nav-link-custom">Fleet</a>
                     <a href="#" class="nav-link-custom">Rewards</a>
                 </div>
             </div>

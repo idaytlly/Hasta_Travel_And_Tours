@@ -7,6 +7,8 @@ use Illuminate\Notifications\Notifiable;
 
 class Customer extends Authenticatable
 {
+    use Notifiable;
+
     protected $fillable = [
         'email',
         'password',
@@ -29,6 +31,14 @@ class Customer extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 }
 ?>
 

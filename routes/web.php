@@ -1,7 +1,10 @@
 <?php
+
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\CustomerProfileController;
+use App\Http\Controllers\VehicleController;
 
 //Guest Routes
 Route::get('/', function () {
@@ -29,4 +32,6 @@ Route::get('/customer/home', function () {
 Route::get('/profile', [CustomerProfileController::class, 'showProfile'])->name('customer.profile');
 Route::get('/profile/edit', [CustomerProfileController::class, 'edit'])->name('customer.profile.edit');
 Route::post('/profile/update', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
+
+Route::resource('vehicles', VehicleController::class)->only(['index', 'show']);
 ?>

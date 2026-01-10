@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Actions\Fortify\CreateNewUser;
 use App\Models\Customer;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Hash;
@@ -22,12 +23,9 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(fn() => view('login'));
 
         // Create customer
-        Fortify::createUsersUsing(function (array $input) {
-            return Customer::create([
-                'email' => $input['email'],
-                'password' => Hash::make($input['password']),
-            ]);
-        });
+        Fortify::createUsersUsing(CreateNewUser::class);
+
+        config(['fortify.model'=> Customer::class]);
 
         // Redirect selepas register
         $this->app->instance(RegisterResponse::class, new class implements RegisterResponse {
@@ -44,6 +42,11 @@ class FortifyServiceProvider extends ServiceProvider
                 return redirect('/customer/dashboard');
             }
         });
+
+        RateLimiter::for('login', function (Request $request) {
+            $throttleKey = strtolower($request->input(Fortify::username())).'|'.$request->ip();
+            return Limit::perMinute(5)->by($throttleKey);
+        });    
     }
 }
 ?>

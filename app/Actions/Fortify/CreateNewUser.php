@@ -20,8 +20,8 @@ class CreateNewUser implements CreatesNewUsers
     public function create(array $input): Customer
     {
         Validator::make($input, [
-            'email' => ['required', 'email', 'unique:customers'],
-            'password' => ['required', 'min:8', 'confirmed'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:customers'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ])->validate();
 
 
