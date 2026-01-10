@@ -3,56 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Car Rental System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Login | Hasta Travel And Tours</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #f8f9fa;
-            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f3c3a3ff 0%, #FF9792 50%, #FF5850 90%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
+
         .login-container {
-            max-width: 450px;
-            margin: 0 auto;
-            padding: 30px;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-        .login-header {
+
+        .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
-        .login-header h2 {
-            color: #333;
-            font-weight: 600;
+
+        .logo-text {
+            background: #ff5722;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            display: inline-block;
+            letter-spacing: 2px;
         }
-        .user-type-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .user-type-btn {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #ddd;
+
+        .profile-icon {
+            width: 120px;
+            height: 120px;
+            margin: 32px auto;
             background: white;
+            border-radius: 50%;
+            border: 6px solid #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-icon::before {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #000;
+            border-radius: 50%;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .profile-icon::after {
+            content: '';
+            position: absolute;
+            width: 85px;
+            height: 100px;
+            background: #000;
+            border-radius: 50%;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .welcome-text h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .welcome-text p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff5722;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
             cursor: pointer;
-            transition: all 0.3s;
         }
-        .user-type-btn.active {
-            border-color: #0d6efd;
-            background-color: #e7f1ff;
-            color: #0d6efd;
+
+        .remember-me label {
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
         }
-        .staff-login-info {
-            display: none;
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            padding: 15px;
-            border-radius: 5px;
+
+        .forgot-password {
+            font-size: 14px;
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: #1d4ed8;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 16px;
+            background: #EC592B;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 24px;
+        }
+
+        .login-button:hover {
+            background: #f4511e;
+        }
+
+        .signup-link {
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .signup-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .signup-link a:hover {
+            color: #1d4ed8;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
             margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 32px 24px;
+            }
+
+            .welcome-text h1 {
+                font-size: 28px;
+            }
+
+            .profile-icon {
+                width: 100px;
+                height: 100px;
+            }
         }
     </style>
 </head>
