@@ -12,37 +12,41 @@ class VehicleController extends Controller
     {
         $query = Vehicle::query();
 
+        // Filter by date range (only if search is done)
         if ($request->pickup_date && $request->return_date) {
-            $pickup_date = $request->pickup_date;
-            $return_date = $request->return_date;
-
-            $query->whereDate('pickup_date', '<=', $pickup_date)
-                ->whereDate('return_date', '>=', $return_date);
+            $query->whereDate('pickup_date', '<=', $request->pickup_date)
+                ->whereDate('return_date', '>=', $request->return_date);
         }
 
-        // Filter by type (car / bike)
-        if ($request->type && $request->type != 'all') {
-            $query->where('vehicle_type', $request->type); 
+        // Filter by vehicle type
+        if ($request->type && $request->type !== 'all') {
+            $query->where('vehicle_type', $request->type);
         }
 
-        // Filter by status
-        if ($request->status && $request->status != 'all') {
+        // Filter by availability status
+        if ($request->status && $request->status !== 'all') {
             $query->where('availability_status', $request->status);
         }
 
-        $query->whereJsonContains('pickup_location', $request->location);
-
-        if ($request->return_time) {
-            $query->where('return_time', $request->return_time);
+        // ✅ Filter by pickup location ONLY if selected
+        if ($request->filled('location')) {
+            $query->whereJsonContains('pickup_location', $request->location);
         }
 
-        if ($request->pickup_time) {
+        // Filter by pickup time
+        if ($request->filled('pickup_time')) {
             $query->where('pickup_time', $request->pickup_time);
+        }
+
+        // Filter by return time
+        if ($request->filled('return_time')) {
+            $query->where('return_time', $request->return_time);
         }
 
         Paginator::useBootstrapFive();
 
         $vehicles = $query->paginate(6)->withQueryString();
+
         return view('vehicles.index', compact('vehicles'));
     }
 
