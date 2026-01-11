@@ -244,7 +244,11 @@
                 </div>
                 <div class="booking-row">
                     <div class="booking-price">RM{{ number_format($vehicle->price_perHour) }} <medium style="font-size:12px; color:#666; font-weight:600">/hour</medium></div>
-                    <button class="btn-book">Book Now</button>
+                    @if($vehicle->availability_status === 'available')
+                        <a href="{{ route('bookings.create', $vehicle->plate_no) }}" class="btn-book" style="text-decoration: none; display: inline-block;">Book Now</a>
+                    @else
+                        <button class="btn-book" disabled style="opacity: 0.5; cursor: not-allowed;">Unavailable</button>
+                    @endif
                 </div>
             </div>
         </div>

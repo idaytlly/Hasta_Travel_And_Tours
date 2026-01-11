@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Vehicle;
-use App\Models\RentalRate;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,13 +12,13 @@ use Carbon\Carbon;
 
 class BookingController extends Controller
 {
-     /**
+    /**
      * Display a listing of the bookings
      */
     public function index()
     {
         $bookings = Booking::with(['vehicle', 'customer'])
-            ->where('matricNum', Auth::user()->matricNum)
+            ->where('customer_id', Auth::guard('customer')->id())
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -31,25 +30,20 @@ class BookingController extends Controller
      */
     public function create($plateNo)
     {
-        $car = Vehicle::findOrFail($plateNo);
+        $vehicle = Vehicle::where('plate_no', $plateNo)->firstOrFail();
         
-        // Check if car is available
-        if (!$car->isAvailable()) {
-            return redirect()->route('cars.index')
+        // Check if vehicle is available
+        if ($vehicle->availability_status !== 'available') {
+            return redirect()->route('vehicles.index')
                 ->with('error', 'This vehicle is not available for booking.');
         }
 
-        // Get rental rates for this vehicle
-        $rentalRates = RentalRate::where('plate_no', $plateNo)
-            ->orderBy('hours')
+        // Get available vouchers
+        $vouchers = Voucher::where('voucherStatus', 'active')
+            ->where('expiryDate', '>=', now())
             ->get();
 
-        if ($rentalRates->isEmpty()) {
-            return redirect()->route('cars.index')
-                ->with('error', 'No rental rates available for this vehicle.');
-        }
-
-        return view('bookings.create', compact('car', 'rentalRates'));
+        return view('bookings.create', compact('vehicle', 'vouchers'));
     }
 
     /**
@@ -60,11 +54,12 @@ class BookingController extends Controller
         // Validate the request
         $validated = $request->validate([
             'plate_no' => 'required|exists:vehicles,plate_no',
-            'pickup_date' => 'required|date|after:now',
+            'pickup_date' => 'required|date|after_or_equal:today',
+            'pickup_time' => 'required|date_format:H:i',
             'return_date' => 'required|date|after:pickup_date',
-            'matricNum' => 'required|string',
+            'return_time' => 'required|date_format:H:i',
             'voucher_id' => 'nullable|exists:vouchers,voucher_id',
-            'delivery' => 'nullable|boolean',
+            'special_requests' => 'nullable|string|max:500',
             'terms' => 'required|accepted',
         ]);
 
@@ -72,64 +67,48 @@ class BookingController extends Controller
             DB::beginTransaction();
 
             // Get the vehicle
-            $vehicle = Vehicle::findOrFail($validated['plate_no']);
+            $vehicle = Vehicle::where('plate_no', $validated['plate_no'])->firstOrFail();
 
             // Check availability again
-            if (!$vehicle->isAvailable()) {
+            if ($vehicle->availability_status !== 'available') {
                 return back()->with('error', 'This vehicle is no longer available.')
                     ->withInput();
             }
 
             // Calculate hours
-            $pickupDate = Carbon::parse($validated['pickup_date']);
-            $returnDate = Carbon::parse($validated['return_date']);
-            $totalHours = (int) ceil($pickupDate->diffInHours($returnDate));
-
-            // Find applicable rental rate
-            $applicableRate = RentalRate::findRateForHours($validated['plate_no'], $totalHours);
-            
-            if (!$applicableRate) {
-                return back()->with('error', 'No rental rate available for this duration.')
-                    ->withInput();
-            }
+            $pickupDateTime = Carbon::parse($validated['pickup_date'] . ' ' . $validated['pickup_time']);
+            $returnDateTime = Carbon::parse($validated['return_date'] . ' ' . $validated['return_time']);
+            $totalHours = (int) ceil($pickupDateTime->diffInHours($returnDateTime));
 
             // Calculate pricing
-            $rentalPrice = $applicableRate->rate_price;
-            $deposit = 50.00;
-            $deliveryCharge = $request->has('delivery') && $request->delivery ? 15.00 : 0.00;
-            $totalPrice = $rentalPrice + $deposit + $deliveryCharge;
+            $totalPrice = $totalHours * $vehicle->price_perHour;
 
             // Apply voucher if provided
-            $voucherDiscount = 0;
             if ($validated['voucher_id']) {
                 $voucher = Voucher::find($validated['voucher_id']);
-                if ($voucher && $voucher->isValid()) {
-                    // Apply discount logic here (percentage or fixed)
-                    // Example: 10% discount
-                    $voucherDiscount = $rentalPrice * 0.10;
-                    $totalPrice -= $voucherDiscount;
+                if ($voucher && $voucher->status === 'active' && $voucher->expiry_date >= now()) {
+                    $discount = ($totalPrice * $voucher->discount_percentage) / 100;
+                    $totalPrice -= $discount;
                 }
             }
 
             // Create the booking
             $booking = Booking::create([
+                'booking_id' => 'BKG' . strtoupper(uniqid()),
                 'plate_no' => $validated['plate_no'],
-                'matricNum' => $validated['matricNum'],
-                'pickup_date' => $pickupDate,
-                'return_date' => $returnDate,
-                'total_hours' => $totalHours,
+                'customer_id' => Auth::id(),
+                'pickup_date' => $validated['pickup_date'],
+                'pickup_time' => $validated['pickup_time'],
+                'return_date' => $validated['return_date'],
+                'return_time' => $validated['return_time'],
                 'total_price' => $totalPrice,
-                'deposit' => $deposit,
-                'delivery_charge' => $deliveryCharge,
                 'booking_status' => 'pending',
+                'special_requests' => $validated['special_requests'] ?? null,
                 'voucher_id' => $validated['voucher_id'] ?? null,
             ]);
 
             // Update vehicle availability
-            $vehicle->update([
-                'availability_status' => 'rented',
-                'customer_id' => Auth::user()->id,
-            ]);
+            $vehicle->update(['availability_status' => 'booked']);
 
             DB::commit();
 
@@ -139,7 +118,7 @@ class BookingController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             
-            return back()->with('error', 'An error occurred while creating the booking. Please try again.')
+            return back()->with('error', 'An error occurred: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -150,10 +129,11 @@ class BookingController extends Controller
     public function show($id)
     {
         $booking = Booking::with(['vehicle', 'customer', 'voucher'])
-            ->findOrFail($id);
+            ->where('booking_id', $id)
+            ->firstOrFail();
 
         // Check if user owns this booking
-        if ($booking->matricNum !== Auth::user()->matricNum && !Auth::user()->isAdmin()) {
+        if ($booking->customer_id !== Auth::id()) {
             abort(403, 'Unauthorized access to booking.');
         }
 
@@ -165,15 +145,15 @@ class BookingController extends Controller
      */
     public function cancel($id)
     {
-        $booking = Booking::findOrFail($id);
+        $booking = Booking::where('booking_id', $id)->firstOrFail();
 
         // Check if user owns this booking
-        if ($booking->matricNum !== Auth::user()->matricNum) {
+        if ($booking->customer_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
         // Check if booking can be cancelled
-        if (!$booking->isPending() && !$booking->isConfirmed()) {
+        if (!in_array($booking->booking_status, ['pending', 'confirmed'])) {
             return back()->with('error', 'This booking cannot be cancelled.');
         }
 
@@ -183,10 +163,7 @@ class BookingController extends Controller
             $booking->update(['booking_status' => 'cancelled']);
 
             // Make vehicle available again
-            $booking->vehicle->update([
-                'availability_status' => 'available',
-                'customer_id' => null,
-            ]);
+            $booking->vehicle->update(['availability_status' => 'available']);
 
             DB::commit();
 
@@ -197,55 +174,6 @@ class BookingController extends Controller
             DB::rollBack();
             
             return back()->with('error', 'An error occurred while cancelling the booking.');
-        }
-    }
-
-    /**
-     * Admin: Confirm a booking
-     */
-    public function confirm($id)
-    {
-        $booking = Booking::findOrFail($id);
-
-        if (!$booking->isPending()) {
-            return back()->with('error', 'Only pending bookings can be confirmed.');
-        }
-
-        $booking->update(['booking_status' => 'confirmed']);
-
-        return back()->with('success', 'Booking confirmed successfully.');
-    }
-
-    /**
-     * Admin: Complete a booking
-     */
-    public function complete($id)
-    {
-        $booking = Booking::findOrFail($id);
-
-        if (!$booking->isConfirmed()) {
-            return back()->with('error', 'Only confirmed bookings can be completed.');
-        }
-
-        DB::beginTransaction();
-        try {
-            // Update booking status
-            $booking->update(['booking_status' => 'completed']);
-
-            // Make vehicle available again
-            $booking->vehicle->update([
-                'availability_status' => 'available',
-                'customer_id' => null,
-            ]);
-
-            DB::commit();
-
-            return back()->with('success', 'Booking completed successfully.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            return back()->with('error', 'An error occurred while completing the booking.');
         }
     }
 }

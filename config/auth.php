@@ -13,8 +13,8 @@ return [
     |
     */
     'defaults' => [
-        'guard' => 'web',          // Default guard (for general web authentication)
-        'passwords' => 'users',    // Default password reset
+        'guard' => 'customer',          // Default guard (for general web authentication)
+        'passwords' => 'customers',    // Default password reset
     ],
 
     /*
@@ -36,18 +36,13 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',      // For general web authentication (usually customers)
+            'provider' => 'customers',      // For general web authentication (usually customers)
         ],
 
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
             'hash' => false,
-        ],
-
-        'web' => [ 
-        'driver' => 'session',
-        'provider' => 'users',
         ],
 
         'customer' => [
