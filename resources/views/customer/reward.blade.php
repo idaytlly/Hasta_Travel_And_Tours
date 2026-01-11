@@ -130,9 +130,9 @@
                             <p class="reward-desc">First 3 stamps</p>
                             <div class="reward-requirement">Each 7-hour booking = 1 stamp</div>
                             @if (($currentStamps ?? 0) >= 3)
-                                <span class="badge bg-success mt-2 px-3 py-1">✓ Unlocked</span>
+                                <span class="mt-2" style="background: rgba(40, 167, 69, 0.1); color: #28a745; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">✓ Unlocked</span>
                             @else
-                                <span class="badge bg-secondary mt-2 px-3 py-1">🔒 Locked</span>
+                                <span class="mt-2" style="background: rgba(108, 117, 125, 0.1); color: #6c757d; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">🔒 Locked</span>
                             @endif
                         </div>
                     </div>
@@ -150,9 +150,9 @@
                             <p class="reward-desc">Collected 9 stamps</p>
                             <div class="reward-requirement">Each 7-hour booking = 1 stamp</div>
                             @if (($currentStamps ?? 0) >= 9)
-                                <span class="badge bg-success mt-2 px-3 py-1">✓ Unlocked</span>
+                                <span class="mt-2" style="background: rgba(40, 167, 69, 0.1); color: #28a745; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">✓ Unlocked</span>
                             @else
-                                <span class="badge bg-secondary mt-2 px-3 py-1">🔒 Locked</span>
+                                <span class="mt-2" style="background: rgba(108, 117, 125, 0.1); color: #6c757d; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">🔒 Locked</span>
                             @endif
                         </div>
                     </div>
@@ -170,9 +170,9 @@
                             <p class="reward-desc">Complete stamp card! 🎉</p>
                             <div class="reward-requirement">Each 7-hour booking = 1 stamp</div>
                             @if (($currentStamps ?? 0) >= 12)
-                                <span class="badge bg-success mt-2 px-3 py-1">✓ Unlocked</span>
+                                <span class="mt-2" style="background: rgba(40, 167, 69, 0.1); color: #28a745; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">✓ Unlocked</span>
                             @else
-                                <span class="badge bg-secondary mt-2 px-3 py-1">🔒 Locked</span>
+                                <span class="mt-2" style="background: rgba(108, 117, 125, 0.1); color: #6c757d; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">🔒 Locked</span>
                             @endif
                         </div>
                     </div>
@@ -200,12 +200,12 @@
                                     <td><strong>#{{ $history->order_id }}</strong></td>
                                     <td>{{ $history->hours }} hours</td>
                                     <td>
-                                        <span style="color: #dc3545; font-weight: 600;">
+                                        <span style="background: rgba(220, 53, 69, 0.1); color: #dc3545; font-weight: 600; padding: 4px 12px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">
                                             +{{ $history->stamps_earned }} stamp{{ $history->stamps_earned > 1 ? 's' : '' }}
                                         </span>
                                     </td>
                                     <td>
-                                        <span style="color: {{ strtolower($history->status) == 'completed' ? '#28a745' : '#ffc107' }}; font-weight: 600;">{{ ucfirst($history->status) }}</span>
+                                        <span style="background: {{ strtolower($history->status) == 'completed' ? 'rgba(40, 167, 69, 0.1)' : 'rgba(255, 193, 7, 0.1)' }}; color: {{ strtolower($history->status) == 'completed' ? '#28a745' : '#ffc107' }}; font-weight: 600; padding: 4px 12px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">{{ ucfirst($history->status) }}</span>
                                     </td>
                                 </tr>
                             @empty
