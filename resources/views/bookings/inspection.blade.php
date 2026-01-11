@@ -149,6 +149,7 @@
     .upload-icon {
         font-size: 48px;
         margin-bottom: 12px;
+        color: #9ca3af;
     }
     
     .upload-label {
@@ -382,12 +383,11 @@
                 <p style="color: #6b7280; font-size: 14px;">Complete thorough inspection before {{ $inspectionType === 'pickup' ? 'picking up' : 'returning' }} the vehicle</p>
             </div>
             <span class="inspection-type-badge type-{{ $inspectionType }}">
-                {{ $inspectionType === 'pickup' ? '📥 Pick Up' : '📤 Drop Off' }} Inspection
+                {{ $inspectionType === 'pickup' ? 'Pick Up' : 'Drop Off' }} Inspection
             </span>
         </div>
         
         <div class="vehicle-info-card">
-            <div style="font-size: 32px;">🚗</div>
             <div>
                 <h3>{{ $booking->vehicle->name }}</h3>
                 <p>{{ $booking->plate_no }} • Booking #{{ $booking->booking_id }}</p>
@@ -403,7 +403,6 @@
         <!-- Car Photos - 4 Sides -->
         <div class="inspection-section">
             <h2 class="section-title">
-                <span>📸</span>
                 Vehicle Photos (4 Sides) <span class="required-label">*</span>
             </h2>
             <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">
@@ -413,9 +412,9 @@
             <div class="car-photos-grid">
                 <!-- Front Photo -->
                 <label class="photo-upload-box" id="front-box">
-                    <input type="file" name="photo_front" accept="image/*" required data-side="front">
+                    <input type="file" name="photo_front" accept="image/*" data-side="front">
                     <div class="upload-content">
-                        <div class="upload-icon">📷</div>
+                        <div class="upload-icon">+</div>
                         <div class="upload-label">Front View</div>
                         <div class="upload-hint">Click to upload</div>
                     </div>
@@ -423,9 +422,9 @@
                 
                 <!-- Back Photo -->
                 <label class="photo-upload-box" id="back-box">
-                    <input type="file" name="photo_back" accept="image/*" required data-side="back">
+                    <input type="file" name="photo_back" accept="image/*" data-side="back">
                     <div class="upload-content">
-                        <div class="upload-icon">📷</div>
+                        <div class="upload-icon">+</div>
                         <div class="upload-label">Back View</div>
                         <div class="upload-hint">Click to upload</div>
                     </div>
@@ -433,9 +432,9 @@
                 
                 <!-- Left Photo -->
                 <label class="photo-upload-box" id="left-box">
-                    <input type="file" name="photo_left" accept="image/*" required data-side="left">
+                    <input type="file" name="photo_left" accept="image/*" data-side="left">
                     <div class="upload-content">
-                        <div class="upload-icon">📷</div>
+                        <div class="upload-icon">+</div>
                         <div class="upload-label">Left Side View</div>
                         <div class="upload-hint">Click to upload</div>
                     </div>
@@ -443,9 +442,9 @@
                 
                 <!-- Right Photo -->
                 <label class="photo-upload-box" id="right-box">
-                    <input type="file" name="photo_right" accept="image/*" required data-side="right">
+                    <input type="file" name="photo_right" accept="image/*" data-side="right">
                     <div class="upload-content">
-                        <div class="upload-icon">📷</div>
+                        <div class="upload-icon">+</div>
                         <div class="upload-label">Right Side View</div>
                         <div class="upload-hint">Click to upload</div>
                     </div>
@@ -456,7 +455,6 @@
         <!-- Fuel Bar Reading Photo -->
         <div class="inspection-section">
             <h2 class="section-title">
-                <span>⛽</span>
                 Fuel Bar Reading <span class="required-label">*</span>
             </h2>
             <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">
@@ -464,9 +462,9 @@
             </p>
             
             <label class="fuel-reading-upload" id="fuel-box">
-                <input type="file" name="photo_fuel" accept="image/*" required id="fuel-input">
+                <input type="file" name="photo_fuel" accept="image/*" id="fuel-input">
                 <div class="upload-content">
-                    <div class="upload-icon">⛽</div>
+                    <div class="upload-icon">+</div>
                     <div class="upload-label">Fuel Gauge Photo</div>
                     <div class="upload-hint">Click to upload fuel gauge reading</div>
                 </div>
@@ -476,7 +474,6 @@
         <!-- Remarks -->
         <div class="inspection-section">
             <h2 class="section-title">
-                <span>📝</span>
                 Inspection Remarks <span class="required-label">*</span>
             </h2>
             <p style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">
@@ -487,7 +484,6 @@
                 <textarea 
                     name="remarks" 
                     id="remarks" 
-                    required 
                     placeholder="Describe the vehicle condition in detail. Include any observations about exterior, interior, cleanliness, damages, scratches, dents, or any other relevant details..."
                     maxlength="1000"></textarea>
                 <div class="char-counter">
@@ -499,7 +495,6 @@
         <!-- Signature -->
         <div class="signature-section">
             <h2 class="section-title">
-                <span>✍️</span>
                 Signature <span class="required-label">*</span>
             </h2>
             <p style="font-size: 14px; color: #6b7280; margin-bottom: 12px;">
@@ -509,7 +504,7 @@
             <div class="signature-controls">
                 <button type="button" class="btn-clear-signature" id="clear-signature">Clear Signature</button>
             </div>
-            <input type="hidden" name="signature" id="signature-data" required>
+            <input type="hidden" name="signature" id="signature-data">
         </div>
         
         <!-- Form Actions -->
@@ -519,6 +514,8 @@
         </div>
     </form>
 </div>
+
+const fuelInput = document.getElementById('fuel-input');
 
 <script>
 // Photo Upload Handlers
@@ -535,7 +532,7 @@ document.querySelectorAll('.photo-upload-box input[type="file"]').forEach(input 
                     <div class="photo-preview-container">
                         <img src="${e.target.result}" alt="Preview" class="photo-preview-img">
                         <button type="button" class="remove-photo-btn">×</button>
-                        <div class="photo-label-display">✓ ${input.dataset.side ? input.dataset.side.charAt(0).toUpperCase() + input.dataset.side.slice(1) + ' view' : 'Fuel gauge'} uploaded</div>
+                        <div class="photo-label-display">${input.dataset.side ? input.dataset.side.charAt(0).toUpperCase() + input.dataset.side.slice(1) + ' view' : 'Fuel gauge'} uploaded</div>
                     </div>
                 `;
                 
@@ -572,7 +569,7 @@ document.getElementById('fuel-input').addEventListener('change', function(e) {
                 <div class="photo-preview-container" style="width: 100%; text-align: center;">
                     <img src="${e.target.result}" alt="Fuel Gauge" class="fuel-preview-img">
                     <button type="button" class="remove-photo-btn">×</button>
-                    <div class="photo-label-display">✓ Fuel gauge photo uploaded</div>
+                    <div class="photo-label-display">Fuel gauge photo uploaded</div>
                 </div>
             `;
             
@@ -580,7 +577,6 @@ document.getElementById('fuel-input').addEventListener('change', function(e) {
             newInput.type = 'file';
             newInput.name = 'photo_fuel';
             newInput.accept = 'image/*';
-            newInput.required = true;
             newInput.id = 'fuel-input';
             newInput.style.display = 'none';
             box.appendChild(newInput);
@@ -607,9 +603,9 @@ function resetPhotoBox(box, inputName, side) {
     
     box.classList.remove('has-image');
     box.innerHTML = `
-        <input type="file" name="${inputName}" accept="image/*" required data-side="${side}">
+        <input type="file" name="${inputName}" accept="image/*" data-side="${side}">
         <div class="upload-content">
-            <div class="upload-icon">📷</div>
+            <div class="upload-icon">+</div>
             <div class="upload-label">${sideLabels[side]}</div>
             <div class="upload-hint">Click to upload</div>
         </div>
@@ -624,9 +620,9 @@ function resetFuelBox() {
     const box = document.getElementById('fuel-box');
     box.classList.remove('has-image');
     box.innerHTML = `
-        <input type="file" name="photo_fuel" accept="image/*" required id="fuel-input">
+        <input type="file" name="photo_fuel" accept="image/*" id="fuel-input">
         <div class="upload-content">
-            <div class="upload-icon">⛽</div>
+            <div class="upload-icon">+</div>
             <div class="upload-label">Fuel Gauge Photo</div>
             <div class="upload-hint">Click to upload fuel gauge reading</div>
         </div>
@@ -718,26 +714,38 @@ document.getElementById('clear-signature').addEventListener('click', function() 
 
 // Form Validation
 document.getElementById('inspection-form').addEventListener('submit', function(e) {
+    console.log('Form submit triggered');
     const errors = [];
     
     // Check photos
     const photoInputs = ['photo_front', 'photo_back', 'photo_left', 'photo_right', 'photo_fuel'];
-    photoInputs.forEach(name => {
+    // Car photos
+    ['photo_front', 'photo_back', 'photo_left', 'photo_right'].forEach(name => {
         const input = document.querySelector(`input[name="${name}"]`);
-        if (!input || !input.files || input.files.length === 0) {
-            errors.push(`${name.replace('photo_', '').replace('_', ' ')} photo is required`);
+        if (!input || input.files.length === 0) {
+            errors.push(`${name.replace('photo_', '')} photo is required`);
         }
     });
+
+    // Fuel photo (SPECIAL CASE)
+    if (!fuelInput || fuelInput.files.length === 0) {
+        errors.push('fuel photo is required');
+    }
+
     
     // Check remarks
+    console.log('Remarks length:', remarksField.value.trim().length);
     if (remarksField.value.trim().length < 10) {
         errors.push('Remarks must be at least 10 characters long');
     }
     
     // Check signature
+    console.log('Signature data exists:', !!signatureData.value);
     if (!signatureData.value) {
         errors.push('Signature is required');
     }
+    
+    console.log('Total errors:', errors.length);
     
     if (errors.length > 0) {
         e.preventDefault();
@@ -753,6 +761,8 @@ document.getElementById('inspection-form').addEventListener('submit', function(e
         errorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return false;
     }
+    
+    console.log('Form validation passed, submitting...');
 });
 </script>
 @endsection

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('fuel_photo')->nullable();
             $table->text('remarks')->nullable();
             $table->string('signature')->nullable();
-            $table->unsignedBigInteger('inspected_by')->nullable();
+            $table->string('inspected_by')->nullable();
             $table->timestamp('inspected_at')->nullable();
             
             // Original fields

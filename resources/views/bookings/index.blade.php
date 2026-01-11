@@ -401,7 +401,6 @@
             <div class="booking-card">
                 <div class="booking-header">
                     <div class="booking-vehicle">
-                        <div class="vehicle-icon">🚗</div>
                         <div class="vehicle-info">
                             <h3>{{ $booking->vehicle->name }}</h3>
                             <p>{{ $booking->plate_no }}</p>
@@ -420,7 +419,7 @@
                 <div class="booking-details-grid">
                     <div class="detail-card pickup">
                         <div class="detail-label">
-                            📍 Pickup
+                            Pickup
                         </div>
                         <div class="detail-date">
                             {{ \Carbon\Carbon::parse($booking->pickup_date)->format('l, F j, Y') }}
@@ -435,7 +434,7 @@
                     
                     <div class="detail-card return">
                         <div class="detail-label">
-                            📍 Return
+                            Return
                         </div>
                         <div class="detail-date">
                             {{ \Carbon\Carbon::parse($booking->return_date)->format('l, F j, Y') }}

@@ -15,6 +15,27 @@ class VehicleSeeder extends Seeder
     {
         $now = Carbon::now();
 
+        // Insert Customer first (required for bookings)
+        $customer = [
+            'customer_id' => 'CUS0001',
+            'name' => 'John Doe',
+            'ic_number' => '990101011234',
+            'email' => 'john.doe@example.com',
+            'phone_no' => '0123456789',
+            'password' => bcrypt('password123'),
+            'ic_passport_image' => 'customer_docs/ic_sample.jpg',
+            'license_image' => 'customer_docs/license_sample.jpg',
+            'license_no' => 'D1234567',
+            'license_expiry' => $now->copy()->addYears(2)->toDateString(),
+            'emergency_phoneNo' => '0198765432',
+            'emergency_name' => 'Jane Doe',
+            'emergency_relationship' => 'Spouse',
+            'created_at' => $now,
+            'updated_at' => $now,
+        ];
+
+        DB::table('customers')->insert($customer);
+
         $vehicles = [
             [
                 'plate_no' => 'MCP 6113',
@@ -231,7 +252,7 @@ class VehicleSeeder extends Seeder
             ],
         ];
 
-        // Ensure every record has the same keys so the multi-insert uses a consistent column list
+        // Ensure every record has the same keys
         $columns = [
             'plate_no','name','color','year','vehicle_type','image','front_image','back_image',
             'left_image','right_image','interior1_image','interior2_image','price_perHour',
@@ -247,5 +268,178 @@ class VehicleSeeder extends Seeder
         }
 
         DB::table('vehicle')->insert($vehicles);
+
+        // Insert Bookings
+        $bookings = [
+            // Confirmed booking - ready for pickup inspection
+            [
+                'booking_id' => 'BKG-' . time() . '-001',
+                'customer_id' => 'CUS0001',
+                'plate_no' => 'MCP 6113',
+                'pickup_date' => $now->copy()->addDays(1)->toDateString(),
+                'pickup_time' => '09:00:00',
+                'pickup_location' => 'HASTA office',
+                'pickup_details' => 'HASTA Office',
+                'return_date' => $now->copy()->addDays(2)->toDateString(),
+                'return_time' => '18:00:00',
+                'dropoff_location' => 'HASTA office',
+                'dropoff_details' => 'HASTA Office',
+                'delivery_required' => false,
+                'total_price' => 1155.00,
+                'booking_status' => 'confirmed',
+                'voucher_id' => null,
+                'signature' => 'signatures/sample_signature_1.png',
+                'created_at' => $now->copy()->subDays(2),
+                'updated_at' => $now->copy()->subDays(1),
+            ],
+            
+            // Confirmed booking - ready for pickup inspection (current rental)
+            [
+                'booking_id' => 'BKG-' . (time() + 1) . '-002',
+                'customer_id' => 'CUS0001',
+                'plate_no' => 'UTM 3365',
+                'pickup_date' => $now->toDateString(),
+                'pickup_time' => '10:00:00',
+                'pickup_location' => 'Residential College',
+                'pickup_details' => 'Kolej Tun Dr. Ismail',
+                'return_date' => $now->copy()->addDays(1)->toDateString(),
+                'return_time' => '17:00:00',
+                'dropoff_location' => 'HASTA office',
+                'dropoff_details' => 'HASTA Office',
+                'delivery_required' => true,
+                'total_price' => 1240.00,
+                'booking_status' => 'confirmed',
+                'voucher_id' => null,
+                'signature' => 'signatures/sample_signature_2.png',
+                'created_at' => $now->copy()->subDays(3),
+                'updated_at' => $now->copy()->subDays(1),
+            ],
+            
+            // Pending booking - waiting for payment
+            [
+                'booking_id' => 'BKG-' . (time() + 2) . '-003',
+                'customer_id' => 'CUS0001',
+                'plate_no' => 'UTM 3655',
+                'pickup_date' => $now->copy()->addDays(3)->toDateString(),
+                'pickup_time' => '08:00:00',
+                'pickup_location' => 'Faculty',
+                'pickup_details' => 'Faculty of Computing',
+                'return_date' => $now->copy()->addDays(4)->toDateString(),
+                'return_time' => '20:00:00',
+                'dropoff_location' => 'Faculty',
+                'dropoff_details' => 'Faculty of Computing',
+                'delivery_required' => true,
+                'total_price' => 1800.00,
+                'booking_status' => 'pending',
+                'voucher_id' => null,
+                'signature' => 'signatures/sample_signature_3.png',
+                'created_at' => $now->copy()->subHours(2),
+                'updated_at' => $now->copy()->subHours(2),
+            ],
+            
+            // Completed booking
+            [
+                'booking_id' => 'BKG-' . (time() + 3) . '-004',
+                'customer_id' => 'CUS0001',
+                'plate_no' => 'JPN 1416',
+                'pickup_date' => $now->copy()->subDays(5)->toDateString(),
+                'pickup_time' => '09:00:00',
+                'pickup_location' => 'HASTA office',
+                'pickup_details' => 'HASTA Office',
+                'return_date' => $now->copy()->subDays(4)->toDateString(),
+                'return_time' => '18:00:00',
+                'dropoff_location' => 'HASTA office',
+                'dropoff_details' => 'HASTA Office',
+                'delivery_required' => false,
+                'total_price' => 1320.00,
+                'booking_status' => 'completed',
+                'voucher_id' => null,
+                'signature' => 'signatures/sample_signature_4.png',
+                'created_at' => $now->copy()->subDays(7),
+                'updated_at' => $now->copy()->subDays(4),
+            ],
+            
+            // Another confirmed booking
+            [
+                'booking_id' => 'BKG-' . (time() + 4) . '-005',
+                'customer_id' => 'CUS0001',
+                'plate_no' => 'CEX 5224',
+                'pickup_date' => $now->copy()->addDays(2)->toDateString(),
+                'pickup_time' => '14:00:00',
+                'pickup_location' => 'Residential College',
+                'pickup_details' => 'Kolej Tun Razak',
+                'return_date' => $now->copy()->addDays(3)->toDateString(),
+                'return_time' => '14:00:00',
+                'dropoff_location' => 'Residential College',
+                'dropoff_details' => 'Kolej Tun Razak',
+                'delivery_required' => true,
+                'total_price' => 960.00,
+                'booking_status' => 'confirmed',
+                'voucher_id' => null,
+                'signature' => 'signatures/sample_signature_5.png',
+                'created_at' => $now->copy()->subDays(1),
+                'updated_at' => $now->copy()->subHours(12),
+            ],
+        ];
+
+        DB::table('booking')->insert($bookings);
+        
+        // Insert payments for confirmed and active bookings
+        $payments = [
+            [
+                'payment_id' => 'PAY-' . time() . '-001',
+                'booking_id' => $bookings[0]['booking_id'],
+                'amount' => 1155.00,
+                'payment_method' => 'online',
+                'payment_status' => 'paid',
+                'payment_date' => $now->copy()->subDays(1),
+                'payment_proof' => 'payment_proofs/payment_001.jpg',
+                'deposit' => 0,
+                'remaining_payment' => 0,
+                'created_at' => $now->copy()->subDays(1),
+                'updated_at' => $now->copy()->subDays(1),
+            ],
+            [
+                'payment_id' => 'PAY-' . (time() + 1) . '-002',
+                'booking_id' => $bookings[1]['booking_id'],
+                'amount' => 1240.00,
+                'payment_method' => 'online',
+                'payment_status' => 'paid',
+                'payment_date' => $now->copy()->subDays(2),
+                'payment_proof' => 'payment_proofs/payment_002.jpg',
+                'deposit' => 0,
+                'remaining_payment' => 0,
+                'created_at' => $now->copy()->subDays(2),
+                'updated_at' => $now->copy()->subDays(2),
+            ],
+            [
+                'payment_id' => 'PAY-' . (time() + 2) . '-004',
+                'booking_id' => $bookings[3]['booking_id'],
+                'amount' => 1320.00,
+                'payment_method' => 'online',
+                'payment_status' => 'paid',
+                'payment_date' => $now->copy()->subDays(6),
+                'payment_proof' => 'payment_proofs/payment_004.jpg',
+                'deposit' => 0,
+                'remaining_payment' => 0,
+                'created_at' => $now->copy()->subDays(6),
+                'updated_at' => $now->copy()->subDays(6),
+            ],
+            [
+                'payment_id' => 'PAY-' . (time() + 3) . '-005',
+                'booking_id' => $bookings[4]['booking_id'],
+                'amount' => 960.00,
+                'payment_method' => 'online',
+                'payment_status' => 'paid',
+                'payment_date' => $now->copy()->subHours(12),
+                'payment_proof' => 'payment_proofs/payment_005.jpg',
+                'deposit' => 0,
+                'remaining_payment' => 0,
+                'created_at' => $now->copy()->subHours(12),
+                'updated_at' => $now->copy()->subHours(12),
+            ],
+        ];
+
+        DB::table('payment')->insert($payments);
     }
 }

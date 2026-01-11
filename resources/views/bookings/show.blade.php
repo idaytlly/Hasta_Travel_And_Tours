@@ -110,6 +110,12 @@
         color: #065f46;
         border: 2px solid #10b981;
     }
+
+    .status-active {
+        background: #dbeafe;
+        color: #1e40af;
+        border: 2px solid #3b82f6;
+    }
     
     .status-completed {
         background: #e5e7eb;
@@ -299,6 +305,63 @@
         background: #fef3c7;
         color: #92400e;
     }
+
+    /* Inspection Alert Box */
+    .inspection-alert {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .inspection-alert h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .inspection-alert p {
+        font-size: 14px;
+        opacity: 0.95;
+        margin-bottom: 16px;
+    }
+
+    .btn-inspection {
+        background: white;
+        color: #667eea;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-inspection:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+    }
+
+    .inspection-completed {
+        background: #d1fae5;
+        border: 2px solid #10b981;
+        color: #065f46;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
     
     .action-buttons {
         display: flex;
@@ -405,6 +468,54 @@
             ℹ️ {{ session('info') }}
         </div>
     @endif
+
+    @php
+        // Check if pickup inspection exists
+        $pickupInspection = \App\Models\Inspection::where('booking_id', $booking->booking_id)
+            ->where('inspection_type', 'pickup')
+            ->first();
+        
+        // Check if dropoff inspection exists
+        $dropoffInspection = \App\Models\Inspection::where('booking_id', $booking->booking_id)
+            ->where('inspection_type', 'dropoff')
+            ->first();
+    @endphp
+
+    {{-- PICKUP INSPECTION ALERT --}}
+    @if($booking->booking_status === 'confirmed' && !$pickupInspection)
+        <div class="inspection-alert">
+            <h3>Pick-Up Inspection Required</h3>
+            <p>Before you can pick up the vehicle, you must complete a vehicle inspection. This ensures both parties agree on the vehicle's condition.</p>
+            <a href="{{ route('bookings.inspection', ['id' => $booking->booking_id, 'type' => 'pickup']) }}" class="btn-inspection">
+                Start Pick-Up Inspection →
+            </a>
+        </div>
+    @endif
+
+    {{-- PICKUP INSPECTION COMPLETED --}}
+    @if($pickupInspection)
+        <div class="inspection-completed">
+            <span>Pick-up inspection completed on {{ \Carbon\Carbon::parse($pickupInspection->inspection_date)->format('F j, Y') }}</span>
+        </div>
+    @endif
+
+    {{-- DROPOFF INSPECTION ALERT --}}
+    @if($booking->booking_status === 'active' && !$dropoffInspection)
+        <div class="inspection-alert">
+            <h3>Drop-Off Inspection Required</h3>
+            <p>Before returning the vehicle, you must complete a drop-off inspection. This finalizes the rental and documents the vehicle's condition upon return.</p>
+            <a href="{{ route('bookings.inspection', ['id' => $booking->booking_id, 'type' => 'dropoff']) }}" class="btn-inspection">
+                Start Drop-Off Inspection →
+            </a>
+        </div>
+    @endif
+
+    {{-- DROPOFF INSPECTION COMPLETED --}}
+    @if($dropoffInspection)
+        <div class="inspection-completed">
+            <span>Drop-off inspection completed on {{ \Carbon\Carbon::parse($dropoffInspection->inspection_date)->format('F j, Y') }}</span>
+        </div>
+    @endif
     
     <div class="page-header">
         <h1>Booking Details</h1>
@@ -424,7 +535,7 @@
         <div class="card-content">
             <!-- Vehicle Information -->
             <h2 class="section-title">
-                🚗 Vehicle Information
+                Vehicle Information
             </h2>
             <div class="car-details-section">
                 <img src="{{ $booking->vehicle->image_url ?? asset('car_images/axia.jpg') }}" alt="{{ $booking->vehicle->name }}">
@@ -439,7 +550,7 @@
             
             <!-- Customer Information -->
             <h2 class="section-title">
-                👤 Customer Information
+                Customer Information
             </h2>
             <div class="customer-info">
                 <div class="customer-row">
@@ -456,12 +567,12 @@
             
             <!-- Rental Details -->
             <h2 class="section-title">
-                📅 Rental Details
+                Rental Details
             </h2>
             <div class="info-grid">
                 <div class="info-card pickup">
                     <div class="info-label">
-                        📍 Pickup
+                        Pickup
                     </div>
                     <div class="info-value">
                         {{ \Carbon\Carbon::parse($booking->pickup_date)->format('l, F j, Y') }}
@@ -476,7 +587,7 @@
                 
                 <div class="info-card return">
                     <div class="info-label">
-                        📍 Return
+                        Return
                     </div>
                     <div class="info-value">
                         {{ \Carbon\Carbon::parse($booking->return_date)->format('l, F j, Y') }}
@@ -498,7 +609,7 @@
             
             <!-- Price Summary -->
             <h2 class="section-title">
-                💰 Price Summary
+                Price Summary
             </h2>
             <div class="price-summary">
                 <div class="price-row">
@@ -535,7 +646,7 @@
             @if($booking->payments->isNotEmpty())
                 <div class="payment-section">
                     <h2 class="section-title">
-                        💳 Payment Information
+                        Payment Information
                     </h2>
                     @php $payment = $booking->payments->first(); @endphp
                     <div style="margin-bottom: 16px;">
@@ -570,7 +681,7 @@
             @if($booking->signature)
                 <div style="border-top: 2px solid #e5e7eb; padding-top: 20px; margin-top: 24px;">
                     <h2 class="section-title">
-                        ✍️ Digital Signature
+                        Digital Signature
                     </h2>
                     <div class="signature-preview">
                         <img src="{{ asset('storage/' . $booking->signature) }}" alt="Digital Signature">
