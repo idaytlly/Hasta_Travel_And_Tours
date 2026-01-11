@@ -1,5 +1,5 @@
 {{-- resources/views/staff/vehicles/show.blade.php --}}
-@extends('staff.layouts.staff')
+@extends('staff.layouts.app')
 
 @section('title', 'Vehicle Details')
 @section('page-title', 'Vehicle Details')
