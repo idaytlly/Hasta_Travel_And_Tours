@@ -8,7 +8,7 @@
 <style>
     /* Page-specific styles copied from previous standalone file */
     body {
-        padding-top: 70px; /* match layout spacing */
+        padding-top: 65px; /* match layout spacing */
     }
 
     .main-content {
@@ -35,7 +35,7 @@
 
     /* Make cards a bit more compact and let image sit outside the card (not cropped) */
     /* Keep card sizes compact and ensure all images use the same fixed container so they're visually consistent */
-    .vehicle-card { background:#fff; border-radius:12px; padding:14px; margin-bottom:14px; box-shadow:0 1px 8px rgba(0,0,0,0.06); }
+    .vehicle-card { background:#fff; border-radius:12px; padding:18px; margin-bottom:10px; box-shadow:0 1px 8px rgba(0,0,0,0.06); }
     .vehicle-info { display:flex; gap:18px; align-items:center; }
     /* Fixed image container — same size for every vehicle */
     .vehicle-image { width:140px; height:100px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:transparent; overflow:visible; }
