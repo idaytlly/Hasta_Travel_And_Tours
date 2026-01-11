@@ -457,13 +457,7 @@
     <footer class="footer-hasta">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-left">
-                    <div class="footer-logo">HASTA</div>
-                    <div class="footer-copyright">
-                        © 2026 Hasta Travel & Tours. All Rights Reserved.
-                    </div>
-                </div>
-
+                <!-- Social Links on LEFT -->
                 <div class="footer-social">
                     <a href="http://wasap.my/601110900700/nakkeretasewa" title="WhatsApp">
                         <i class="fab fa-whatsapp"></i>
@@ -477,6 +471,11 @@
                     <a href="http://youtube.com/watch?v=41Vedbjxn_s" title="YouTube">
                         <i class="fab fa-youtube"></i>
                     </a>
+                </div>
+
+                <!-- Copyright on RIGHT -->
+                <div class="footer-copyright">
+                    © 2026 Hasta Travel & Tours. All Rights Reserved.
                 </div>
             </div>
         </div>

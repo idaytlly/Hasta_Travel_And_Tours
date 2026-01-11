@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('title', 'Edit Profile')
+
+@section('noFooter', true)
+
 @section('content')
 <style>
     .profile-edit-container {
