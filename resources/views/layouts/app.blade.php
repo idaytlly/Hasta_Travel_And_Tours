@@ -396,7 +396,7 @@
                 <div class="nav-links">
                     <a href="{{ route('customer.home') }}" class="nav-link-custom">Home</a>
                     <a href="{{ route('vehicles.index') }}" class="nav-link-custom">Fleet</a>
-                    <a href="#" class="nav-link-custom">Rewards</a>
+                    <a href="{{ route('customer.reward') }}" class="nav-link-custom">Rewards</a>
                 </div>
             </div>
 

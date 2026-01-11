@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\Staff\AuthController;
 use App\Http\Controllers\VehicleController;
@@ -24,9 +25,7 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 // Customer Routes
-Route::get('/customer/home', function () {
-    return view('customer.home');
-})->name('customer.home');
+Route::get('/customer/home', [CustomerController::class, 'home'])->name('customer.home');
 
 // Customer Profile
 Route::get('/profile', [CustomerProfileController::class, 'showProfile'])->name('customer.profile');
@@ -34,6 +33,9 @@ Route::get('/profile/edit', [CustomerProfileController::class, 'edit'])->name('c
 Route::put('/profile', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
 
 Route::resource('vehicles', VehicleController::class)->only(['index', 'show']);
+
+//Rewards
+Route::get('/customer/reward', [CustomerController::class, 'rewards'])->name('customer.reward');
 
 // Staff Booking Routes
 Route::middleware(['staff.auth'])->prefix('staff')->group(function () {
