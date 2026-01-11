@@ -391,12 +391,9 @@
                                     <span class="required">*</span>
                                 </label>
                                 <select class="form-select" name="emergency_relationship" required>
-                                    <option value="Parent" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Parent' ? 'selected' : '' }}>Parent</option>
-                                    <option value="Spouse" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Spouse' ? 'selected' : '' }}>Spouse</option>
+                                    <option value="Father" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Father' ? 'selected' : '' }}>Father</option>
+                                    <option value="Mother" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Mother' ? 'selected' : '' }}>Mother</option>
                                     <option value="Sibling" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Sibling' ? 'selected' : '' }}>Sibling</option>
-                                    <option value="Friend" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Friend' ? 'selected' : '' }}>Friend</option>
-                                    <option value="Relative" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Relative' ? 'selected' : '' }}>Relative</option>
-                                    <option value="Other" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Other' ? 'selected' : '' }}>Other</option>
                                 </select>
                                 @error('emergency_relationship')
                                     <small class="text-danger">{{ $message }}</small>
