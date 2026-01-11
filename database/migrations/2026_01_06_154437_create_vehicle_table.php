@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('color')->nullable();
             $table->integer('year')->nullable();
+            $table->json('pickup_location')->nullable();
+            $table->string('pickup_date')->nullable();
+            $table->string('pickup_time')->nullable();
+            $table->string('return_date')->nullable();
+            $table->string('return_time')->nullable();
             $table->string('vehicle_type')->nullable();
             $table->string('image')->nullable();
             $table->string('front_image')->nullable();
