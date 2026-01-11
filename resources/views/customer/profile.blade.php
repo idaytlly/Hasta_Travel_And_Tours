@@ -2,6 +2,8 @@
 
 @section('title', 'My Profile')
 
+@section('noFooter', true)
+
 @section('content')
 <style>
     .profile-container {
