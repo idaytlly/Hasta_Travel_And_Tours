@@ -285,13 +285,6 @@
                 >
             </div>
 
-            <div class="terms-checkbox">
-                <input type="checkbox" id="terms" name="terms" required>
-                <label for="terms">
-                    I agree to the <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a>
-                </label>
-            </div>
-
             <button type="submit" class="register-button">Sign Up</button>
 
             <div class="login-link">
