@@ -55,14 +55,16 @@
         }
 
         .btn-login:hover {
-            background-color: #f9fafb;
+            background-color: #e6623aff;
             border-color: #0000;
             color: #1f2937;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         }
 
         .btn-register {
-            color: white;
-            background-color: #F0785B;
+            color: #c62828;
+            background-color: #ffffffff;
             border: none;
             font-weight: 500;
             padding: 8px 20px;
@@ -71,121 +73,94 @@
         }
 
         .btn-register:hover {
-            background-color: #e06849;
-            color: white;
+            background-color: #ffebee;
+            color:#c62828;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
         }
 
-        /* FOOTER */
+        main {
+            flex: 1 0 auto;
+            /* give room at the bottom so page content doesn't sit flush against the footer */
+            padding-bottom: 100px;
+        }
+
+
         .footer-hasta {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
             background: var(--dark);
-            color: var(--white);
-            padding: 80px 0 30px;
-        }
+            color: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            box-shadow: 0 -8px 24px rgba(0,0,0,0.12);
+            z-index: 999;
 
-        .footer-brand {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--white);
-            margin-bottom: 20px;
-        }
-
-        .footer-brand .star {
-            color: var(--primary);
-        }
-
-        .footer-text {
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 25px;
-            max-width: 300px;
-        }
-
-        .footer-contact {
-            margin-bottom: 25px;
-        }
-
-        .footer-contact-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            color: rgba(255,255,255,0.8);
-        }
-
-        .footer-contact-item i {
-            width: 40px;
-            height: 40px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .footer-links h5 {
-            color: var(--white);
-            font-weight: 600;
-            margin-bottom: 25px;
-        }
-
-        .footer-links ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer-links ul li {
-            margin-bottom: 12px;
-        }
-
-        .footer-links ul li a {
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
+            /* 👇 default hidden */
+            transform: translateY(100%);
+            opacity: 0;
             transition: all 0.3s ease;
         }
 
-        .footer-links ul li a:hover {
-            color: var(--primary);
-            padding-left: 5px;
+        /* 👇 only show when at bottom */
+        .footer-hasta.show {
+            transform: translateY(0);
+            opacity: 1;
         }
-
-        .social-links {
-            display: flex;
-            gap: 12px;
-        }
-
-        .social-links a {
-            width: 45px;
-            height: 45px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            background: var(--primary);
-            transform: translateY(-5px);
-        }
-
-        .footer-bottom {
+        .footer-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 30px;
-            margin-top: 50px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
             color: rgba(255,255,255,0.6);
         }
 
-        .footer-bottom-left {
+        .footer-links-inline {
             display: flex;
-            gap: 12px;
+            gap: 25px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
         }
 
-        .footer-bottom-left a {
+        .footer-links-inline a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links-inline a:hover {
+            color: var(--primary);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+
+        .footer-social a {
             width: 35px;
             height: 35px;
             background: rgba(255,255,255,0.1);
@@ -196,16 +171,13 @@
             color: rgba(255,255,255,0.8);
             text-decoration: none;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
-        .footer-bottom-left a:hover {
+        .footer-social a:hover {
             background: var(--primary);
             color: white;
             transform: translateY(-3px);
-        }
-
-        .footer-bottom-right {
-            text-align: right;
         }
 
          /* RESPONSIVE */
@@ -243,14 +215,30 @@
                 padding: 20px;
             }
 
-            .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
+            .footer-hasta {
+                padding: 12px 0;
             }
 
-            .footer-bottom-right {
+            .footer-content {
+                flex-direction: column;
                 text-align: center;
+                gap: 12px;
+            }
+
+            .footer-left {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .footer-links-inline {
+                gap: 15px;
+                font-size: 0.8rem;
+            }
+
+            .footer-social a {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
             }
         }
 
@@ -263,7 +251,7 @@
             <img 
                 src="{{ asset('images/logo_hasta.jpeg') }}" 
                 alt="Hasta Travel & Tours" 
-                height="40"
+                height="35"
             >
         </div>
 
@@ -281,66 +269,11 @@
     </main>
 
     {{-- Footer --}}
-    <footer id="footer-hasta" class="footer-hasta">
+    <footer class="footer-hasta">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4 mb-lg-0">
-                    <div class="footer-brand">HASTA</div>
-                    <p class="footer-text">
-                        Your trusted partner for car rental services in Malaysia. Quality vehicles, affordable prices.
-                    </p>
-                    
-                    <div class="footer-contact">
-                        <div class="footer-contact-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Student Mall UTM, Skudai, 81300, Johor Bahru</span>
-                        </div>
-                        <div class="footer-contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <span>hastatraveltours@gmail.com</span>
-                        </div>
-                        <div class="footer-contact-item">
-                            <i class="fas fa-phone"></i>
-                            <span>011-1090 0700</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-6 col-lg-2 offset-lg-1 footer-links">
-                    <h5>Quick Links</h5>
-                    <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Vehicles</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-6 col-lg-2 footer-links">
-                    <h5>Vehicles</h5>
-                    <ul>
-                        <li><a href="#">Sedan</a></li>
-                        <li><a href="#">Hatchback</a></li>
-                        <li><a href="#">MPV</a></li>
-                        <li><a href="#">SUV</a></li>
-                        <li><a href="#">Luxury</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-3 footer-links">
-                    <h5>Newsletter</h5>
-                    <p class="text-white-50 mb-3">Subscribe for updates and special offers</p>
-                    <form class="d-flex gap-2">
-                        <input type="email" class="form-control" placeholder="Your email" style="border-radius: 10px;">
-                        <button type="submit" class="btn" style="background: var(--primary); color: white; border-radius: 10px;">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
+            <div class="footer-content">
                 <!-- Social Links on LEFT -->
-                <div class="footer-bottom-left">
+                <div class="footer-social">
                     <a href="http://wasap.my/601110900700/nakkeretasewa" title="WhatsApp">
                         <i class="fab fa-whatsapp"></i>
                     </a>
@@ -356,14 +289,39 @@
                 </div>
 
                 <!-- Copyright on RIGHT -->
-                <div class="footer-bottom-right">
-                    <p class="mb-0">&copy; {{ date('Y') }} Hasta Travel & Tours. All Rights Reserved.</p>
+                <div class="footer-copyright">
+                    © 2026 Hasta Travel & Tours. All Rights Reserved.
                 </div>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        (function () {
+            const footer = document.querySelector('.footer-hasta');
+            if (!footer) return;
+
+            const THRESHOLD = 2; // tolerance px
+
+            function isAtBottom() {
+                return window.innerHeight + window.scrollY >= document.body.offsetHeight - THRESHOLD;
+            }
+
+            function toggleFooter() {
+                if (isAtBottom()) {
+                    footer.classList.add('show');
+                } else {
+                    footer.classList.remove('show');
+                }
+            }
+
+            window.addEventListener('load', toggleFooter);
+            window.addEventListener('scroll', toggleFooter);
+            window.addEventListener('resize', toggleFooter);
+        })();
+    </script>
 
 </body>
 </html>
