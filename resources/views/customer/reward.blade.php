@@ -7,9 +7,9 @@
     <div class="row justify-content-center">
         <div class="col-md-9 col-lg-8">
             <!-- Header Section -->
-            <div class="text-center mb-4">
-                <h1 class="h2 fw-bold mb-2" style="color: #dc3545;">Stamp Rewards Program</h1>
-                <p style="color: #8A8584;">Collect stamps with every 7-hour booking and earn exclusive discounts!</p>
+            <div class="text-center mb-3">
+                <h1 class="h3 fw-bold mb-1" style="color: #dc3545;">Stamp Rewards Program</h1>
+                <p class="small mb-0" style="color: #8A8584;">Collect stamps with every 7-hour booking and earn exclusive discounts!</p>
             </div>
 
             <!-- Current Stamp Card -->
@@ -31,9 +31,16 @@
                                         <!-- Filled Stamp -->
                                         <div class="stamp-circle stamped">
                                             <svg width="60" height="60" viewBox="0 0 100 100">
-                                                <circle cx="50" cy="50" r="45" fill="#dc3545" opacity="0.1"/>
-                                                <circle cx="50" cy="50" r="40" fill="#dc3545"/>
-                                                <path d="M30 50 L45 65 L70 35" stroke="white" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <!-- Outer circle -->
+                                                <circle cx="50" cy="50" r="45" fill="none" stroke="#dc3545" stroke-width="4" opacity="0.8"/>
+                                                <!-- Inner circle -->
+                                                <circle cx="50" cy="50" r="35" fill="none" stroke="#dc3545" stroke-width="2" opacity="0.6"/>
+                                                
+                                                <!-- Rotated rectangle background -->
+                                                <rect x="15" y="40" width="70" height="20" fill="#dc3545" transform="rotate(-15 50 50)" opacity="0.9"/>
+                                                
+                                                <!-- HASTA text -->
+                                                <text x="50" y="55" text-anchor="middle" font-size="16" fill="white" font-weight="bold" font-family="Arial, sans-serif" transform="rotate(-15 50 50)" letter-spacing="2">HASTA</text>
                                             </svg>
                                         </div>
                                         <div class="stamp-number mt-1">{{ $i }}</div>
