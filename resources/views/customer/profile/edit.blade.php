@@ -230,7 +230,7 @@
 
             <!-- Form Body -->
             <div class="edit-body">
-                <form action="{{ route('customer.profile.update') }}" method="POST">
+                <form action="{{ route('customer.profile') }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -261,12 +261,12 @@
                                     Identification Card (IC/NRIC)
                                     <span class="required">*</span>
                                 </label>
-                                <input type="text" class="form-control" name="ic" value="{{ old('ic', $customers->ic ?? '') }}" placeholder="e.g., 990101-01-1234" required>
+                                <input type="text" class="form-control" name="ic_number" value="{{ old('ic_number', $customers->ic_number ?? '') }}" placeholder="e.g., 990101-01-1234" required>
                                 <div class="info-helper">
                                     <i class="fas fa-info-circle"></i>
                                     <span>Enter your MyKad number</span>
                                 </div>
-                                @error('ic')
+                                @error('ic_number')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
@@ -296,8 +296,8 @@
                                     License Expiry Date
                                     <span class="required">*</span>
                                 </label>
-                                <input type="date" class="form-control" name="license_no" value="{{ old('license_no', $customers->license_no ?? '') }}" required>
-                                @error('license_no')
+                                <input type="date" class="form-control" name="license_expiry" value="{{ old('license_expiry', $customers->license_expiry ?? '') }}" required>
+                                @error('license_expiry')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
@@ -340,80 +340,6 @@
                                     <i class="fas fa-lock"></i>
                                     <span>Email cannot be changed</span>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-home"></i>
-                                    Address
-                                    <span class="required">*</span>
-                                </label>
-                                <textarea class="form-control" name="address" rows="3" value="{{ old('address', $customers->address ?? '') }}" required></textarea>
-                                @error('address')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-city"></i>
-                                    City
-                                    <span class="required">*</span>
-                                </label>
-                                <input type="text" class="form-control" name="city" value="{{ old('city', $customers->city ?? '') }}" required>
-                                @error('city')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-map-marked-alt"></i>
-                                    State
-                                    <span class="required">*</span>
-                                </label>
-                                <select class="form-select" name="state" required>
-                                    <option value="">Select State</option>
-                                    <option value="Johor {{ old('state', $customers->state ?? '') == 'Johor' ? 'selected' : '' }}">Johor</option>
-                                    <option value="Kedah {{ old('state', $customers->state ?? '') == 'Kedah' ? 'selected' : '' }}">Kedah</option>
-                                    <option value="Kelantan {{ old('state', $customers->state ?? '') == 'Kelantan' ? 'selected' : '' }}">Kelantan</option>
-                                    <option value="Melaka {{ old('state', $customers->state ?? '') == 'Melaka' ? 'selected' : '' }}">Melaka</option>
-                                    <option value="Negeri Sembilan {{ old('state', $customers->state ?? '') == 'Negeri Sembilan' ? 'selected' : '' }}">Negeri Sembilan</option>
-                                    <option value="Pahang {{ old('state', $customers->state ?? '') == 'Pahang' ? 'selected' : '' }}">Pahang</option>
-                                    <option value="Penang {{ old('state', $customers->state ?? '') == 'Penang' ? 'selected' : '' }}">Penang</option>
-                                    <option value="Perak {{ old('state', $customers->state ?? '') == 'Perak' ? 'selected' : '' }}">Perak</option>
-                                    <option value="Perlis {{ old('state', $customers->state ?? '') == 'Perlis' ? 'selected' : '' }}">Perlis</option>
-                                    <option value="Sabah {{ old('state', $customers->state ?? '') == 'Sabah' ? 'selected' : '' }}">Sabah</option>
-                                    <option value="Sarawak {{ old('state', $customers->state ?? '') == 'Sarawak' ? 'selected' : '' }}">Sarawak</option>
-                                    <option value="Selangor {{ old('state', $customers->state ?? '') == 'Selangor' ? 'selected' : '' }}">Selangor</option>
-                                    <option value="Terengganu {{ old('state', $customers->state ?? '') == 'Terengganu' ? 'selected' : '' }}">Terengganu</option>
-                                    <option value="Kuala Lumpur {{ old('state', $customers->state ?? '') == 'Kuala Lumpur' ? 'selected' : '' }}">W.P. Kuala Lumpur</option>
-                                    <option value="Labuan {{ old('state', $customers->state ?? '') == 'Labuan' ? 'selected' : '' }}">W.P. Labuan</option>
-                                    <option value="Putrajaya {{ old('state', $customers->state ?? '') == 'Putrajaya' ? 'selected' : '' }}">W.P. Putrajaya</option>
-                                </select>
-                                @error('state')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-mail-bulk"></i>
-                                    Postcode
-                                    <span class="required">*</span>
-                                </label>
-                                <input type="text" class="form-control" name="postcode" value="{{ old('postcode', $customers->postcode ?? '') }}" placeholder="81300" required>
-                                @error('postcode')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
                             </div>
                         </div>
                     </div>

@@ -25,14 +25,10 @@ class CustomerProfileController extends Controller
 
         $customer->update([
             'name' => $request->name,
-            'ic' => $request->ic,
+            'ic_number' => $request->ic_number,
             'matricNum' => $request->matricNum,
-            'license_no' => $request->license_no,
+            'license_expiry' => $request->license_expiry,
             'phone_no' => $request->phone_no,
-            'address' => $request->address,
-            'city' => $request->city,
-            'state' => $request->state,
-            'postcode' => $request->postcode,
             'emergency_name' => $request->emergency_name,
             'emergency_phoneNo' => $request->emergency_phoneNo,
             'emergency_relationship' => $request->emergency_relationship,

@@ -318,8 +318,8 @@
                             <i class="fas fa-id-card"></i>
                             IC/NRIC Number
                         </div>
-                        <div class="info-value {{ !isset($customers->ic) ? 'empty' : '' }}">
-                            {{ $customers->ic ?? 'Not provided' }}
+                        <div class="info-value {{ !isset($customers->ic_number) ? 'empty' : '' }}">
+                            {{ $customers->ic_number ?? 'Not provided' }}
                         </div>
                     </div>
 
@@ -339,10 +339,10 @@
                             License Expiry
                         </div>
                         <div class="info-value">
-                            @if(isset($customers->license_no))
-                                {{ \Carbon\Carbon::parse($customers->license_no)->format('d M Y') }}
+                            @if(isset($customers->license_expiry))
+                                {{ \Carbon\Carbon::parse($customers->license_expiry)->format('d M Y') }}
                                 @php
-                                    $expiryDate = \Carbon\Carbon::parse($customers->license_no);
+                                    $expiryDate = \Carbon\Carbon::parse($customers->license_expiry);
                                     $today = \Carbon\Carbon::today();
                                 @endphp
                                 @if($expiryDate->isPast())
@@ -385,46 +385,6 @@
                         </div>
                         <div class="info-value">
                             {{ $customers->email ?? 'Not provided' }}
-                        </div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-home"></i>
-                            Address
-                        </div>
-                        <div class="info-value {{ !isset($customers->address) ? 'empty' : '' }}">
-                            {{ $customers->address ?? 'Not provided' }}
-                        </div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-city"></i>
-                            City
-                        </div>
-                        <div class="info-value {{ !isset($customers->city) ? 'empty' : '' }}">
-                            {{ $customers->city ?? 'Not provided' }}
-                        </div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-map-marked-alt"></i>
-                            State
-                        </div>
-                        <div class="info-value {{ !isset($customers->state) ? 'empty' : '' }}">
-                            {{ $customers->state ?? 'Not provided' }}
-                        </div>
-                    </div>
-
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-mail-bulk"></i>
-                            Postcode
-                        </div>
-                        <div class="info-value {{ !isset($customers->postcode) ? 'empty' : '' }}">
-                            {{ $customers->postcode ?? 'Not provided' }}
                         </div>
                     </div>
                 </div>
