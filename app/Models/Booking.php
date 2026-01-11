@@ -11,6 +11,7 @@ class Booking extends Model
 {
     use HasFactory;
 
+    protected $table = 'booking';
     protected $primaryKey = 'booking_id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -49,7 +50,7 @@ class Booking extends Model
     ];
 
     // Relationships
-    public function customer()
+    public function customers()
     {
         return $this->belongsTo(Customer::class, 'customer_id');
     }

@@ -84,7 +84,7 @@
         <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="p-6 border-b border-gray-200 flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-gray-800">Recent Bookings</h3>
-                <a href="{{ route('staff.bookings') }}" class="text-sm text-red-600 hover:text-red-700 flex items-center gap-1">
+                <a href="{{ route('staff.bookings.index') }}" class="text-sm text-red-600 hover:text-red-700 flex items-center gap-1">
                     View All
                     <i data-lucide="chevron-right" class="w-4 h-4"></i>
                 </a>
@@ -112,7 +112,7 @@
                         <i data-lucide="check-circle" class="w-5 h-5"></i>
                         <span>Approve Bookings</span>
                     </button>
-                    <button onclick="window.location.href='{{ route('staff.vehicles') }}'" class="w-full px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition flex items-center justify-center gap-2">
+                    <button onclick="window.location.href='{{ route('staff.vehicles.index') }}'" class="w-full px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition flex items-center justify-center gap-2">
                         <i data-lucide="car" class="w-5 h-5"></i>
                         <span>Manage Vehicles</span>
                     </button>
@@ -357,7 +357,7 @@
     }
 
     function viewPendingApprovals() {
-        window.location.href = `{{ route('staff.bookings') }}?status=pending`;
+        window.location.href = `{{ route('staff.bookings.index') }}?status=pending`;
     }
 
     // Load data on page load

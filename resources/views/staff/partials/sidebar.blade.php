@@ -12,39 +12,39 @@
     
     <!-- Navigation -->
     <nav class="flex-1 p-4 overflow-y-auto">
-        <a href="{{ route('staff.dashboard') }}" 
-           class="nav-link {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
+        <a href="{{ route('staff.dashboard.index') }}" 
+           class="nav-link {{ request()->routeIs('staff.dashboard.index') ? 'active' : '' }}">
             <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
             <span>Overview</span>
         </a>
         
-        <a href="{{ route('staff.bookings') }}" 
-           class="nav-link {{ request()->routeIs('staff.bookings') ? 'active' : '' }}">
+        <a href="{{ route('staff.bookings.index') }}" 
+           class="nav-link {{ request()->routeIs('staff.bookings.index') ? 'active' : '' }}">
             <i data-lucide="calendar" class="w-5 h-5"></i>
             <span>Bookings</span>
         </a>
         
-        <a href="{{ route('staff.delivery') }}" 
-           class="nav-link {{ request()->routeIs('staff.delivery') ? 'active' : '' }}"
+        <a href="{{ route('staff.delivery.index') }}" 
+           class="nav-link {{ request()->routeIs('staff.delivery.index') ? 'active' : '' }}"
            id="delivery-nav-link">
             <i data-lucide="truck" class="w-5 h-5"></i>
             <span>Delivery & Pickup</span>
         </a>
         
-        <a href="{{ route('staff.reports') }}" 
-           class="nav-link {{ request()->routeIs('staff.reports') ? 'active' : '' }}">
+        <a href="{{ route('staff.reports.index') }}" 
+           class="nav-link {{ request()->routeIs('staff.reports.index') ? 'active' : '' }}">
             <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
             <span>Reports & Analytics</span>
         </a>
         
-        <a href="{{ route('staff.vehicles') }}" 
-           class="nav-link {{ request()->routeIs('staff.vehicles') ? 'active' : '' }}">
+        <a href="{{ route('staff.vehicles.index') }}" 
+           class="nav-link {{ request()->routeIs('staff.vehicles.index') ? 'active' : '' }}">
             <i data-lucide="car" class="w-5 h-5"></i>
             <span>Vehicles</span>
         </a>
         
-        <a href="{{ route('staff.customers') }}" 
-           class="nav-link {{ request()->routeIs('staff.customers') ? 'active' : '' }}">
+        <a href="{{ route('staff.customers.index') }}" 
+           class="nav-link {{ request()->routeIs('staff.customers.index') ? 'active' : '' }}">
             <i data-lucide="users" class="w-5 h-5"></i>
             <span>Customers</span>
         </a>

@@ -1,4 +1,4 @@
-@extends('staff.layouts.staff')
+@extends('staff.layouts.app')
 
 @section('title', 'Bookings Management')
 @section('page-title', 'Bookings Management')
@@ -129,14 +129,14 @@
                             <small class="text-muted">{{ $booking->created_at->format('M d, Y') }}</small>
                         </td>
                         <td>
-                            <strong>{{ $booking->customer->name }}</strong>
+                            <strong>{{ $booking->customer->name ?? 'Customer Deleted' }}</strong>
                             <br>
-                            <small class="text-muted">{{ $booking->customer->phone_no }}</small>
+                            <small class="text-muted">{{ $booking->customer->phone_no ?? 'N/A' }}</small>
                         </td>
                         <td>
-                            {{ $booking->vehicle->name }}
+                            {{ $booking->vehicle->name ?? 'Vehicle Deleted' }}
                             <br>
-                            <small class="text-muted">{{ $booking->vehicle->plate_no }}</small>
+                            <small class="text-muted">{{ $booking->vehicle->plate_no ?? 'N/A' }}</small>
                         </td>
                         <td>
                             {{ \Carbon\Carbon::parse($booking->pickup_date)->format('M d, Y') }}

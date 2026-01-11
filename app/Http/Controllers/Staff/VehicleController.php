@@ -5,224 +5,231 @@ namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Vehicle;
-use App\Models\Booking;
-use App\Models\Maintenance;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class VehicleController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $query = Vehicle::query();
-        
-        // Filters
-        if ($request->has('status') && $request->status != 'all') {
-            $query->where('availability_status', $request->status);
-        }
-        
-        if ($request->has('type') && $request->type != 'all') {
-            $query->where('vehicle_type', $request->type);
-        }
-        
-        if ($request->has('fuel_type') && $request->fuel_type != 'all') {
-            $query->where('fuel_type', $request->fuel_type);
-        }
-        
-        if ($request->has('transmission') && $request->transmission != 'all') {
-            $query->where('transmission', $request->transmission);
-        }
-        
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('plate_no', 'LIKE', "%{$search}%")
-                  ->orWhere('model', 'LIKE', "%{$search}%");
-            });
-        }
-        
-        $vehicles = $query->with(['currentBooking'])->orderBy('name')->paginate(20);
+        $vehicles = Vehicle::orderBy('created_at', 'desc')->paginate(20);
         
         $stats = [
             'total' => Vehicle::count(),
-            'available' => Vehicle::available()->count(),
-            'booked' => Vehicle::booked()->count(),
-            'maintenance' => Vehicle::maintenance()->count(),
-            'unavailable' => Vehicle::unavailable()->count(),
+            'available' => Vehicle::where('availability_status', 'available')->count(),
+            'booked' => Vehicle::where('availability_status', 'booked')->count(),
+            'maintenance' => Vehicle::where('availability_status', 'maintenance')->count(),
         ];
         
         return view('staff.vehicles.index', compact('vehicles', 'stats'));
     }
 
-    public function show($id)
-    {
-        $vehicle = Vehicle::with(['bookings' => function($query) {
-            $query->where('booking_status', '!=', 'cancelled')
-                  ->orderBy('pickup_date', 'desc')
-                  ->limit(10);
-        }, 'maintenances' => function($query) {
-            $query->orderBy('maintenance_date', 'desc')
-                  ->limit(5);
-        }, 'inspections' => function($query) {
-            $query->orderBy('inspection_date', 'desc')
-                  ->limit(5);
-        }])->findOrFail($id);
-        
-        // Current booking if any
-        $currentBooking = $vehicle->currentBooking;
-        
-        // Upcoming maintenance
-        $upcomingMaintenance = $vehicle->maintenances()
-            ->where('maintenance_status', 'scheduled')
-            ->where('maintenance_date', '>=', now())
-            ->orderBy('maintenance_date')
-            ->first();
-        
-        return view('staff.vehicles.show', compact('vehicle', 'currentBooking', 'upcomingMaintenance'));
-    }
-
     public function create()
     {
-        return view('staff.vehicles.create');
+        $vehicleTypes = Vehicle::distinct()->pluck('vehicle_type')->sort();
+        $transmissionTypes = ['Manual', 'Automatic'];
+        $fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid'];
+        
+        return view('staff.vehicles.create', compact('vehicleTypes', 'transmissionTypes', 'fuelTypes'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'plate_no' => 'required|unique:vehicle,plate_no',
-            'name' => 'required|string|max:100',
-            'model' => 'required|string|max:50',
-            'year' => 'required|integer|min:2000|max:' . date('Y'),
-            'color' => 'required|string|max:30',
-            'vehicle_type' => 'required|string',
-            'seating_capacity' => 'required|integer|min:1|max:20',
-            'transmission' => 'required|in:automatic,manual',
-            'fuel_type' => 'required|in:petrol,diesel,electric,hybrid',
-            'mileage' => 'required|integer|min:0',
+            'plate_no' => 'required|unique:vehicles|max:20',
+            'name' => 'required|string|max:255',
+            'model' => 'required|string|max:255',
+            'vehicle_type' => 'required|string|max:50',
+            'transmission' => 'required|in:Manual,Automatic',
+            'fuel_type' => 'required|in:Petrol,Diesel,Electric,Hybrid',
+            'seating_capacity' => 'required|integer|min:1|max:100',
             'price_perHour' => 'required|numeric|min:0',
-            'availability_status' => 'required|in:available,booked,maintenance,unavailable',
-            'image_url' => 'nullable|url',
-            'description' => 'nullable|string|max:500',
-            'insurance_expiry' => 'nullable|date',
-            'features' => 'nullable|array'
+            'price_perDay' => 'required|numeric|min:0',
+            'description' => 'nullable|string|max:1000',
+            'features' => 'nullable|array',
+            'availability_status' => 'required|in:available,booked,maintenance',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'maintenance_notes' => 'nullable|string|max:500',
         ]);
 
-        $vehicle = Vehicle::create($request->all());
-        
-        return redirect()->route('staff.vehicles.show', $vehicle->plate_no)
-                       ->with('success', 'Vehicle added successfully!');
-    }
+        DB::beginTransaction();
+        try {
+            // Handle images
+            $imagePaths = [];
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $path = $image->store('vehicles', 'public');
+                    $imagePaths[] = $path;
+                }
+            }
 
-    public function edit($id)
-    {
-        $vehicle = Vehicle::findOrFail($id);
-        return view('staff.vehicles.edit', compact('vehicle'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $vehicle = Vehicle::findOrFail($id);
-        
-        $request->validate([
-            'name' => 'required|string|max:100',
-            'model' => 'required|string|max:50',
-            'year' => 'required|integer|min:2000|max:' . date('Y'),
-            'color' => 'required|string|max:30',
-            'vehicle_type' => 'required|string',
-            'seating_capacity' => 'required|integer|min:1|max:20',
-            'transmission' => 'required|in:automatic,manual',
-            'fuel_type' => 'required|in:petrol,diesel,electric,hybrid',
-            'mileage' => 'required|integer|min:0',
-            'price_perHour' => 'required|numeric|min:0',
-            'availability_status' => 'required|in:available,booked,maintenance,unavailable',
-            'image_url' => 'nullable|url',
-            'description' => 'nullable|string|max:500',
-            'insurance_expiry' => 'nullable|date',
-            'features' => 'nullable|array'
-        ]);
-
-        $vehicle->update($request->all());
-        
-        return redirect()->route('staff.vehicles.show', $vehicle->plate_no)
-                       ->with('success', 'Vehicle updated successfully!');
-    }
-
-    public function updateAvailability(Request $request, $id)
-    {
-        $vehicle = Vehicle::findOrFail($id);
-        
-        $request->validate([
-            'availability_status' => 'required|in:available,booked,maintenance,unavailable',
-            'status_notes' => 'nullable|string|max:500'
-        ]);
-
-        $vehicle->update([
-            'availability_status' => $request->availability_status
-        ]);
-
-        // If putting in maintenance, create maintenance record
-        if ($request->availability_status === 'maintenance') {
-            Maintenance::create([
-                'maintenance_id' => 'MNT' . now()->format('Ymd') . strtoupper(uniqid()),
-                'plate_no' => $vehicle->plate_no,
-                'staff_id' => Auth::guard('staff')->user()->staff_id,
-                'maintenance_date' => now(),
-                'maintenance_type' => 'routine',
-                'maintenance_status' => 'in_progress',
-                'description' => $request->status_notes ?? 'Routine maintenance',
-                'notes' => 'Vehicle status changed to maintenance'
+            // Create vehicle
+            $vehicle = Vehicle::create([
+                'plate_no' => $request->plate_no,
+                'name' => $request->name,
+                'model' => $request->model,
+                'vehicle_type' => $request->vehicle_type,
+                'transmission' => $request->transmission,
+                'fuel_type' => $request->fuel_type,
+                'seating_capacity' => $request->seating_capacity,
+                'price_perHour' => $request->price_perHour,
+                'price_perDay' => $request->price_perDay,
+                'description' => $request->description,
+                'features' => $request->features ? json_encode($request->features) : null,
+                'availability_status' => $request->availability_status,
+                'images' => !empty($imagePaths) ? json_encode($imagePaths) : null,
+                'maintenance_notes' => $request->maintenance_notes,
             ]);
+
+            DB::commit();
+            
+            return redirect()->route('staff.vehicles.index')
+                           ->with('success', 'Vehicle added successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to add vehicle: ' . $e->getMessage())
+                        ->withInput();
         }
-
-        return back()->with('success', 'Vehicle availability updated successfully!');
     }
 
-    public function scheduleMaintenance(Request $request, $id)
+    public function show(Vehicle $vehicle)
     {
-        $vehicle = Vehicle::findOrFail($id);
+        $vehicle->load('bookings.customer'); // Load relationships if needed
+        return view('staff.vehicles.show', compact('vehicle'));
+    }
+
+    public function edit(Vehicle $vehicle)
+    {
+        $vehicleTypes = Vehicle::distinct()->pluck('vehicle_type')->sort();
+        $transmissionTypes = ['Manual', 'Automatic'];
+        $fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid'];
         
+        return view('staff.vehicles.edit', compact('vehicle', 'vehicleTypes', 'transmissionTypes', 'fuelTypes'));
+    }
+
+    public function update(Request $request, Vehicle $vehicle)
+    {
         $request->validate([
-            'maintenance_date' => 'required|date|after:today',
-            'maintenance_type' => 'required|in:routine,repair,service,inspection',
-            'description' => 'required|string|max:500',
-            'estimated_cost' => 'nullable|numeric|min:0'
+            'plate_no' => 'required|max:20|unique:vehicles,plate_no,' . $vehicle->plate_no . ',plate_no',
+            'name' => 'required|string|max:255',
+            'model' => 'required|string|max:255',
+            'vehicle_type' => 'required|string|max:50',
+            'transmission' => 'required|in:Manual,Automatic',
+            'fuel_type' => 'required|in:Petrol,Diesel,Electric,Hybrid',
+            'seating_capacity' => 'required|integer|min:1|max:100',
+            'price_perHour' => 'required|numeric|min:0',
+            'price_perDay' => 'required|numeric|min:0',
+            'description' => 'nullable|string|max:1000',
+            'features' => 'nullable|array',
+            'availability_status' => 'required|in:available,booked,maintenance',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'maintenance_notes' => 'nullable|string|max:500',
         ]);
 
-        Maintenance::create([
-            'maintenance_id' => 'MNT' . now()->format('Ymd') . strtoupper(uniqid()),
-            'plate_no' => $vehicle->plate_no,
-            'staff_id' => Auth::guard('staff')->user()->staff_id,
-            'maintenance_date' => $request->maintenance_date,
-            'maintenance_type' => $request->maintenance_type,
-            'maintenance_status' => 'scheduled',
-            'description' => $request->description,
-            'cost' => $request->estimated_cost,
-            'notes' => $request->notes
+        DB::beginTransaction();
+        try {
+            // Handle images
+            $imagePaths = json_decode($vehicle->images ?? '[]', true) ?: [];
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $path = $image->store('vehicles', 'public');
+                    $imagePaths[] = $path;
+                }
+            }
+            
+            // Handle image removal
+            if ($request->has('remove_images')) {
+                foreach ($request->remove_images as $imagePath) {
+                    if (($key = array_search($imagePath, $imagePaths)) !== false) {
+                        Storage::disk('public')->delete($imagePath);
+                        unset($imagePaths[$key]);
+                    }
+                }
+                $imagePaths = array_values($imagePaths); // Reindex array
+            }
+
+            $vehicle->update([
+                'plate_no' => $request->plate_no,
+                'name' => $request->name,
+                'model' => $request->model,
+                'vehicle_type' => $request->vehicle_type,
+                'transmission' => $request->transmission,
+                'fuel_type' => $request->fuel_type,
+                'seating_capacity' => $request->seating_capacity,
+                'price_perHour' => $request->price_perHour,
+                'price_perDay' => $request->price_perDay,
+                'description' => $request->description,
+                'features' => $request->features ? json_encode($request->features) : null,
+                'availability_status' => $request->availability_status,
+                'images' => !empty($imagePaths) ? json_encode($imagePaths) : null,
+                'maintenance_notes' => $request->maintenance_notes,
+            ]);
+
+            DB::commit();
+            
+            return redirect()->route('staff.vehicles.index')
+                           ->with('success', 'Vehicle updated successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to update vehicle: ' . $e->getMessage())
+                        ->withInput();
+        }
+    }
+
+    public function destroy(Vehicle $vehicle)
+    {
+        DB::beginTransaction();
+        try {
+            // Delete images
+            if ($vehicle->images) {
+                $images = json_decode($vehicle->images, true);
+                foreach ($images as $imagePath) {
+                    Storage::disk('public')->delete($imagePath);
+                }
+            }
+            
+            $vehicle->delete();
+            
+            DB::commit();
+            
+            return redirect()->route('staff.vehicles.index')
+                           ->with('success', 'Vehicle deleted successfully!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to delete vehicle: ' . $e->getMessage());
+        }
+    }
+
+    public function toggleAvailability(Vehicle $vehicle)
+    {
+        $newStatus = $vehicle->availability_status === 'available' ? 'maintenance' : 'available';
+        $vehicle->update(['availability_status' => $newStatus]);
+        
+        return back()->with('success', "Vehicle status changed to {$newStatus}!");
+    }
+
+    public function maintenance(Vehicle $vehicle)
+    {
+        return view('staff.vehicles.maintenance', compact('vehicle'));
+    }
+
+    public function updateMaintenance(Request $request, Vehicle $vehicle)
+    {
+        $request->validate([
+            'maintenance_notes' => 'required|string|max:500',
+            'availability_status' => 'required|in:available,maintenance',
         ]);
-
-        return back()->with('success', 'Maintenance scheduled successfully!');
-    }
-
-    public function bookingHistory($id)
-    {
-        $vehicle = Vehicle::findOrFail($id);
-        $bookings = $vehicle->bookings()
-            ->with(['customer', 'payments'])
-            ->where('booking_status', '!=', 'cancelled')
-            ->orderBy('pickup_date', 'desc')
-            ->paginate(20);
         
-        return view('staff.vehicles.booking-history', compact('vehicle', 'bookings'));
-    }
-
-    public function maintenanceHistory($id)
-    {
-        $vehicle = Vehicle::findOrFail($id);
-        $maintenances = $vehicle->maintenances()
-            ->orderBy('maintenance_date', 'desc')
-            ->paginate(20);
+        $vehicle->update([
+            'maintenance_notes' => $request->maintenance_notes,
+            'availability_status' => $request->availability_status,
+        ]);
         
-        return view('staff.vehicles.maintenance-history', compact('vehicle', 'maintenances'));
+        return redirect()->route('staff.vehicles.index')
+                       ->with('success', 'Maintenance details updated successfully!');
     }
 }

@@ -1,4 +1,4 @@
-@extends('staff.layouts.staff')
+@extends('staff.layouts.app')
 
 @section('title', 'Vehicle Management')
 @section('page-title', 'Vehicle Management')

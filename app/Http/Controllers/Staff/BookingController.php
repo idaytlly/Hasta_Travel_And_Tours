@@ -18,18 +18,27 @@ class BookingController extends Controller
 {
     public function index()
     {
-        $bookings = Booking::with(['vehicle', 'customer', 'payments'])
+        $bookings = Booking::with(['vehicle', 'customers', 'payments'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
         
-        return view('staff.bookings.index', compact('bookings'));
+            // Add statistics 
+            $stats = [ 
+                'total' => Booking::count(), 
+                'pending' => Booking::where('booking_status', 'pending')->count(), 
+                'confirmed' => Booking::where('booking_status', 'confirmed')->count(),                
+                'active' => Booking::where('booking_status', 'active')->count(), 
+                'cancelled' => Booking::where('booking_status', 'cancelled')->count(),
+                'completed' => Booking::where('booking_status', 'completed')->count(), ];
+
+                return view('staff.bookings.index', compact('bookings', 'stats'));
     }
 
     public function create()
     {
-        $vehicles = Vehicle::where('availability_status', 'available')->get();
+        $vehicle = Vehicle::where('availability_status', 'available')->get();
         $customers = Customer::where('status', 'active')->get();
-        $vouchers = Voucher::where('voucherStatus', 'active')->get();
+        $voucher = Voucher::where('voucherStatus', 'active')->get();
         
         return view('staff.bookings.create', compact('vehicles', 'customers', 'vouchers'));
     }
@@ -417,7 +426,7 @@ class BookingController extends Controller
             $query->where('booking_status', $request->status);
         }
         
-        $bookings = $query->orderBy('created_at', 'desc')->get();
+        $booking = $query->orderBy('created_at', 'desc')->get();
         
         if ($request->format === 'pdf') {
             $pdf = PDF::loadView('staff.bookings.export-pdf', compact('bookings'));

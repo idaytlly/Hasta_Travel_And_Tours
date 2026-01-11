@@ -30,6 +30,7 @@ Route::middleware(['guest'])->group(function () {
 // Logout route
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
+
 // ==================== CUSTOMER PROTECTED ROUTES ====================
 Route::middleware(['auth:customer'])->group(function () {
     // Customer Dashboard
@@ -51,11 +52,11 @@ Route::middleware(['auth:customer'])->group(function () {
 
 // ==================== STAFF PROTECTED ROUTES ====================
 Route::middleware(['auth:staff'])->prefix('staff')->name('staff.')->group(function () {
-    // Dashboard
+    // Staff Dashboard
     Route::get('/dashboard', function () {
-        return view('staff.dashboard');
-    })->name('staff.dashboard');
-    
+        return view('staff.dashboard.index');
+    })->name('dashboard.index');
+
     // Bookings Management
     Route::prefix('bookings')->name('bookings.')->group(function () {
         Route::get('/', [StaffBookingController::class, 'index'])->name('index');
@@ -65,16 +66,58 @@ Route::middleware(['auth:staff'])->prefix('staff')->name('staff.')->group(functi
         Route::get('/{id}/edit', [StaffBookingController::class, 'edit'])->name('edit');
         Route::put('/{id}', [StaffBookingController::class, 'update'])->name('update');
         Route::delete('/{id}', [StaffBookingController::class, 'destroy'])->name('destroy');
-        
+
         // Booking Actions
         Route::post('/{id}/approve', [StaffBookingController::class, 'approve'])->name('approve');
         Route::post('/{id}/cancel', [StaffBookingController::class, 'cancel'])->name('cancel');
         Route::post('/{id}/mark-active', [StaffBookingController::class, 'markActive'])->name('mark-active');
         Route::post('/{id}/mark-completed', [StaffBookingController::class, 'markCompleted'])->name('mark-completed');
         Route::post('/{id}/extend', [StaffBookingController::class, 'extend'])->name('extend');
-        
-        // Reports
+    });
+
+    // Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', function () {
+            return view('staff.reports.index');
+        })->name('index');
+
         Route::get('/late-returns', [StaffBookingController::class, 'lateReturns'])->name('late-returns');
         Route::get('/export', [StaffBookingController::class, 'export'])->name('export');
     });
+
+    // Vehicles Management
+    // Resource routes for vehicles (except show)
+    Route::resource('vehicles', \App\Http\Controllers\Staff\VehicleController::class);
+
+    // Custom routes
+    Route::get('{vehicle}/availability', [\App\Http\Controllers\Staff\VehicleController::class, 'toggleAvailability'])
+        ->name('availability');
+
+    Route::get('{vehicle}/maintenance', [\App\Http\Controllers\Staff\VehicleController::class, 'maintenance'])
+        ->name('maintenance');
+
+    Route::post('{vehicle}/maintenance', [\App\Http\Controllers\Staff\VehicleController::class, 'updateMaintenance'])
+        ->name('maintenance.update');
+
+    // Delivery & Pickup
+    Route::prefix('delivery')->name('delivery.')->group(function () { 
+        Route::get('/', function () { 
+            return view('staff.delivery.index'); 
+        })->name('index');  
+
+        Route::post('/', function () { 
+            // handle storing delivery assignment 
+        })->name('store'); 
+    });
+
+    // Customers Management 
+    Route::prefix('customers')->name('customers.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Staff\CustomerController::class, 'index'])
+        ->name('index');
+    Route::get('/{customer}', [\App\Http\Controllers\Staff\CustomerController::class, 'show'])
+        ->name('show');
+    Route::get('/{customer}/edit', [\App\Http\Controllers\Staff\CustomerController::class, 'edit'])
+        ->name('edit');
 });
+
+    });
