@@ -15,6 +15,7 @@ return [
     |
     */
 
+    'model' => App\Models\Customer::class,
     'guard' => 'web',
 
     /*

@@ -63,23 +63,6 @@ class Customer extends Authenticatable
             }
         });
     }
-    public function bookings()
-    {
-        return $this->hasMany(Booking::class, 'customer_id', 'customer_id');
-    }
-
-    public function payments()
-    {
-        return $this->hasManyThrough(
-            Payment::class,
-            Booking::class,
-            'customer_id',   // Foreign key on bookings table
-            'booking_id',    // Foreign key on payments table
-            'customer_id',   // Local key on customers table
-            'booking_id'     // Local key on bookings table
-        );
-    }
-
 }
 ?>
 

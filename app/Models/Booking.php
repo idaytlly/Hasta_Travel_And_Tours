@@ -1,5 +1,5 @@
 <?php
-// app/Models/Booking.php
+
 
 namespace App\Models;
 
@@ -60,11 +60,76 @@ class Booking extends Model
         return $this->belongsTo(Vehicle::class, 'plate_no', 'plate_no');
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'matricNum', 'matricNum');
+    }
+
     public function voucher()
     {
         return $this->belongsTo(Voucher::class, 'voucher_id', 'voucher_id');
     }
 
+    // Scopes
+    public function scopePending($query)
+    {
+        return $query->where('booking_status', 'pending');
+    }
+
+    public function scopeConfirmed($query)
+    {
+        return $query->where('booking_status', 'confirmed');
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('booking_status', 'completed');
+    }
+
+    public function scopeCancelled($query)
+    {
+        return $query->where('booking_status', 'cancelled');
+    }
+
+    // Helper methods
+    public function isPending()
+    {
+        return $this->booking_status === 'pending';
+    }
+
+    public function isConfirmed()
+    {
+        return $this->booking_status === 'confirmed';
+    }
+
+    public function isCompleted()
+    {
+        return $this->booking_status === 'completed';
+    }
+
+    public function isCancelled()
+    {
+        return $this->booking_status === 'cancelled';
+    }
+
+    public function calculateTotalHours()
+    {
+        $pickup = Carbon::parse($this->pickup_date);
+        $return = Carbon::parse($this->return_date);
+        return (int) ceil($pickup->diffInHours($return));
+    }
+
+    public function getStatusColorAttribute()
+    {
+        return match($this->booking_status) {
+            'pending' => 'yellow',
+            'confirmed' => 'blue',
+            'completed' => 'green',
+            'cancelled' => 'red',
+            default => 'gray',
+        };
+    }
+}
     public function payments()
     {
         return $this->hasMany(Payment::class, 'booking_id', 'booking_id');

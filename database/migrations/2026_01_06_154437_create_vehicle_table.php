@@ -14,27 +14,23 @@ return new class extends Migration
         Schema::create('vehicle', function (Blueprint $table) {
             $table->string('plate_no')->primary();
 
-            $table->string('brand')->nullable();
-            $table->string('model')->nullable();
-            $table->string('year')->nullable();
-            $table->string('category')->nullable();
-            $table->string('daily_rate')->nullable();
-            $table->string('mileage')->nullable();
-            $table->string('image')->nullable();
-            $table->string('air_conditioner')->nullable();
-            $table->string('passengers')->nullable();
-            $table->string('seats')->nullable();
-            $table->string('fuel_type')->nullable();
+            $table->string('name')->nullable();
+            $table->string('color')->nullable();
+            $table->integer('year')->nullable();
             $table->string('vehicle_type')->nullable();
-            $table->double('price_perDay')->nullable();
+            $table->string('image')->nullable();
+            $table->string('front_image')->nullable();
+            $table->string('back_image')->nullable();
+            $table->string('left_image')->nullable();
+            $table->string('right_image')->nullable();
+            $table->string('interior1_image')->nullable();
+            $table->string('interior2_image')->nullable();
             $table->double('price_perHour')->nullable();
+            $table->integer('passengers')->nullable();
+            $table->double('distance_travelled')->nullable();
             $table->string('availability_status')->nullable();
-            $table->string('phone_no')->nullable();
 
             //FK
-            $table->string('matricNum')->nullable();
-            $table->foreign('matricNum')->references('matricNum')->on('customers');
-
             $table->string('staff_id')->nullable();
             $table->foreign('staff_id')->references('staff_id')->on('staff');
 

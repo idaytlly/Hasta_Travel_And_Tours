@@ -1,0 +1,209 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+class VehicleSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $now = Carbon::now();
+
+        $vehicles = [
+            [
+                'plate_no' => 'MCP 6113',
+                'name' => 'Perodua Axia (1st Gen)',
+                'color' => 'White',
+                'year' => 2018,
+                'vehicle_type' => 'Car',
+                'image' => 'car_images/axia1stgen.jpg',
+                'front_image' => 'car_images/axia1stgen_front.jpg',
+                'back_image' => 'car_images/axia1stgen_back.jpg',
+                'left_image' => 'car_images/axia1stgen_left.jpg',
+                'right_image' => 'car_images/axia1stgen_right.jpg',
+                'interior1_image' => 'car_images/axia1stgen_interior1.jpg',
+                'interior2_image' => 'car_images/axia1stgen_interior2.jpg',
+                'price_perHour' => 35.00,
+                'passengers' => 5,
+                'distance_travelled' => 12000,
+                'availability_status' => 'available',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'plate_no' => 'VC 6522',
+                'name' => 'Perodua Myvi (2nd Gen)',
+                'color' => 'Silver',
+                'year' => 2012,
+                'vehicle_type' => 'Car',
+                'image' => 'car_images/myvi2ndgen.jpg',
+                'price_perHour' => 40.00,
+                'passengers' => 5,
+                'distance_travelled' => 15000,
+                'availability_status' => 'available',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'plate_no' => 'QRP 5205',
+                'name' => 'Honda Dash 125',
+                'vehicle_type' => 'Bike',
+                'color' => 'Yellow',
+                'year' => 2023,
+                'image' => 'car_images/dash125.jpg',
+                'price_perHour' => 10.00,
+                'passengers' => 2,
+                'distance_travelled' => 5000,
+                'availability_status' => 'available',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'plate_no' => 'JWD 9496',
+                'name' => 'Honda Beat 110',
+                'vehicle_type' => 'Bike',
+                'color' => 'Black',
+                'year' => 2023,
+                'image' => 'car_images/beat110.jpg',
+                'price_perHour' => 9.00,
+                'passengers' => 2,
+                'distance_travelled' => 3000,
+                'availability_status' => 'unavailable',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'plate_no' => 'UTM 3365',
+                'name' => 'Perodua Axia (2nd Gen)',
+                'vehicle_type' => 'Car',
+                'color' => 'Silver',
+                'year' => 2024,
+                'image' => 'car_images/axia2ndgen.jpg',
+                'price_perHour' => 40.00,
+                'passengers' => 5,
+                'distance_travelled' => 10000,
+                'availability_status' => 'available',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'plate_no' => 'NDF 9903',
+                'name' => 'Perodua Bezza (1st Gen)',
+                'color' => 'White',
+                'year' => 2019,
+                'vehicle_type' => 'Car',
+                'image' => 'car_images/bezza1stgen.jpg',
+                'price_perHour' => 40.00,
+                'passengers' => 5,
+                'distance_travelled' => 12000,
+                'availability_status' => 'available',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'plate_no' => 'UTM 3655',
+                'name' => 'Perodua Bezza (2nd Gen)',
+                'vehicle_type' => 'Car',
+                'color' => 'Black',
+                'year' => 2023,
+                'image' => 'car_images/bezza2ndgen.jpg',
+                'price_perHour' => 50.00,
+                'passengers' => 5,
+                'distance_travelled' => 8000,
+                'availability_status' => 'available',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'plate_no' => 'JQU 1957',
+                'name' => 'Perodua Axia (1st Gen)',
+                'color' => 'Green',
+                'year' => 2015,
+                'vehicle_type' => 'Car',
+                'image' => 'car_images/axia1stgen.jpg',
+                'price_perHour' => 35.00,
+                'passengers' => 5,
+                'distance_travelled' => 8000,
+                'availability_status' => 'unavailable',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'plate_no' => 'CEX 5224',
+                'name' => 'Perodua Axia (2nd Gen)',
+                'color' => 'Blue',
+                'year' => 2024,
+                'vehicle_type' => 'Car',
+                'image' => 'car_images/axia2ndgen.jpg',
+                'price_perHour' => 40.00,
+                'passengers' => 5,
+                'distance_travelled' => 10000,
+                'availability_status' => 'available',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'plate_no' => 'JPN 1416',
+                'name' => 'Perodua Myvi (2nd Gen)',
+                'color' => 'Purple',
+                'year' => 2013,
+                'vehicle_type' => 'Car',
+                'image' => 'car_images/myvi2ndgen.jpg',
+                'price_perHour' => 40.00,
+                'passengers' => 5,
+                'distance_travelled' => 15000,
+                'availability_status' => 'unavailable',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'plate_no' => 'UTM 3057',
+                'name' => 'Perodua Bezza (2nd Gen)',
+                'color' => 'Red',
+                'year' => 2025,
+                'vehicle_type' => 'Car',
+                'image' => 'car_images/bezza2ndgen.jpg',
+                'price_perHour' => 50.00,
+                'passengers' => 5,
+                'distance_travelled' => 8000,
+                'availability_status' => 'unavailable',
+                'staff_id' => null,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+        ];
+
+        // Ensure every record has the same keys so the multi-insert uses a consistent column list
+        $columns = [
+            'plate_no','name','color','year','vehicle_type','image','front_image','back_image',
+            'left_image','right_image','interior1_image','interior2_image','price_perHour',
+            'passengers','distance_travelled','availability_status','staff_id','created_at','updated_at'
+        ];
+
+        foreach ($vehicles as &$v) {
+            foreach ($columns as $col) {
+                if (!array_key_exists($col, $v)) {
+                    $v[$col] = null;
+                }
+            }
+        }
+
+        DB::table('vehicle')->insert($vehicles);
+    }
+}
