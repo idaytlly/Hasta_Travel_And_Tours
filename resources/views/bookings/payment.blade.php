@@ -5,6 +5,12 @@
 @section('noFooter', true)
 
 @section('content')
+    @include('components.booking-timeline', ['currentStep' => 2])
+    
+    <div class="payment-container">
+        <!-- Your existing payment form -->
+    </div>
+    
 <style>
     body { padding-top: 70px; }
     .payment-container { 

@@ -443,7 +443,7 @@
                         <span>My Profile</span>
                     </a>
                     
-                    <a href="#" class="dropdown-item-custom">
+                    <a href="{{ route('bookings.index') }}" class="dropdown-item-custom">
                         <i class="fas fa-car"></i>
                         <span>My Bookings</span>
                     </a>

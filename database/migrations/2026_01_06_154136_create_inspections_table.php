@@ -1,5 +1,4 @@
 <?php
-// 2026_01_06_154136_create_inspections_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -11,15 +10,24 @@ return new class extends Migration
     {
         Schema::create('inspections', function (Blueprint $table) {
             $table->string('inspection_id')->primary();
+            
+            // Customer inspection fields
+            $table->string('booking_id')->nullable();
+            $table->enum('inspection_type', ['pickup', 'dropoff'])->nullable();
+            $table->json('car_photos')->nullable();
+            $table->string('fuel_photo')->nullable();
+            $table->text('remarks')->nullable();
+            $table->string('signature')->nullable();
+            $table->unsignedBigInteger('inspected_by')->nullable();
+            $table->timestamp('inspected_at')->nullable();
+            
+            // Original fields
             $table->date('inspection_date')->nullable();
             $table->string('fuel_level')->nullable();
             $table->mediumText('inspection_status')->nullable();
             $table->string('damage_notes')->nullable();
             $table->string('photo_evidence')->nullable();
-            
-            // FK to staff table
             $table->string('person_in_charge')->nullable();
-            $table->foreign('person_in_charge')->references('staff_id')->on('staff')->onDelete('set null');
             
             $table->timestamps();
         });
