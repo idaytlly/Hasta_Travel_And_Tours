@@ -45,9 +45,12 @@
         /* MINIMALIST NAVBAR */
         .navbar-custom {
             background-color: #CB3737;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 0.75rem 0;
-            transition: all 0.3s ease;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 0;
+        }
+
+        .navbar-brand img {
+            filter: none;
         }
 
         .navbar-brand {
@@ -255,19 +258,36 @@
             flex: 1 0 auto;
         }
 
+        .footer-spacer {
+            height: 90px; /* lebih sikit dari footer height (60px) */
+        }
+
         /* MINIMALIST FOOTER */
         .footer-hasta {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: #1a1a2e;
-            color: rgba(255,255,255,0.8);
-            padding: 15px 0;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            height: 60px;
+            background: var(--dark);
+            color: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            box-shadow: 0 -8px 24px rgba(0,0,0,0.12);
             z-index: 999;
+
+            /* 👇 default hidden */
+            transform: translateY(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
         }
 
+        /* 👇 only show when at bottom */
+        .footer-hasta.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
         .footer-content {
             display: flex;
             justify-content: space-between;
@@ -336,7 +356,6 @@
             color: white;
             transform: translateY(-3px);
         }
-
         /* RESPONSIVE */
         @media (max-width: 991px) {
             .nav-links {
@@ -392,7 +411,7 @@
                 <img 
                     src="{{ asset('images/logo_hasta.jpeg') }}" 
                     alt="Hasta Travel & Tours" 
-                    height="40"
+                    height="35"
                 >
             </div>
 
@@ -450,6 +469,7 @@
     {{-- Page Content --}}
     <main>
         @yield('content')
+        <div class="footer-spacer"></div>
     </main>
 
     {{-- Minimalist Fixed Footer --}}
@@ -508,6 +528,31 @@
                 event.stopPropagation();
             }
         });
+
+        (function () {
+    const footer = document.querySelector('.footer-hasta');
+    if (!footer) return;
+
+    let lastScrollY = window.scrollY;
+
+    function handleScroll() {
+        const currentScrollY = window.scrollY;
+
+        // scroll down
+        if (currentScrollY > lastScrollY && currentScrollY > 50) {
+            footer.classList.add('show');
+        } 
+        // scroll up
+        else {
+            footer.classList.remove('show');
+        }
+
+        lastScrollY = currentScrollY;
+    }
+
+    window.addEventListener('scroll', handleScroll);
+})();
+
     </script>
 </body>
 </html>

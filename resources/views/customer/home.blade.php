@@ -60,24 +60,27 @@ body {
 
 /* Search Button */
 .btn-search {
-    background: #C27D72;
+    background: #c62828;
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 10px 32px;
+    padding: 10px; /* make padding uniform so icon centers nicely */
     font-weight: 600;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-search:hover {
-    background: #e06849;
+    background: #f23333ff;
     color: white;
 }
 
 /* Checkbox */
 .form-check-input:checked {
-    background-color: #F0785B;
-    border-color: #F0785B;
+    background-color: #c62828;
+    border-color: #c62828;
 }
 
 /* Car Cards */
@@ -260,33 +263,33 @@ body {
     <div class="d-flex justify-content-center flex-wrap gap-5 mb-5">
     <!-- Car 1 -->
     <div class="car-card" style="width: 350px;">
-        <img src="{{ asset('car_images/axia.jpg') }}" alt="Car">
-        <h3 class="car-name">Perodua Axia 1st Gen</h3>
+        <img src="{{ asset('car_images/axia2ndgen.jpg') }}" alt="Car">
+        <h3 class="car-name">Perodua Axia (2nd Gen)</h3>
         <p class="car-type">Hatchback</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM35.00 <small>per hour</small></div>
+            <div class="car-price">RM40.00 <small>/hour</small></div>
         </div>
         <button class="btn btn-view-details">View Details</button>
     </div>
 
     <!-- Car 2 -->
     <div class="car-card" style="width: 350px;">
-        <img src="{{ asset('car_images/myvi.jpg') }}" alt="Car">
-        <h3 class="car-name">Perodua Myvi 2nd Gen</h3>
-        <p class="car-type">Hatchback</p>
+        <img src="{{ asset('car_images/bezza2ndgen.jpg') }}" alt="Car">
+        <h3 class="car-name">Perodua Bezza (2nd Gen)</h3>
+        <p class="car-type">Sedan</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM40.00 <small>per hour</small></div>
+            <div class="car-price">RM50.00 <small>/hour</small></div>
         </div>
         <button class="btn btn-view-details">View Details</button>
     </div>
 
     <!-- Car 3 -->
     <div class="car-card" style="width: 350px;">
-        <img src="{{ asset('car_images/bezza1stgen.jpg') }}" alt="Car">
-        <h3 class="car-name">Perodua Bezza 1st Gen</h3>
-        <p class="car-type">Sedan</p>
+        <img src="{{ asset('car_images/myvi2ndgen.jpg') }}" alt="Car">
+        <h3 class="car-name">Perodua Myvi (2nd Gen)</h3>
+        <p class="car-type">Hatchback</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM40.00 <small>per hour</small></div>
+            <div class="car-price">RM40.00 <small>/hour</small></div>
         </div>
         <button class="btn btn-view-details">View Details</button>
     </div>

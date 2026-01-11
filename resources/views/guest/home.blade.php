@@ -60,24 +60,27 @@ body {
 
 /* Search Button */
 .btn-search {
-    background: #C27D72;
+    background: #c62828;
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 10px 32px;
+    padding: 10px; /* make padding uniform so icon centers nicely */
     font-weight: 600;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-search:hover {
-    background: #e06849;
+    background: #f23333ff;
     color: white;
 }
 
 /* Checkbox */
 .form-check-input:checked {
-    background-color: #F0785B;
-    border-color: #F0785B;
+    background-color: #c62828;
+    border-color: #c62828;
 }
 
 /* Car Cards */
@@ -137,7 +140,7 @@ body {
 }
 
 .btn-view-details:hover {
-    background: #CB3737;
+    background: #f33636ff;
     color: white;
 }
 
@@ -250,10 +253,10 @@ body {
     <!-- Car 1 -->
     <div class="car-card" style="width: 350px;">
         <img src="images/car1.jpeg" alt="Car">
-        <h3 class="car-name">Perodua Axia 2018</h3>
+        <h3 class="car-name">Perodua Axia (2nd Gen)</h3>
         <p class="car-type">Hatchback</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM120 <small>per day</small></div>
+            <div class="car-price">RM40.00 <small>/hour</small></div>
         </div>
         <button class="btn btn-view-details">View Details</button>
     </div>
@@ -261,10 +264,10 @@ body {
     <!-- Car 2 -->
     <div class="car-card" style="width: 350px;">
         <img src="images/car2.jpg" alt="Car">
-        <h3 class="car-name">Perodua Bezza 2018</h3>
+        <h3 class="car-name">Perodua Bezza (2nd Gen)</h3>
         <p class="car-type">Sedan</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM140 <small>per day</small></div>
+            <div class="car-price">RM50.00 <small>/hour</small></div>
         </div>
         <button class="btn btn-view-details">View Details</button>
     </div>
@@ -272,10 +275,10 @@ body {
     <!-- Car 3 -->
     <div class="car-card" style="width: 350px;">
         <img src="images/car3.jpg" alt="Car">
-        <h3 class="car-name">Perodua Myvi 2015</h3>
+        <h3 class="car-name">Perodua Myvi (2nd Gen)</h3>
         <p class="car-type">Hatchback</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM120 <small>per day</small></div>
+            <div class="car-price">RM40.00 <small>/hour</small></div>
         </div>
         <button class="btn btn-view-details">View Details</button>
     </div>
