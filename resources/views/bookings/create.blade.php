@@ -2,6 +2,8 @@
 
 @section('title', 'Create Booking')
 
+@section('noFooter', true)
+
 @section('content')
 <style>
     body { padding-top: 70px; }
