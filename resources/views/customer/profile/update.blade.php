@@ -285,10 +285,10 @@
             <!-- Profile Header -->
             <div class="profile-header">
                 <div class="profile-avatar-large">
-                    <i class="fas fa-customers"></i>
+                    <i class="fas fa-customer"></i>
                 </div>
-                <h1 class="profile-name">{{ $customers->name ?? 'User Name' }}</h1>
-                <p class="profile-email">{{ $customers->email ?? 'customers@example.com' }}</p>
+                <h1 class="profile-name">{{ $customer->name ?? 'User Name' }}</h1>
+                <p class="profile-email">{{ $customer->email ?? 'customer@example.com' }}</p>
             </div>
 
             <!-- Profile Body -->
@@ -309,7 +309,7 @@
                             Full Name
                         </div>
                         <div class="info-value">
-                            {{ $customers->name ?? 'Not provided' }}
+                            {{ $customer->name ?? 'Not provided' }}
                         </div>
                     </div>
 
@@ -318,8 +318,8 @@
                             <i class="fas fa-id-card"></i>
                             IC/NRIC Number
                         </div>
-                        <div class="info-value {{ !isset($customers->ic_number) ? 'empty' : '' }}">
-                            {{ $customers->ic_number ?? 'Not provided' }}
+                        <div class="info-value {{ !isset($customer->ic_number) ? 'empty' : '' }}">
+                            {{ $customer->ic_number ?? 'Not provided' }}
                         </div>
                     </div>
 
@@ -328,8 +328,8 @@
                             <i class="fas fa-graduation-cap"></i>
                             Matric Number
                         </div>
-                        <div class="info-value {{ !isset($customers->matricNum) ? 'empty' : '' }}">
-                            {{ $customers->matricNum ?? 'Not provided' }}
+                        <div class="info-value {{ !isset($customer->matricNum) ? 'empty' : '' }}">
+                            {{ $customer->matricNum ?? 'Not provided' }}
                         </div>
                     </div>
 
@@ -339,10 +339,10 @@
                             License Expiry
                         </div>
                         <div class="info-value">
-                            @if(isset($customers->license_expiry))
-                                {{ \Carbon\Carbon::parse($customers->license_expiry)->format('d M Y') }}
+                            @if(isset($customer->license_expiry))
+                                {{ \Carbon\Carbon::parse($customer->license_expiry)->format('d M Y') }}
                                 @php
-                                    $expiryDate = \Carbon\Carbon::parse($customers->license_expiry);
+                                    $expiryDate = \Carbon\Carbon::parse($customer->license_expiry);
                                     $today = \Carbon\Carbon::today();
                                 @endphp
                                 @if($expiryDate->isPast())
@@ -373,8 +373,8 @@
                             <i class="fas fa-phone"></i>
                             Phone Number
                         </div>
-                        <div class="info-value {{ !isset($customers->phone_no) ? 'empty' : '' }}">
-                            {{ isset($customers->phone_no) ? '+60 ' . $customers->phone_no : 'Not provided' }}
+                        <div class="info-value {{ !isset($customer->phone_no) ? 'empty' : '' }}">
+                            {{ isset($customer->phone_no) ? '+60 ' . $customer->phone_no : 'Not provided' }}
                         </div>
                     </div>
 
@@ -384,7 +384,7 @@
                             Email Address
                         </div>
                         <div class="info-value">
-                            {{ $customers->email ?? 'Not provided' }}
+                            {{ $customer->email ?? 'Not provided' }}
                         </div>
                     </div>
                 </div>
@@ -403,8 +403,8 @@
                             <i class="fas fa-user-shield"></i>
                             Contact Name
                         </div>
-                        <div class="info-value {{ !isset($customers->emergency_name) ? 'empty' : '' }}">
-                            {{ $customers->emergency_name ?? 'Not provided' }}
+                        <div class="info-value {{ !isset($customer->emergency_name) ? 'empty' : '' }}">
+                            {{ $customer->emergency_name ?? 'Not provided' }}
                         </div>
                     </div>
 
@@ -413,8 +413,8 @@
                             <i class="fas fa-phone-alt"></i>
                             Contact Number
                         </div>
-                        <div class="info-value {{ !isset($customers->emergency_phoneNo) ? 'empty' : '' }}">
-                            {{ isset($customers->emergency_phoneNo) ? '+60 ' . $customers->emergency_phoneNo : 'Not provided' }}
+                        <div class="info-value {{ !isset($customer->emergency_phoneNo) ? 'empty' : '' }}">
+                            {{ isset($customer->emergency_phoneNo) ? '+60 ' . $customer->emergency_phoneNo : 'Not provided' }}
                         </div>
                     </div>
 
@@ -423,8 +423,8 @@
                             <i class="fas fa-users"></i>
                             Relationship
                         </div>
-                        <div class="info-value {{ !isset($customers->emergency_relationship) ? 'empty' : '' }}">
-                            {{ $customers->emergency_relationship ?? 'Not provided' }}
+                        <div class="info-value {{ !isset($customer->emergency_relationship) ? 'empty' : '' }}">
+                            {{ $customer->emergency_relationship ?? 'Not provided' }}
                         </div>
                     </div>
                 </div>

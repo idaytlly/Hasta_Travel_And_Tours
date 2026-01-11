@@ -31,7 +31,7 @@ Route::get('/customer/home', function () {
 // Customer Profile
 Route::get('/profile', [CustomerProfileController::class, 'showProfile'])->name('customer.profile');
 Route::get('/profile/edit', [CustomerProfileController::class, 'edit'])->name('customer.profile.edit');
-Route::put('/profile/update', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
+Route::put('/profile', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
 
 Route::resource('vehicles', VehicleController::class)->only(['index', 'show']);
 

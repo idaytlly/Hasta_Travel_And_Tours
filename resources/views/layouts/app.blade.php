@@ -243,6 +243,12 @@
             transition: all 0.3s ease;
         }
 
+        .welcome-msg {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: white;
+        }
+
         /* FOOTER */
         .footer-hasta {
             background: var(--dark);
@@ -401,15 +407,6 @@
                 </button>
                 
                 <div class="dropdown-menu-custom" id="profileDropdown">
-                    <div class="dropdown-header-custom">
-                        <div class="user-name">
-                            {{ Auth::guard('customer')->user()->name ?? 'User Name' }}
-                        </div>
-                        <div class="user-email">
-                            {{ Auth::guard('customer')->user()->email ?? 'email@example.com' }}
-                        </div>
-                    </div>
-                    
                     <a href="{{ route('customer.profile') }}" class="dropdown-item-custom">
                         <i class="fas fa-user-circle"></i>
                         <span>My Profile</span>

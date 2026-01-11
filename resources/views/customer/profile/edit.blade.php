@@ -222,7 +222,7 @@
             <!-- Header -->
             <div class="edit-header">
                 <div class="profile-avatar">
-                    <i class="fas fa-customers-edit"></i>
+                    <i class="fas fa-customer-edit"></i>
                 </div>
                 <h1>Edit Your Profile</h1>
                 <p>Keep your information up to date for a better experience</p>
@@ -230,13 +230,13 @@
 
             <!-- Form Body -->
             <div class="edit-body">
-                <form action="{{ route('customer.profile') }}" method="POST">
+                <form action="{{ route('customer.profile.update') }}" method="POST">
                     @csrf
                     @method('PUT')
 
                     <!-- Personal Information Section -->
                     <div class="section-title">
-                        <i class="fas fa-customers-circle"></i> Personal Information
+                        <i class="fas fa-customer-circle"></i> Personal Information
                     </div>
 
                     <div class="row">
@@ -247,7 +247,7 @@
                                     Full Name
                                     <span class="required">*</span>
                                 </label>
-                                <input type="text" class="form-control" name="name" value="{{ old('name', $customers->name ?? '') }}" required>
+                                <input type="text" class="form-control" name="name" value="{{ old('name', $customer->name ?? '') }}" required>
                                 @error('name')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
@@ -261,7 +261,7 @@
                                     Identification Card (IC/NRIC)
                                     <span class="required">*</span>
                                 </label>
-                                <input type="text" class="form-control" name="ic_number" value="{{ old('ic_number', $customers->ic_number ?? '') }}" placeholder="e.g., 990101-01-1234" required>
+                                <input type="text" class="form-control" name="ic_number" value="{{ old('ic_number', $customer->ic_number ?? '') }}" placeholder="e.g., 990101-01-1234" required>
                                 <div class="info-helper">
                                     <i class="fas fa-info-circle"></i>
                                     <span>Enter your MyKad number</span>
@@ -278,7 +278,7 @@
                                     <i class="fas fa-graduation-cap"></i>
                                     Matric Number
                                 </label>
-                                <input type="text" class="form-control" name="matricNum" value="{{ old('matricNum', $customers->matricNum ?? '') }}" placeholder="e.g., A21EC0001">
+                                <input type="text" class="form-control" name="matricNum" value="{{ old('matricNum', $customer->matricNum ?? '') }}" placeholder="e.g., A21EC0001">
                                 <div class="info-helper">
                                     <i class="fas fa-info-circle"></i>
                                     <span>For students only</span>
@@ -296,7 +296,7 @@
                                     License Expiry Date
                                     <span class="required">*</span>
                                 </label>
-                                <input type="date" class="form-control" name="license_expiry" value="{{ old('license_expiry', $customers->license_expiry ?? '') }}" required>
+                                <input type="date" class="form-control" name="license_expiry" value="{{ old('license_expiry', $customer->license_expiry ?? '') }}" required>
                                 @error('license_expiry')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
@@ -321,7 +321,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text">+60</span>
-                                    <input type="text" class="form-control" name="phone_no" value="{{ old('phone_no', $customers->phone_no ?? '') }}" placeholder="123456789" required>
+                                    <input type="text" class="form-control" name="phone_no" value="{{ old('phone_no', $customer->phone_no ?? '') }}" placeholder="123456789" required>
                                 </div>
                                 @error('phone_no')
                                     <small class="text-danger">{{ $message }}</small>
@@ -335,7 +335,7 @@
                                     <i class="fas fa-envelope"></i>
                                     Email Address
                                 </label>
-                                <input type="email" class="form-control" value="{{ $customers->email ?? '' }}" readonly style="background-color: #e9ecef;">
+                                <input type="email" class="form-control" value="{{ $customer->email ?? '' }}" readonly style="background-color: #e9ecef;">
                                 <div class="info-helper">
                                     <i class="fas fa-lock"></i>
                                     <span>Email cannot be changed</span>
@@ -355,11 +355,11 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">
-                                    <i class="fas fa-customers-shield"></i>
+                                    <i class="fas fa-customer-shield"></i>
                                     Emergency Contact Name
                                     <span class="required">*</span>
                                 </label>
-                                <input type="text" class="form-control" name="emergency_name" value="{{ old('emergency_name', $customers->emergency_name ?? '') }}" required>
+                                <input type="text" class="form-control" name="emergency_name" value="{{ old('emergency_name', $customer->emergency_name ?? '') }}" required>
                                 @error('emergency_name')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
@@ -375,7 +375,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text">+60</span>
-                                    <input type="text" class="form-control" name="emergency_phoneNo" value="{{ old('emergency_phoneNo', $customers->emergency_phoneNo ?? '') }}" placeholder="123456789" required>
+                                    <input type="text" class="form-control" name="emergency_phoneNo" value="{{ old('emergency_phoneNo', $customer->emergency_phoneNo ?? '') }}" placeholder="123456789" required>
                                 </div>
                                 @error('emergency_phoneNo')
                                     <small class="text-danger">{{ $message }}</small>
@@ -386,18 +386,17 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label">
-                                    <i class="fas fa-customerss"></i>
+                                    <i class="fas fa-customers"></i>
                                     Relationship
                                     <span class="required">*</span>
                                 </label>
                                 <select class="form-select" name="emergency_relationship" required>
-                                    <option value="">Select Relationship</option>
-                                    <option value="Parent {{ old('emergency_relationship', $customers->emergency_relationship ?? '') == 'Parent' ? 'selected' : '' }}">Parent</option>
-                                    <option value="Spouse {{ old('emergency_relationship', $customers->emergency_relationship ?? '') == 'Spouse' ? 'selected' : '' }}">Spouse</option>
-                                    <option value="Sibling {{ old('emergency_relationship', $customers->emergency_relationship ?? '') == 'Sibling' ? 'selected' : '' }}">Sibling</option>
-                                    <option value="Friend {{ old('emergency_relationship', $customers->emergency_relationship ?? '') == 'Friend' ? 'selected' : '' }}">Friend</option>
-                                    <option value="Relative {{ old('emergency_relationship', $customers->emergency_relationship ?? '') == 'Relative' ? 'selected' : '' }}">Relative</option>
-                                    <option value="Other {{ old('emergency_relationship', $customers->emergency_relationship ?? '') == 'Other' ? 'selected' : '' }}">Other</option>
+                                    <option value="Parent" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Parent' ? 'selected' : '' }}>Parent</option>
+                                    <option value="Spouse" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Spouse' ? 'selected' : '' }}>Spouse</option>
+                                    <option value="Sibling" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Sibling' ? 'selected' : '' }}>Sibling</option>
+                                    <option value="Friend" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Friend' ? 'selected' : '' }}>Friend</option>
+                                    <option value="Relative" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Relative' ? 'selected' : '' }}>Relative</option>
+                                    <option value="Other" {{ old('emergency_relationship', $customer->emergency_relationship ?? '') == 'Other' ? 'selected' : '' }}>Other</option>
                                 </select>
                                 @error('emergency_relationship')
                                     <small class="text-danger">{{ $message }}</small>
