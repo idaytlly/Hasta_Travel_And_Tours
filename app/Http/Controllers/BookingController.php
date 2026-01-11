@@ -53,7 +53,7 @@ class BookingController extends Controller
     {
         // Validate the request
         $validated = $request->validate([
-            'plate_no' => 'required|exists:vehicles,plate_no',
+            'plate_no' => 'required|exists:vehicle,plate_no',
             'pickup_date' => 'required|date|after_or_equal:today',
             'pickup_time' => 'required|date_format:H:i',
             'return_date' => 'required|date|after:pickup_date',
