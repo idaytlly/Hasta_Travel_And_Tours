@@ -6,15 +6,29 @@
 @section('content')
 <div class="space-y-6">
     
-    <!-- Quick Stats -->
+    <!-- Welcome Banner -->
+    <div class="bg-gradient-to-r from-red-600 to-red-700 rounded-lg shadow-md p-6 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold">Welcome back, <span id="welcome-name">{{ Auth::guard('staff')->user()->name }}</span>!</h1>
+                <p class="text-red-100 mt-2">Here's what's happening with your rental business today.</p>
+            </div>
+            <button onclick="refreshDashboard()" class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg transition flex items-center gap-2">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                <span>Refresh</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Today's Bookings -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Today's Bookings</p>
                     <p class="text-3xl font-bold text-gray-800 mt-2" id="stat-today-bookings">0</p>
-                    <p class="text-xs text-green-600 mt-2">↑ 3 from yesterday</p>
+                    <p class="text-xs text-green-600 mt-2" id="stat-today-change">Loading...</p>
                 </div>
                 <div class="bg-blue-100 p-3 rounded-lg">
                     <i data-lucide="calendar" class="w-8 h-8 text-blue-600"></i>
@@ -22,8 +36,22 @@
             </div>
         </div>
 
+        <!-- Active Bookings -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Active Bookings</p>
+                    <p class="text-3xl font-bold text-gray-800 mt-2" id="stat-active-bookings">0</p>
+                    <p class="text-xs text-blue-600 mt-2">Currently rented</p>
+                </div>
+                <div class="bg-purple-100 p-3 rounded-lg">
+                    <i data-lucide="activity" class="w-8 h-8 text-purple-600"></i>
+                </div>
+            </div>
+        </div>
+
         <!-- Pending Approvals -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Pending Approvals</p>
@@ -36,272 +64,176 @@
             </div>
         </div>
 
-        <!-- Active Rentals -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <!-- Month Revenue -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Active Rentals</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2" id="stat-active">0</p>
-                    <p class="text-xs text-blue-600 mt-2">Currently ongoing</p>
+                    <p class="text-sm text-gray-600">This Month Revenue</p>
+                    <p class="text-3xl font-bold text-gray-800 mt-2" id="stat-revenue">RM 0</p>
+                    <p class="text-xs text-green-600 mt-2" id="stat-revenue-change">Loading...</p>
                 </div>
                 <div class="bg-green-100 p-3 rounded-lg">
-                    <i data-lucide="car" class="w-8 h-8 text-green-600"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Revenue (This Month) -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600">Revenue (Month)</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2" id="stat-revenue">RM 0</p>
-                    <p class="text-xs text-green-600 mt-2">↑ 12% from last month</p>
-                </div>
-                <div class="bg-red-100 p-3 rounded-lg">
-                    <i data-lucide="dollar-sign" class="w-8 h-8 text-red-600"></i>
+                    <i data-lucide="dollar-sign" class="w-8 h-8 text-green-600"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Runner Commission Card (Only visible for runners) -->
-    <div id="runner-commission-card" class="bg-gradient-to-r from-red-600 to-red-700 rounded-lg shadow-lg p-6 text-white hidden">
-        <div class="flex items-center justify-between">
-            <div>
-                <h3 class="text-lg font-semibold">Your Commission (This Month)</h3>
-                <p class="text-4xl font-bold mt-2">RM <span id="runner-commission">380.00</span></p>
-                <p class="text-sm text-red-100 mt-2">5 deliveries completed • 2 pending</p>
-            </div>
-            <div class="bg-white bg-opacity-20 p-4 rounded-lg">
-                <i data-lucide="trending-up" class="w-12 h-12"></i>
-            </div>
-        </div>
-    </div>
-
+    <!-- Quick Actions & Recent Activity -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Recent Bookings -->
-        <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200">
-            <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-gray-800">Recent Bookings</h3>
-                <a href="{{ route('staff.bookings.index') }}" class="text-sm text-red-600 hover:text-red-700 flex items-center gap-1">
-                    View All
-                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                </a>
-            </div>
-            <div id="recent-bookings-list" class="divide-y divide-gray-200">
-                <!-- Loading state -->
-                <div class="p-8 text-center">
-                    <div class="spinner"></div>
-                    <p class="text-gray-500 mt-4">Loading bookings...</p>
-                </div>
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+            <div class="space-y-3">
+                <button onclick="window.location.href='{{ route('staff.bookings') }}'" 
+                        class="w-full px-4 py-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition flex items-center gap-3">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    <span class="font-medium">View All Bookings</span>
+                </button>
+                <button onclick="window.location.href='{{ route('staff.vehicles') }}'" 
+                        class="w-full px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition flex items-center gap-3">
+                    <i data-lucide="car" class="w-5 h-5"></i>
+                    <span class="font-medium">Manage Vehicles</span>
+                </button>
+                <button onclick="window.location.href='{{ route('staff.customers') }}'" 
+                        class="w-full px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition flex items-center gap-3">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    <span class="font-medium">View Customers</span>
+                </button>
+                <button onclick="window.location.href='{{ route('staff.reports') }}'" 
+                        class="w-full px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition flex items-center gap-3">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                    <span class="font-medium">Generate Reports</span>
+                </button>
             </div>
         </div>
 
-        <!-- Quick Actions & Alerts -->
-        <div class="space-y-6">
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
-                <div class="space-y-3">
-                    <button onclick="openNewRentalModal()" class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-2">
-                        <i data-lucide="plus" class="w-5 h-5"></i>
-                        <span>New Rental</span>
-                    </button>
-                    <button onclick="viewPendingApprovals()" class="w-full px-4 py-3 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition flex items-center justify-center gap-2">
-                        <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        <span>Approve Bookings</span>
-                    </button>
-                    <button onclick="window.location.href='{{ route('staff.vehicles.index') }}'" class="w-full px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition flex items-center justify-center gap-2">
-                        <i data-lucide="car" class="w-5 h-5"></i>
-                        <span>Manage Vehicles</span>
-                    </button>
-                </div>
+        <!-- Recent Bookings -->
+        <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">Recent Bookings</h3>
+                <a href="{{ route('staff.bookings') }}" class="text-sm text-red-600 hover:text-red-700 font-medium">View All →</a>
             </div>
-
-            <!-- Today's Schedule -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Today's Schedule</h3>
-                <div id="today-schedule" class="space-y-3">
-                    <div class="text-center text-gray-500 py-4">
-                        <i data-lucide="calendar-x" class="w-12 h-12 mx-auto mb-2 text-gray-400"></i>
-                        <p class="text-sm">No scheduled tasks</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Vehicle Status -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Vehicle Status</h3>
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">Available</span>
-                        <span class="text-sm font-semibold text-green-600" id="vehicles-available">0</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">Rented</span>
-                        <span class="text-sm font-semibold text-blue-600" id="vehicles-rented">0</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">Maintenance</span>
-                        <span class="text-sm font-semibold text-orange-600" id="vehicles-maintenance">0</span>
-                    </div>
+            <div id="recent-bookings" class="space-y-3">
+                <!-- Loading state -->
+                <div class="text-center py-8">
+                    <div class="spinner mx-auto"></div>
+                    <p class="text-gray-500 text-sm mt-2">Loading bookings...</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Today's Schedule & Vehicle Status -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Today's Schedule -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">Today's Schedule</h3>
+                <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full" id="schedule-count">0 tasks</span>
+            </div>
+            <div id="today-schedule" class="space-y-3">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Vehicle Status -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">Vehicle Status</h3>
+                <button onclick="refreshVehicleStatus()" class="text-sm text-red-600 hover:text-red-700 font-medium">Refresh</button>
+            </div>
+            <div class="space-y-4" id="vehicle-status">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
 </div>
 
 @push('scripts')
 <script>
-    // Sample data for demonstration
-    const dashboardData = {
-        stats: {
-            todayBookings: 8,
-            pendingApprovals: 3,
-            activeRentals: 24,
-            totalRevenue: 15680,
-            availableVehicles: 12,
-            rentedVehicles: 18,
-            maintenanceVehicles: 2
-        },
-        recentBookings: [
-            {
-                id: 'BK001',
-                customer: 'Ahmad Ibrahim',
-                vehicle: 'Perodua Myvi',
-                pickup: '2026-01-10 10:00',
-                return: '2026-01-12 10:00',
-                status: 'pending',
-                total: 280,
-                type: 'self-pickup'
-            },
-            {
-                id: 'BK002',
-                customer: 'Sarah Lee',
-                vehicle: 'Honda City',
-                pickup: '2026-01-10 14:00',
-                return: '2026-01-15 14:00',
-                status: 'confirmed',
-                total: 750,
-                type: 'delivery'
-            },
-            {
-                id: 'BK003',
-                customer: 'Michael Tan',
-                vehicle: 'Toyota Vios',
-                pickup: '2026-01-11 09:00',
-                return: '2026-01-11 18:00',
-                status: 'pending',
-                total: 120,
-                type: 'self-pickup'
-            },
-            {
-                id: 'BK004',
-                customer: 'Lisa Wong',
-                vehicle: 'Perodua Axia',
-                pickup: '2026-01-10 16:00',
-                return: '2026-01-13 16:00',
-                status: 'approved',
-                total: 360,
-                type: 'delivery'
-            },
-            {
-                id: 'BK005',
-                customer: 'David Chen',
-                vehicle: 'Honda Civic',
-                pickup: '2026-01-12 08:00',
-                return: '2026-01-14 08:00',
-                status: 'active',
-                total: 480,
-                type: 'self-pickup'
-            }
-        ],
-        todaySchedule: [
-            {
-                time: '10:00 AM',
-                task: 'Vehicle Pickup - Ahmad Ibrahim',
-                type: 'pickup',
-                vehicle: 'Perodua Myvi'
-            },
-            {
-                time: '02:00 PM',
-                task: 'Delivery - Sarah Lee',
-                type: 'delivery',
-                vehicle: 'Honda City',
-                location: 'Jalan Ampang, KL'
-            }
-        ]
-    };
+    let dashboardData = null;
 
-    // Load dashboard data
-    function loadDashboardData() {
+    // Fetch dashboard data from API
+    async function fetchDashboardData() {
+        try {
+            const data = await apiRequest('/api/staff/dashboard/data');
+            dashboardData = data;
+            updateDashboard(data);
+            return data;
+        } catch (error) {
+            console.error('Error fetching dashboard data:', error);
+        }
+    }
+
+    // Update all dashboard components
+    function updateDashboard(data) {
+        if (!data) return;
+        
         // Update stats
-        document.getElementById('stat-today-bookings').textContent = dashboardData.stats.todayBookings;
-        document.getElementById('stat-pending').textContent = dashboardData.stats.pendingApprovals;
-        document.getElementById('stat-active').textContent = dashboardData.stats.activeRentals;
-        document.getElementById('stat-revenue').textContent = formatCurrency(dashboardData.stats.totalRevenue);
+        updateStats(data.stats);
+        
+        // Update recent bookings
+        updateRecentBookings(data.recentBookings);
+        
+        // Update today's schedule
+        updateTodaySchedule(data.schedule);
         
         // Update vehicle status
-        document.getElementById('vehicles-available').textContent = dashboardData.stats.availableVehicles;
-        document.getElementById('vehicles-rented').textContent = dashboardData.stats.rentedVehicles;
-        document.getElementById('vehicles-maintenance').textContent = dashboardData.stats.maintenanceVehicles;
-
-        // Load recent bookings
-        loadRecentBookings();
+        updateVehicleStatus(data.vehicleStatus);
         
-        // Load today's schedule
-        loadTodaySchedule();
-
-        // Show runner commission if role is runner
-        const staffRole = localStorage.getItem('staff_role') || 'staff';
-        if (staffRole === 'runner') {
-            document.getElementById('runner-commission-card').classList.remove('hidden');
-        }
+        lucide.createIcons();
     }
 
-    function loadRecentBookings() {
-        const container = document.getElementById('recent-bookings-list');
+    // Update statistics cards
+    function updateStats(stats) {
+        document.getElementById('stat-today-bookings').textContent = stats.todayBookings || 0;
+        document.getElementById('stat-active-bookings').textContent = stats.activeBookings || 0;
+        document.getElementById('stat-pending').textContent = stats.pendingApprovals || 0;
+        document.getElementById('stat-revenue').textContent = formatCurrency(stats.monthRevenue || 0);
         
-        if (dashboardData.recentBookings.length === 0) {
+        // Update change indicators
+        const todayChange = stats.todayBookingsChange || 0;
+        document.getElementById('stat-today-change').textContent = 
+            `${todayChange > 0 ? '↑' : todayChange < 0 ? '↓' : ''} ${Math.abs(todayChange)}% from yesterday`;
+        document.getElementById('stat-today-change').className = 
+            `text-xs mt-2 ${todayChange >= 0 ? 'text-green-600' : 'text-red-600'}`;
+            
+        const revenueChange = stats.revenueChange || 0;
+        document.getElementById('stat-revenue-change').textContent = 
+            `${revenueChange > 0 ? '↑' : revenueChange < 0 ? '↓' : ''} ${Math.abs(revenueChange)}% from last month`;
+        document.getElementById('stat-revenue-change').className = 
+            `text-xs mt-2 ${revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}`;
+    }
+
+    // Update recent bookings list
+    function updateRecentBookings(bookings) {
+        const container = document.getElementById('recent-bookings');
+        
+        if (!bookings || bookings.length === 0) {
             container.innerHTML = `
-                <div class="p-8 text-center text-gray-500">
-                    <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 text-gray-400"></i>
-                    <p>No recent bookings</p>
+                <div class="text-center py-8">
+                    <i data-lucide="inbox" class="w-12 h-12 text-gray-400 mx-auto mb-2"></i>
+                    <p class="text-gray-500">No recent bookings</p>
                 </div>
             `;
-            lucide.createIcons();
             return;
         }
-
-        container.innerHTML = dashboardData.recentBookings.map(booking => `
-            <div class="p-4 hover:bg-gray-50 cursor-pointer" onclick="viewBookingDetails('${booking.id}')">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2">
-                            <h4 class="font-semibold text-gray-800">${booking.customer}</h4>
-                            ${getStatusBadge(booking.status)}
-                        </div>
-                        <p class="text-sm text-gray-600 mt-1">
-                            <i data-lucide="car" class="w-4 h-4 inline"></i>
-                            ${booking.vehicle}
-                        </p>
-                        <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                            <span>
-                                <i data-lucide="calendar" class="w-3 h-3 inline"></i>
-                                ${formatDateTime(booking.pickup)}
-                            </span>
-                            <span>
-                                <i data-lucide="${booking.type === 'delivery' ? 'truck' : 'map-pin'}" class="w-3 h-3 inline"></i>
-                                ${booking.type === 'delivery' ? 'Delivery' : 'Self Pickup'}
-                            </span>
-                        </div>
+        
+        container.innerHTML = bookings.slice(0, 5).map(booking => `
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <i data-lucide="calendar" class="w-6 h-6 text-red-600"></i>
                     </div>
-                    <div class="text-right">
-                        <p class="font-semibold text-gray-800">${formatCurrency(booking.total)}</p>
-                        <p class="text-xs text-gray-500 mt-1">${booking.id}</p>
+                    <div>
+                        <p class="font-semibold text-gray-800">${booking.booking_code}</p>
+                        <p class="text-sm text-gray-600">${booking.customer_name} • ${booking.vehicle_name}</p>
                     </div>
+                </div>
+                <div class="text-right">
+                    ${getStatusBadge(booking.status)}
+                    <p class="text-sm text-gray-600 mt-1">${formatCurrency(booking.total_amount)}</p>
                 </div>
             </div>
         `).join('');
@@ -309,63 +241,136 @@
         lucide.createIcons();
     }
 
-    function loadTodaySchedule() {
+    // Update today's schedule
+    function updateTodaySchedule(schedule) {
         const container = document.getElementById('today-schedule');
+        const countElement = document.getElementById('schedule-count');
         
-        if (dashboardData.todaySchedule.length === 0) {
+        if (!schedule || schedule.length === 0) {
             container.innerHTML = `
-                <div class="text-center text-gray-500 py-4">
-                    <i data-lucide="calendar-x" class="w-12 h-12 mx-auto mb-2 text-gray-400"></i>
-                    <p class="text-sm">No scheduled tasks</p>
+                <div class="text-center py-8">
+                    <i data-lucide="check-circle" class="w-12 h-12 text-green-400 mx-auto mb-2"></i>
+                    <p class="text-gray-500">No scheduled tasks for today</p>
                 </div>
             `;
-            lucide.createIcons();
+            countElement.textContent = '0 tasks';
             return;
         }
-
-        container.innerHTML = dashboardData.todaySchedule.map(item => `
+        
+        countElement.textContent = `${schedule.length} tasks`;
+        
+        container.innerHTML = schedule.map(task => `
             <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                <div class="flex-shrink-0 ${item.type === 'delivery' ? 'bg-red-100' : 'bg-blue-100'} p-2 rounded-lg">
-                    <i data-lucide="${item.type === 'delivery' ? 'truck' : 'calendar-check'}" 
-                       class="w-4 h-4 ${item.type === 'delivery' ? 'text-red-600' : 'text-blue-600'}"></i>
+                <div class="w-2 h-2 ${task.completed ? 'bg-green-500' : 'bg-orange-500'} rounded-full mt-2"></div>
+                <div class="flex-1">
+                    <p class="font-medium text-gray-800">${task.title}</p>
+                    <p class="text-sm text-gray-600">${task.time} • ${task.type}</p>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-gray-800">${item.time}</p>
-                    <p class="text-sm text-gray-600 mt-1">${item.task}</p>
-                    ${item.location ? `<p class="text-xs text-gray-500 mt-1">${item.location}</p>` : ''}
-                </div>
+                ${!task.completed ? `
+                    <button onclick="completeTask('${task.id}')" 
+                            class="text-green-600 hover:text-green-700">
+                        <i data-lucide="check" class="w-5 h-5"></i>
+                    </button>
+                ` : `
+                    <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                `}
             </div>
         `).join('');
         
         lucide.createIcons();
     }
 
+    // Update vehicle status
+    function updateVehicleStatus(vehicles) {
+        const container = document.getElementById('vehicle-status');
+        
+        if (!vehicles) return;
+        
+        const total = vehicles.total || 0;
+        const available = vehicles.available || 0;
+        const rented = vehicles.rented || 0;
+        const maintenance = vehicles.maintenance || 0;
+        
+        container.innerHTML = `
+            <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="check-circle" class="w-8 h-8 text-green-600"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">${available}</p>
+                        <p class="text-sm text-gray-600">Available</p>
+                    </div>
+                </div>
+                <div class="text-2xl font-bold text-green-600">${((available/total)*100).toFixed(0)}%</div>
+            </div>
+            
+            <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="activity" class="w-8 h-8 text-purple-600"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">${rented}</p>
+                        <p class="text-sm text-gray-600">Currently Rented</p>
+                    </div>
+                </div>
+                <div class="text-2xl font-bold text-purple-600">${((rented/total)*100).toFixed(0)}%</div>
+            </div>
+            
+            <div class="flex items-center justify-between p-4 bg-orange-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="wrench" class="w-8 h-8 text-orange-600"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">${maintenance}</p>
+                        <p class="text-sm text-gray-600">Under Maintenance</p>
+                    </div>
+                </div>
+                <div class="text-2xl font-bold text-orange-600">${((maintenance/total)*100).toFixed(0)}%</div>
+            </div>
+        `;
+        
+        lucide.createIcons();
+    }
+
+    // Get status badge HTML
     function getStatusBadge(status) {
         const badges = {
-            'pending': '<span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">Pending</span>',
-            'confirmed': '<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Confirmed</span>',
-            'approved': '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Approved</span>',
-            'active': '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Active</span>',
-            'completed': '<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Completed</span>',
-            'cancelled': '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Cancelled</span>'
+            'pending': '<span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">Pending</span>',
+            'confirmed': '<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">Confirmed</span>',
+            'approved': '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Approved</span>',
+            'active': '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">Active</span>',
+            'completed': '<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">Completed</span>',
+            'cancelled': '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">Cancelled</span>'
         };
-        return badges[status] || '';
+        return badges[status.toLowerCase()] || '';
     }
 
-    function viewBookingDetails(bookingId) {
-        window.location.href = `{{ url('/staff/bookings') }}?id=${bookingId}`;
+    // Refresh dashboard manually
+    async function refreshDashboard() {
+        showToast('Refreshing dashboard...', 'info');
+        await fetchDashboardData();
+        showToast('Dashboard refreshed successfully!', 'success');
     }
 
-    function viewPendingApprovals() {
-        window.location.href = `{{ route('staff.bookings.index') }}?status=pending`;
+    // Refresh vehicle status
+    async function refreshVehicleStatus() {
+        showToast('Refreshing vehicle status...', 'info');
+        await fetchDashboardData();
+        showToast('Vehicle status updated!', 'success');
     }
 
-    // Load data on page load
+    // Complete a task
+    async function completeTask(taskId) {
+        if (confirm('Mark this task as completed?')) {
+            showToast('Task marked as completed!', 'success');
+            await fetchDashboardData();
+        }
+    }
+
+    // Initialize dashboard with real-time updates
     document.addEventListener('DOMContentLoaded', () => {
-        loadDashboardData();
+        // Initial load
+        fetchDashboardData();
         
-        // Refresh data every 30 seconds
-        setInterval(loadDashboardData, 30000);
+        // Start real-time updates (every 30 seconds)
+        startRealTimeUpdates(fetchDashboardData, 30000);
     });
 </script>
 @endpush
