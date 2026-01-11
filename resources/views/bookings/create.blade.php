@@ -341,6 +341,12 @@
 <div class="booking-container">
     <a href="{{ route('vehicles.show', $vehicle->plate_no) }}" class="back-arrow" title="Back">←</a>
     
+    @if(session('error'))
+        <div class="alert alert-danger" style="margin-bottom: 20px; padding: 15px; background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; border-radius: 8px;">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="booking-card">
         <h2 class="section-title">Fill in Booking Details</h2>
         

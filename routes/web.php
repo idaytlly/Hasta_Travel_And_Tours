@@ -36,10 +36,17 @@ Route::put('/profile', [CustomerProfileController::class, 'update'])->name('cust
 Route::resource('vehicles', VehicleController::class)->only(['index', 'show']);
 
 // Customer Booking
+// Customer Booking
 Route::middleware(['auth:customer'])->group(function () {
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::get('/vehicles/{plate_no}/book', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    
+    // === ADD THESE TWO MISSING LINES ===
+    Route::get('/bookings/{id}/payment', [BookingController::class, 'payment'])->name('bookings.payment');
+    Route::post('/bookings/{id}/payment', [BookingController::class, 'storePayment'])->name('bookings.payment.store');
+    // ===================================
+
     Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('bookings.show');
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });

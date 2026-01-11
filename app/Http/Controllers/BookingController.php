@@ -49,9 +49,7 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         \Log::info('=== BOOKING STORE METHOD CALLED ===');
-        \Log::info('Request data:', $request->all());
         
-        // Validate the request
         $validated = $request->validate([
             'plate_no' => 'required|exists:vehicle,plate_no',
             'pickup_date' => 'required|date|after_or_equal:today',
@@ -68,39 +66,31 @@ class BookingController extends Controller
             'signature' => 'required|string',
         ]);
 
-        \Log::info('Validation passed');
-
         try {
             DB::beginTransaction();
 
-            // Get the vehicle
+            // 1. Get Vehicle
             $vehicle = Vehicle::where('plate_no', $validated['plate_no'])->firstOrFail();
-            \Log::info('Vehicle found:', ['plate_no' => $vehicle->plate_no, 'name' => $vehicle->name]);
 
-            // Check availability
             if ($vehicle->availability_status !== 'available') {
-                \Log::warning('Vehicle not available', ['plate_no' => $vehicle->plate_no, 'status' => $vehicle->availability_status]);
-                return back()->with('error', 'This vehicle is no longer available.')
-                    ->withInput();
+                return back()->with('error', 'This vehicle is no longer available.')->withInput();
             }
 
-            // Get customer from authenticated user
+            // 2. Get Customer
             $customer = Auth::guard('customer')->user();
-            \Log::info('Customer:', ['id' => $customer->customer_id, 'name' => $customer->name]);
 
-            // Calculate hours and pricing
-            $pickupDateTime = Carbon::parse($validated['pickup_date'] . ' ' . $validated['pickup_time']);
-            $returnDateTime = Carbon::parse($validated['return_date'] . ' ' . $validated['return_time']);
+            // 3. FIX: Sanitize Dates (Take only first 10 chars YYYY-MM-DD)
+            // This prevents "Double time specification" errors if the input has a time component
+            $pickupDateOnly = substr($validated['pickup_date'], 0, 10);
+            $returnDateOnly = substr($validated['return_date'], 0, 10);
+
+            $pickupDateTime = Carbon::parse($pickupDateOnly . ' ' . $validated['pickup_time']);
+            $returnDateTime = Carbon::parse($returnDateOnly . ' ' . $validated['return_time']);
+            
             $totalHours = (int) ceil($pickupDateTime->diffInHours($returnDateTime));
             $totalPrice = $totalHours * $vehicle->price_perHour;
 
-            \Log::info('Price calculation:', [
-                'hours' => $totalHours,
-                'price_per_hour' => $vehicle->price_perHour,
-                'subtotal' => $totalPrice
-            ]);
-
-            // Apply voucher if provided
+            // 4. Apply Voucher
             $voucherId = null;
             if (!empty($validated['voucher_code'])) {
                 $voucher = Voucher::where('voucher_code', strtoupper($validated['voucher_code']))
@@ -112,11 +102,10 @@ class BookingController extends Controller
                     $discount = ($totalPrice * $voucher->voucherAmount) / 100;
                     $totalPrice -= $discount;
                     $voucherId = $voucher->voucher_id;
-                    \Log::info('Voucher applied:', ['code' => $voucher->voucher_code, 'discount' => $discount]);
                 }
             }
 
-            // Determine pickup and dropoff details
+            // 5. Format Locations
             $pickupDetails = $this->formatLocationDetails(
                 $validated['pickup_location'],
                 $validated['pickup_college'] ?? null,
@@ -129,39 +118,33 @@ class BookingController extends Controller
                 $validated['dropoff_faculty'] ?? null
             );
 
-            // Check if delivery is required
             $deliveryRequired = ($validated['pickup_location'] !== 'HASTA office') || 
                                ($validated['dropoff_location'] !== 'HASTA office');
 
-            // Save signature image
+            // 6. Handle Signature
             $signaturePath = null;
             if (!empty($validated['signature'])) {
-                try {
-                    $signatureData = $validated['signature'];
-                    // Remove data:image/png;base64, prefix if present
-                    if (strpos($signatureData, 'base64,') !== false) {
-                        $signatureData = explode('base64,', $signatureData)[1];
-                    }
-                    $signatureData = base64_decode($signatureData);
-                    
-                    $fileName = 'signatures/' . uniqid() . '.png';
-                    Storage::disk('public')->put($fileName, $signatureData);
-                    $signaturePath = $fileName;
-                    \Log::info('Signature saved:', ['path' => $signaturePath]);
-                } catch (\Exception $e) {
-                    \Log::error('Failed to save signature: ' . $e->getMessage());
+                $signatureData = $validated['signature'];
+                if (strpos($signatureData, 'base64,') !== false) {
+                    $signatureData = explode('base64,', $signatureData)[1];
                 }
+                $fileName = 'signatures/' . uniqid() . '.png';
+                Storage::disk('public')->put($fileName, base64_decode($signatureData));
+                $signaturePath = $fileName;
             }
 
-            // Create the booking
+            // 7. Generate ID & Create Booking
+            $bookingId = 'BKG-' . time() . '-' . rand(100, 999);
+
             $booking = Booking::create([
+                'booking_id' => $bookingId,
                 'customer_id' => $customer->customer_id,
-                'plate_no' => $validated['vehicle_id'],
-                'pickup_date' => $validated['pickup_date'],
+                'plate_no' => $validated['plate_no'],
+                'pickup_date' => $pickupDateOnly,          // <--- UPDATED: Use sanitized date
                 'pickup_time' => $validated['pickup_time'],
                 'pickup_location' => $validated['pickup_location'],
                 'pickup_details' => $pickupDetails,
-                'return_date' => $validated['return_date'],
+                'return_date' => $returnDateOnly,          // <--- UPDATED: Use sanitized date
                 'return_time' => $validated['return_time'],
                 'dropoff_location' => $validated['dropoff_location'],
                 'dropoff_details' => $dropoffDetails,
@@ -172,20 +155,17 @@ class BookingController extends Controller
                 'signature' => $signaturePath,
             ]);
 
-            // Update vehicle availability
             $vehicle->update(['availability_status' => 'booked']);
 
             DB::commit();
 
-            // Redirect to payment page
             return redirect()->route('bookings.payment', $booking->booking_id)
                 ->with('success', 'Booking created successfully! Please complete payment.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            return back()->with('error', 'An error occurred: ' . $e->getMessage())
-                ->withInput();
+            \Log::error('Booking Error: ' . $e->getMessage());
+            return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
         }
     }
 

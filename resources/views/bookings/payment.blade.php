@@ -2,6 +2,8 @@
 
 @section('title', 'Payment')
 
+@section('noFooter', true)
+
 @section('content')
 <style>
     body { padding-top: 70px; }
@@ -263,7 +265,6 @@
     <h1 class="page-title">Complete Your Payment</h1>
     
     <div class="payment-grid">
-        <!-- Booking Summary -->
         <div class="card">
             <h2 class="card-title">Booking Summary</h2>
             
@@ -289,28 +290,39 @@
             
             <div class="info-group">
                 <div class="info-label">Pickup</div>
+                {{-- FIX: Robust parsing for Pickup --}}
                 <div class="info-value">{{ \Carbon\Carbon::parse($booking->pickup_date)->format('F d, Y') }}</div>
                 <div class="info-subtext" style="font-size: 13px; color: #666;">
-                    {{ \Carbon\Carbon::parse($booking->pickup_time, 'H:i')->format('g:i A') }} • {{ $booking->pickup_details ?? $booking->pickup_location }}
+                    {{ \Carbon\Carbon::parse($booking->pickup_time)->format('g:i A') }} • {{ $booking->pickup_details ?? $booking->pickup_location }}
                 </div>
             </div>
             
             <div class="info-group">
                 <div class="info-label">Return</div>
+                {{-- FIX: Robust parsing for Return --}}
                 <div class="info-value">{{ \Carbon\Carbon::parse($booking->return_date)->format('F d, Y') }}</div>
                 <div class="info-subtext" style="font-size: 13px; color: #666;">
-                    {{ \Carbon\Carbon::parse($booking->return_time, 'H:i')->format('g:i A') }} • {{ $booking->dropoff_details ?? $booking->dropoff_location }}
+                    {{ \Carbon\Carbon::parse($booking->return_time)->format('g:i A') }} • {{ $booking->dropoff_details ?? $booking->dropoff_location }}
                 </div>
             </div>
             
             <div class="divider"></div>
             
             @php
-                $pickup = \Carbon\Carbon::parse($booking->pickup_date . ' ' . $booking->pickup_time);
-                $return = \Carbon\Carbon::parse($booking->return_date . ' ' . $booking->return_time);
+                // === DATE PARSING FIX ===
+                // We ensure pickup_date is treated as a Y-m-d string before concatenation
+                $pDate = \Carbon\Carbon::parse($booking->pickup_date)->format('Y-m-d');
+                $pTime = $booking->pickup_time;
+                $pickup = \Carbon\Carbon::parse($pDate . ' ' . $pTime);
+
+                $rDate = \Carbon\Carbon::parse($booking->return_date)->format('Y-m-d');
+                $rTime = $booking->return_time;
+                $return = \Carbon\Carbon::parse($rDate . ' ' . $rTime);
+
                 $hours = ceil($pickup->diffInHours($return));
                 $subtotal = $hours * $booking->vehicle->price_perHour;
                 $discount = 0;
+                
                 if($booking->voucher) {
                     $discount = ($subtotal * $booking->voucher->voucherAmount) / 100;
                 }
@@ -339,14 +351,12 @@
             </div>
         </div>
         
-        <!-- Payment Form -->
         <div class="card">
             <h2 class="card-title">Payment via QR Code</h2>
             
             <form id="paymentForm" method="POST" action="{{ route('bookings.payment.store', $booking->booking_id) }}" enctype="multipart/form-data">
                 @csrf
                 
-                <!-- QR Code -->
                 <div class="qr-section">
                     <p style="font-size: 13px; color: #666; margin-bottom: 16px;">Scan the QR code below to make payment</p>
                     
@@ -359,7 +369,6 @@
                     <p style="font-size: 13px; color: #666; margin-top: 8px;">HASTA Car Rental Service</p>
                 </div>
                 
-                <!-- Instructions -->
                 <div class="instructions-box">
                     <h4>Payment Instructions:</h4>
                     <ol>
@@ -370,7 +379,6 @@
                     </ol>
                 </div>
                 
-                <!-- Upload Receipt -->
                 <div class="upload-section">
                     <label class="upload-label">Upload Payment Receipt (PDF, PNG, or JPG) *</label>
                     
