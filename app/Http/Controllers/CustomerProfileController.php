@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -9,14 +10,20 @@ class CustomerProfileController extends Controller
 {
     public function edit()
     {
-        return view('customer.profile.edit');
+        $customer = Auth::guard('customer')->user();
+        return view('customer.profile.edit', compact('customer'));
     }
 
     public function update(Request $request)
     {
-        $customers = Customer::where('email', auth()->user()->email)->first();
+        // Get logged-in customer
+        $customer = Auth::guard('customer')->user();
 
-        $customers->update([
+        if (!$customer) {
+            return redirect()->route('login');
+        }
+
+        $customer->update([
             'name' => $request->name,
             'ic' => $request->ic,
             'matricNum' => $request->matricNum,
@@ -31,15 +38,14 @@ class CustomerProfileController extends Controller
             'emergency_relationship' => $request->emergency_relationship,
         ]);
 
-        $customer->save();
-
-        return redirect()->route('customer.profile')->with('success', 'Profile updated successfully!');
+        return redirect()
+            ->route('customer.profile')
+            ->with('success', 'Profile updated successfully!');
     }
 
     public function showProfile()
     {
-        // ambil logged-in customer
-        $customer = Auth::guard('web')->user(); // atau guard lain ikut setup awak
+        $customer = Auth::guard('customer')->user();
 
         return view('customer.profile', compact('customer'));
     }
