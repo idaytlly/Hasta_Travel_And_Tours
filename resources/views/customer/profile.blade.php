@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'My Profile')
+
 @section('content')
 <style>
     .profile-container {
@@ -130,7 +132,7 @@
         background: #f8d7da;
         color: #721c24;
     }
-    
+
     .action-buttons {
         display: flex;
         justify-content: center;
