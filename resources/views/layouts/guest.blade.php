@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>@yield('title') | Hasta Travel And Tours</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -172,11 +171,41 @@
         }
 
         .footer-bottom {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding-top: 30px;
             margin-top: 50px;
             border-top: 1px solid rgba(255,255,255,0.1);
             color: rgba(255,255,255,0.6);
+        }
+
+        .footer-bottom-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-bottom-left a {
+            width: 35px;
+            height: 35px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-bottom-left a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom-right {
+            text-align: right;
         }
 
          /* RESPONSIVE */
@@ -212,6 +241,16 @@
             
             .search-box {
                 padding: 20px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .footer-bottom-right {
+                text-align: center;
             }
         }
 
@@ -265,13 +304,6 @@
                             <span>011-1090 0700</span>
                         </div>
                     </div>
-
-                    <div class="social-links">
-                        <a href="http://wasap.my/601110900700/nakkeretasewa"><i class="fab fa-whatsapp"></i></a>
-                        <a href="http://t.me/infoHastaCarRentalUTM"><i class="fab fa-telegram"></i></a>
-                        <a href="http://youtube.com/watch?v=41Vedbjxn_s"><i class="fab fa-youtube"></i></a>
-                        <a href="https://www.instagram.com/hastatraveltours?igsh=MXR0ZjYyM3c3Znpsdg=="><i class="fab fa-instagram"></i></a>
-                    </div>
                 </div>
 
                 <div class="col-6 col-lg-2 offset-lg-1 footer-links">
@@ -307,10 +339,31 @@
             </div>
 
             <div class="footer-bottom">
-                <p class="mb-0">&copy; {{ date('Y') }} Hasta Travel & Tours. All Rights Reserved.</p>
+                <!-- Social Links on LEFT -->
+                <div class="footer-bottom-left">
+                    <a href="http://wasap.my/601110900700/nakkeretasewa" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="http://t.me/infoHastaCarRentalUTM" title="Telegram">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://www.instagram.com/hastatraveltours?igsh=MXR0ZjYyM3c3Znpsdg==" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="http://youtube.com/watch?v=41Vedbjxn_s" title="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+
+                <!-- Copyright on RIGHT -->
+                <div class="footer-bottom-right">
+                    <p class="mb-0">&copy; {{ date('Y') }} Hasta Travel & Tours. All Rights Reserved.</p>
+                </div>
             </div>
         </div>
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
