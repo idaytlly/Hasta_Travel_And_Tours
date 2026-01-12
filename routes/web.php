@@ -5,7 +5,6 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerProfileController;
-use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Staff\AuthController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\Staff\BookingController as StaffBookingController;
@@ -34,24 +33,6 @@ Route::get('/profile/edit', [CustomerProfileController::class, 'edit'])->name('c
 Route::put('/profile', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
 
 Route::resource('vehicles', VehicleController::class)->only(['index', 'show']);
-
-// Customer Booking
-Route::middleware(['auth:customer'])->group(function () {
-    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
-    Route::get('/vehicles/{plate_no}/book', [BookingController::class, 'create'])->name('bookings.create');
-    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
-    
-    // === ADD THESE TWO MISSING LINES ===
-    Route::get('/bookings/{id}/payment', [BookingController::class, 'payment'])->name('bookings.payment');
-    Route::post('/bookings/{id}/payment', [BookingController::class, 'storePayment'])->name('bookings.payment.store');
-    // ===================================
-
-    Route::get('/bookings/{id}/inspection/{type}', [BookingController::class, 'inspection'])->name('bookings.inspection');
-    Route::post('/bookings/{id}/inspection/{type}', [BookingController::class, 'storeInspection'])->name('bookings.inspection.store');
-
-    Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
-    Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('bookings.show');
-});
 
 //Rewards
 Route::get('/customer/reward', [CustomerController::class, 'rewards'])->name('customer.reward');
