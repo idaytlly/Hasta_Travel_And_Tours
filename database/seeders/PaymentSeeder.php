@@ -13,10 +13,13 @@ class PaymentSeeder extends Seeder
         // Remove previous test payments
         DB::table('payment')->where('payment_id', 'like', 'PAY%')->delete();
 
+        // Ensure any payments for our seeded bookings are removed to avoid duplicates
+        DB::table('payment')->whereIn('booking_id', ['BK2026010001','BK2026010002','BK2026010004'])->delete();
+
         // Create payments for bookings
         $payments = [
             [
-                'payment_id' => Payment::generatePaymentId('PAY'),
+                'payment_id' => 'PAY' . time() . rand(100,999),
                 'booking_id' => 'BK2026010002',
                 'amount' => 480.00,
                 'payment_status' => 'paid',
@@ -27,7 +30,7 @@ class PaymentSeeder extends Seeder
                 'updated_at' => now()->subDay(),
             ],
             [
-                'payment_id' => Payment::generatePaymentId('PAY'),
+                'payment_id' => 'PAY' . (time()+1) . rand(100,999),
                 'booking_id' => 'BK2026010001',
                 'amount' => 100.00,
                 'payment_status' => 'pending',
@@ -38,7 +41,7 @@ class PaymentSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'payment_id' => Payment::generatePaymentId('PAY'),
+                'payment_id' => 'PAY' . (time()+2) . rand(100,999),
                 'booking_id' => 'BK2026010004',
                 'amount' => 80.00,
                 'payment_status' => 'paid',
