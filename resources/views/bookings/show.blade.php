@@ -552,11 +552,11 @@
                 <div class="customer-row">
                     <div class="customer-field">
                         <label>Full Name</label>
-                        <p>{{ $booking->customers->name }}</p>
+                        <p>{{ $booking->customer->name }}</p>
                     </div>
                     <div class="customer-field">
                         <label>Phone Number</label>
-                        <p>{{ $booking->customers->phone_no }}</p>
+                        <p>{{ $booking->customer->phone_no }}</p>
                     </div>
                 </div>
             </div>

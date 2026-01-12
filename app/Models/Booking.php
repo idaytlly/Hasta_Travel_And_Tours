@@ -57,7 +57,7 @@ class Booking extends Model
     ];
 
     // Relationships
-    public function customers()
+    public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
     }

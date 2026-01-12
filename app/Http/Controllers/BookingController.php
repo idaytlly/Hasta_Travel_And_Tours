@@ -182,7 +182,7 @@ class BookingController extends Controller
      */
     public function payment($bookingId)
     {
-        $booking = Booking::with(['vehicle', 'customers', 'voucher'])
+        $booking = Booking::with(['vehicle', 'customer', 'voucher'])
             ->where('booking_id', $bookingId)
             ->firstOrFail();
 
@@ -341,7 +341,9 @@ class BookingController extends Controller
             return redirect()->route('login')->with('error', 'Please login.');
         }
 
-        $customer = Auth::guard('customer')->user();
+        $vehicle = Vehicle::where('plate_no', $booking->plate_no)->first();
+        if ($vehicle) $vehicle->update(['availability_status' => 'available']);
+
         $booking = $customer->bookings()->findOrFail($id);
 
         $request->validate(['cancellation_reason' => 'required|string|max:500']);
