@@ -5,6 +5,9 @@
 @section('noFooter', true)
 
 @section('content')
+
+@include('components.booking-timeline', ['currentStep' => 2])
+
 <style>
     body { padding-top: 70px; }
     .payment-container { 
@@ -326,6 +329,8 @@
                 if($booking->voucher) {
                     $discount = ($subtotal * $booking->voucher->voucherAmount) / 100;
                 }
+
+                $deliveryFee = $booking->delivery_required ? 15 : 0;
             @endphp
             
             <div class="price-row">
@@ -344,7 +349,12 @@
                 <span style="font-weight: 600;">- RM {{ number_format($discount, 2) }}</span>
             </div>
             @endif
-            
+            @if($deliveryFee > 0)
+            <div class="price-row">
+                <span>Delivery Fee:</span>
+                <span style="font-weight: 600;">RM {{ number_format($deliveryFee, 2) }}</span>
+            </div>
+            @endif
             <div class="price-row total">
                 <span>Total:</span>
                 <span class="amount">RM {{ number_format($booking->total_price, 2) }}</span>

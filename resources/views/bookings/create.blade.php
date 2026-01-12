@@ -5,6 +5,10 @@
 @section('noFooter', true)
 
 @section('content')
+
+@include('components.booking-timeline', ['currentStep' => 1])
+
+
 <style>
     body { padding-top: 70px; }
     .booking-container { 
@@ -34,6 +38,51 @@
         transform: translateX(-2px) scale(1.1);
         background: #ffcaca;
         box-shadow: 0 6px 14px rgba(217,48,37,0.35);
+    }
+    
+    .alert-warning-profile {
+        margin-bottom: 20px;
+        padding: 20px;
+        background: #fef3c7;
+        border: 2px solid #f59e0b;
+        border-radius: 8px;
+        display: flex;
+        align-items: start;
+        gap: 12px;
+    }
+    
+    .alert-warning-profile .icon {
+        font-size: 24px;
+        line-height: 1;
+    }
+    
+    .alert-warning-profile h4 {
+        margin: 0 0 8px 0;
+        color: #92400e;
+        font-weight: 700;
+        font-size: 18px;
+    }
+    
+    .alert-warning-profile p {
+        margin: 0 0 12px 0;
+        color: #92400e;
+        font-size: 14px;
+    }
+    
+    .alert-warning-profile .btn-complete-profile {
+        display: inline-block;
+        background: #d97706;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .alert-warning-profile .btn-complete-profile:hover {
+        background: #b45309;
+        transform: translateY(-1px);
     }
     
     .booking-card {
@@ -346,6 +395,19 @@
             {{ session('error') }}
         </div>
     @endif
+    
+    @if(empty(Auth::guard('customer')->user()->name) || empty(Auth::guard('customer')->user()->phone_no))
+        <div class="alert-warning-profile">
+            <span class="icon">⚠️</span>
+            <div>
+                <h4>Incomplete Profile</h4>
+                <p>Your profile is incomplete. Please update your full name and phone number before making a booking.</p>
+                <a href="{{ route('customer.profile.edit') }}" class="btn-complete-profile">
+                    Complete Profile Now →
+                </a>
+            </div>
+        </div>
+    @endif
 
     <div class="booking-card">
         <h2 class="section-title">Fill in Booking Details</h2>
@@ -371,18 +433,14 @@
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Full Name</label>
-                    <input type="text" class="form-control" value="{{ Auth::guard('customer')->user()->name }}" readonly style="background: #e5e7eb; cursor: not-allowed;">
+                    <input type="text" name="customer_name" class="form-control" value="{{ Auth::guard('customer')->user()->name }}" readonly required style="background: #e5e7eb; cursor: not-allowed;">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Phone Number</label>
-                    <input type="tel" class="form-control" value="{{ Auth::guard('customer')->user()->phone_no }}" readonly style="background: #e5e7eb; cursor: not-allowed;">
+                    <input type="tel" name="customer_phone" class="form-control" value="{{ Auth::guard('customer')->user()->phone_no }}" readonly required style="background: #e5e7eb; cursor: not-allowed;">
                 </div>
             </div>
-
-            <p style="font-size: 13px; color: #6b7280; margin-bottom: 20px;">
-                Need to update your details? <a href="{{ route('customer.profile.edit') }}" style="color: #d93025; font-weight: 600;">Edit your profile</a>
-            </p>
 
             <!-- Pickup Date & Time -->
             <div class="form-row">
@@ -452,7 +510,7 @@
             
             <!-- Delivery Notice -->
             <div id="deliveryNotice" class="delivery-notice" style="display: none;">
-                <p>⚠️ Delivery service will be charged for this booking</p>
+                <p>⚠️ RM 15 delivery fee applies (shown at payment).</p>
             </div>
             
             <!-- Voucher Section -->
@@ -714,11 +772,11 @@
         
         if (vouchers[code]) {
             voucherDiscount = vouchers[code];
-            msg.textContent = `✓ Voucher applied: ${voucherDiscount}% discount`;
+            msg.textContent = `Voucher applied: ${voucherDiscount}% discount`;
             msg.style.display = 'block';
             calculatePrice();
         } else if (code) {
-            msg.textContent = '✗ Invalid voucher code';
+            msg.textContent = 'Invalid voucher code';
             msg.style.color = '#dc2626';
             msg.style.display = 'block';
             voucherDiscount = 0;
@@ -727,10 +785,47 @@
     
     // Form submission
     document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        // Check customer info
+        const customerName = document.querySelector('input[name="customer_name"]').value.trim();
+        const customerPhone = document.querySelector('input[name="customer_phone"]').value.trim();
+        
+        if (!customerName || !customerPhone) {
+            e.preventDefault();
+            alert('⚠️ Please complete your profile with your full name and phone number before booking.');
+            window.location.href = '{{ route("customer.profile.edit") }}';
+            return;
+        }
+        
         if (!hasSignature) {
             e.preventDefault();
             alert('Please provide your signature before submitting.');
             return;
+        }
+        
+        // Validate rental duration
+        const pickupDate = document.getElementById('pickupDate').value;
+        const pickupTime = document.getElementById('pickupTime').value;
+        const returnDate = document.getElementById('returnDate').value;
+        const returnTime = document.getElementById('returnTime').value;
+        
+        if (pickupDate && pickupTime && returnDate && returnTime) {
+            const pickup = new Date(`${pickupDate}T${pickupTime}`);
+            const returnDt = new Date(`${returnDate}T${returnTime}`);
+            
+            if (returnDt <= pickup) {
+                e.preventDefault();
+                alert('Return date and time must be after pickup date and time.');
+                return;
+            }
+            
+            const diffMs = returnDt - pickup;
+            const hours = diffMs / (1000 * 60 * 60);
+            
+            if (hours < 1) {
+                e.preventDefault();
+                alert('Minimum rental duration is 1 hour.');
+                return;
+            }
         }
         
         // Save signature as base64
