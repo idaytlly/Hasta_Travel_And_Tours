@@ -458,7 +458,7 @@
                 <!-- Welcome Message -->
                 <div class="welcome-msg">
                     <i class="fas fa-hand-wave"></i>
-                    <span>Welcome!</span>
+                    <span>Welcome, <span class="user-name-display">{{ auth('customer')->user()?->name }}</span></span>
                 </div>
 
                 <!-- Profile Dropdown -->
