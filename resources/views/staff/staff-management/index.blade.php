@@ -4,588 +4,789 @@
 @section('page-title', 'Staff Management')
 
 @section('content')
-<div class="space-y-6">
-    
-    <!-- Admin Check - Hide page if not admin -->
-    @if(Auth::guard('staff')->user()->role !== 'admin')
-    <div class="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
-        <i data-lucide="shield-alert" class="w-16 h-16 text-red-500 mx-auto mb-4"></i>
-        <h3 class="text-xl font-bold text-red-800 mb-2">Access Denied</h3>
-        <p class="text-red-600">Only administrators can access this page.</p>
-    </div>
-    @else
-
-    <!-- Header with Actions -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <h2 class="text-2xl font-bold text-gray-800">Staff Management</h2>
-            <p class="text-gray-600 mt-1">Manage staff accounts and permissions</p>
+<!-- Admin Check -->
+@if(Auth::guard('staff')->user()->role !== 'admin')
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white border-l-4 border-red-500 rounded-lg shadow-lg p-8 text-center max-w-2xl mx-auto">
+        <div class="flex justify-center mb-4">
+            <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
+                <i data-lucide="shield-alert" class="w-10 h-10 text-red-600"></i>
+            </div>
         </div>
-        <div class="flex items-center gap-3">
-            <button onclick="refreshStaff()" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition flex items-center gap-2">
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                <span>Refresh</span>
-            </button>
-            <button onclick="showAddStaffModal()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center gap-2">
-                <i data-lucide="user-plus" class="w-4 h-4"></i>
-                <span>Add Staff</span>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">Access Denied</h3>
+        <p class="text-gray-600 mb-6">Only administrators can access the Staff Management portal.</p>
+        <a href="{{ route('staff.dashboard') }}" class="inline-flex items-center px-6 py-3 bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg transition">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+@else
+
+<div class="container mx-auto px-4 py-6">
+    <!-- Header Section -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-[#dc2626] mb-1">Staff Directory</h1>
+                <p class="text-gray-600">Manage your team access and permissions efficiently</p>
+            </div>
+            <button onclick="openAddModal()" class="inline-flex items-center px-6 py-3 bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg shadow-md transition-colors">
+                <i data-lucide="user-plus" class="w-5 h-5 mr-2"></i>
+                Add New Staff
             </button>
         </div>
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="bg-gradient-to-br from-[#dc2626] to-[#b91c1c] rounded-lg shadow-md p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Total Staff</p>
-                    <p class="text-2xl font-bold text-gray-800 mt-1" id="total-staff">0</p>
+                    <p class="text-red-100 text-sm font-medium mb-1">Total Personnel</p>
+                    <p class="text-4xl font-bold" id="stat-total">0</p>
                 </div>
-                <div class="bg-blue-100 p-3 rounded-lg">
-                    <i data-lucide="users" class="w-6 h-6 text-blue-600"></i>
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <i data-lucide="users" class="w-8 h-8"></i>
                 </div>
             </div>
         </div>
-        
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600">Admin</p>
-                    <p class="text-2xl font-bold text-red-600 mt-1" id="admin-count">0</p>
-                </div>
-                <div class="bg-red-100 p-3 rounded-lg">
-                    <i data-lucide="shield" class="w-6 h-6 text-red-600"></i>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600">Regular Staff</p>
-                    <p class="text-2xl font-bold text-green-600 mt-1" id="staff-count">0</p>
-                </div>
-                <div class="bg-green-100 p-3 rounded-lg">
-                    <i data-lucide="user" class="w-6 h-6 text-green-600"></i>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600">Runners</p>
-                    <p class="text-2xl font-bold text-purple-600 mt-1" id="runner-count">0</p>
-                </div>
-                <div class="bg-purple-100 p-3 rounded-lg">
-                    <i data-lucide="truck" class="w-6 h-6 text-purple-600"></i>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
-                <div class="relative">
-                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" id="search-input" placeholder="Search staff..." 
-                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                           onkeyup="filterStaff()">
+        <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg shadow-md p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-emerald-100 text-sm font-medium mb-1">Active Staff</p>
+                    <p class="text-4xl font-bold" id="stat-active">0</p>
+                </div>
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <i data-lucide="user-check" class="w-8 h-8"></i>
                 </div>
             </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
-                <select id="role-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                        onchange="filterStaff()">
-                    <option value="">All Roles</option>
-                    <option value="admin">Admin</option>
-                    <option value="staff">Staff</option>
-                    <option value="runner">Runner</option>
-                </select>
+        </div>
+
+        <div class="bg-gradient-to-br from-amber-600 to-amber-700 rounded-lg shadow-md p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-amber-100 text-sm font-medium mb-1">Administrators</p>
+                    <p class="text-4xl font-bold" id="stat-admin">0</p>
+                </div>
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <i data-lucide="shield-check" class="w-8 h-8"></i>
+                </div>
             </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <select id="status-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                        onchange="filterStaff()">
-                    <option value="">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                </select>
+        </div>
+
+        <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg shadow-md p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-100 text-sm font-medium mb-1">This Month</p>
+                    <p class="text-4xl font-bold" id="stat-new">0</p>
+                </div>
+                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <i data-lucide="user-plus-2" class="w-8 h-8"></i>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Staff Table -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div class="p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-800">Staff List</h3>
+        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+            <h2 class="text-xl font-bold text-gray-900">Staff Members</h2>
+            <div class="flex gap-2">
+                <button onclick="toggleColumnVisibility()" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
+                    <i data-lucide="eye" class="w-4 h-4 mr-2"></i>
+                    <span id="toggle-text">Show IC</span>
+                </button>
+                <button onclick="fetchStaff()" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors">
+                    <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i>
+                    Refresh
+                </button>
+            </div>
         </div>
         
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Staff ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">IC Number</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Role</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Joined Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Info</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ic-column hidden">IC Number</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enrolled</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="staff-table" class="divide-y divide-gray-200">
-                    <!-- Loading state -->
+                <tbody id="staff-table-body" class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center">
+                            <div class="inline-flex items-center justify-center w-12 h-12 bg-red-50 rounded-full mb-3">
+                                <i data-lucide="loader" class="w-6 h-6 text-[#dc2626] animate-spin"></i>
+                            </div>
+                            <p class="text-gray-500 font-medium">Loading staff members...</p>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-        
-        <div class="p-4 border-t border-gray-200 text-center" id="loading-indicator">
-            <div class="spinner mx-auto"></div>
-            <p class="text-gray-500 text-sm mt-2">Loading staff...</p>
-        </div>
     </div>
-
-    @endif
 </div>
 
-<!-- Add Staff Modal -->
-<div id="staff-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-            <h3 class="text-xl font-bold text-gray-800">Add New Staff</h3>
-            <button onclick="closeStaffModal()" class="text-gray-400 hover:text-gray-600">
+<!-- View Details Modal -->
+<div id="viewDetailsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white w-full max-w-3xl rounded-lg shadow-2xl overflow-hidden">
+        <div class="bg-[#dc2626] px-6 py-4 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-white">Staff Details</h3>
+            <button onclick="closeViewModal()" class="text-white hover:text-gray-200 transition">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
         </div>
         
-        <form id="staff-form" class="p-6 space-y-4">
+        <div class="p-6" id="staff-details-content">
+            <!-- Populated by JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- Edit Staff Modal -->
+<div id="editStaffModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden">
+        <div class="bg-[#dc2626] px-6 py-4 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-white">Edit Staff Information</h3>
+            <button onclick="closeEditModal()" class="text-white hover:text-gray-200 transition">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+        
+        <form id="editStaffForm" class="p-6 space-y-5">
+            @csrf
+            <input type="hidden" id="edit-staff-id">
+            
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-                <input type="text" id="staff-name" required
-                       placeholder="Enter full name"
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                <input type="text" id="edit-name" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dc2626] focus:border-[#dc2626] outline-none transition">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="edit-email" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dc2626] focus:border-[#dc2626] outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">IC Number</label>
+                    <input type="text" id="edit-ic" placeholder="XXXXXX-XX-XXXX" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dc2626] focus:border-[#dc2626] outline-none transition">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                <input type="tel" id="edit-phone" placeholder="+60 XXX XXXXXX" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dc2626] focus:border-[#dc2626] outline-none transition">
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">IC Number *</label>
-                <input type="text" id="staff-ic" required
-                       placeholder="123456-12-1234"
-                       pattern="[0-9]{6}-[0-9]{2}-[0-9]{4}"
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
-                <p class="text-xs text-gray-500 mt-1">Format: 123456-12-1234</p>
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Role *</label>
-                <select id="staff-role" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
-                    <option value="">Select Role</option>
-                    <option value="admin">Admin</option>
-                    <option value="staff">Staff</option>
-                    <option value="runner">Runner</option>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Role Assignment</label>
+                <select id="edit-role" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dc2626] focus:border-[#dc2626] outline-none transition">
+                    <option value="staff">Regular Staff</option>
+                    <option value="runner">Runner / Driver</option>
+                    <option value="admin">Administrator</option>
                 </select>
             </div>
 
-            <!-- Generated credentials will show here -->
-            <div id="generated-credentials" class="hidden p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p class="text-sm font-semibold text-green-800 mb-2">✓ Staff Account Created Successfully!</p>
-                <div class="space-y-2 text-sm">
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Staff ID:</span>
-                        <span class="font-mono font-bold text-gray-800" id="generated-id"></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Password:</span>
-                        <span class="font-mono font-bold text-gray-800" id="generated-password"></span>
-                    </div>
-                </div>
-                <p class="text-xs text-green-700 mt-3">⚠️ Please save these credentials. The password cannot be retrieved later.</p>
-            </div>
-            
             <div class="flex gap-3 pt-4">
-                <button type="submit" id="submit-btn" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                    Create Staff Account
-                </button>
-                <button type="button" onclick="closeStaffModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                <button type="button" onclick="closeEditModal()" class="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors">
                     Cancel
+                </button>
+                <button type="submit" id="edit-save-btn" class="flex-1 px-6 py-3 bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg shadow-md transition-colors">
+                    Save Changes
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Staff Details Modal -->
-<div id="details-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-            <h3 class="text-xl font-bold text-gray-800">Staff Details</h3>
-            <button onclick="closeDetailsModal()" class="text-gray-400 hover:text-gray-600">
+<!-- Add Staff Modal -->
+<div id="addStaffModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden">
+        <div class="bg-[#dc2626] px-6 py-4 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-white">Create Staff Account</h3>
+            <button onclick="closeAddModal()" class="text-white hover:text-gray-200 transition">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
         </div>
         
-        <div id="staff-details-content" class="p-6">
-            <!-- Content populated by JavaScript -->
-        </div>
+        <form id="addStaffForm" class="p-6 space-y-5">
+            @csrf
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                <input type="text" name="name" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dc2626] focus:border-[#dc2626] outline-none transition">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <input type="email" name="email" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dc2626] focus:border-[#dc2626] outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">IC Number</label>
+                    <input type="text" name="ic_number" placeholder="XXXXXX-XX-XXXX" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dc2626] focus:border-[#dc2626] outline-none transition">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                <input type="tel" name="phone_no" placeholder="+60 XXX XXXXXX" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dc2626] focus:border-[#dc2626] outline-none transition">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Role Assignment</label>
+                <select name="role" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dc2626] focus:border-[#dc2626] outline-none transition">
+                    <option value="staff">Regular Staff</option>
+                    <option value="runner">Runner / Driver</option>
+                    <option value="admin">Administrator</option>
+                </select>
+            </div>
+
+            <div id="credentials-display" class="hidden p-5 bg-green-50 border border-green-200 rounded-lg">
+                <div class="flex items-start gap-3">
+                    <div class="flex-shrink-0">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-green-900 font-bold mb-3">Account Created Successfully!</p>
+                        <div class="space-y-2 bg-white rounded-lg p-3">
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium">Staff ID:</p>
+                                <p class="text-lg font-mono font-bold text-gray-900" id="new-staff-id">-</p>
+                            </div>
+                            <div class="pt-2 border-t border-gray-200">
+                                <p class="text-xs text-gray-500 font-medium">Temporary Password:</p>
+                                <p class="text-lg font-mono font-bold text-gray-900" id="new-staff-pass">-</p>
+                            </div>
+                        </div>
+                        <p class="text-green-700 text-xs mt-3 font-medium">⚠️ Save these credentials - they cannot be retrieved later!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="closeAddModal()" class="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" id="save-btn" class="flex-1 px-6 py-3 bg-[#dc2626] hover:bg-[#b91c1c] text-white font-semibold rounded-lg shadow-md transition-colors">
+                    Create Account
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 @push('scripts')
 <script>
-    let allStaff = [];
-    let filteredStaff = [];
+let allStaff = [];
+let icColumnVisible = false;
 
-    // Fetch staff members
-    async function fetchStaff() {
-        try {
-            const mockStaff = generateMockStaff();
-            allStaff = mockStaff;
-            filteredStaff = [...allStaff];
-            updateStaffDisplay();
-            updateStats();
-        } catch (error) {
-            console.error('Error fetching staff:', error);
-            showToast('Error loading staff', 'error');
-        }
-    }
-
-    // Generate mock staff
-    function generateMockStaff() {
-        const names = ['Ahmad Fauzi', 'Siti Nurhaliza', 'Lee Chong Wei', 'Kumar Selvam', 'Tan Mei Ling'];
-        const roles = ['admin', 'staff', 'runner'];
+// Fetch staff from API
+async function fetchStaff() {
+    try {
+        showLoading();
         
-        return Array.from({ length: 8 }, (_, i) => ({
-            id: i + 1,
-            staff_id: `STF${String(i + 1001).padStart(4, '0')}`,
-            name: names[Math.floor(Math.random() * names.length)],
-            ic_number: `${Math.floor(Math.random() * 900000 + 100000)}-${Math.floor(Math.random() * 90 + 10)}-${Math.floor(Math.random() * 9000 + 1000)}`,
-            role: roles[Math.floor(Math.random() * roles.length)],
-            status: Math.random() > 0.2 ? 'active' : 'inactive',
-            joined_date: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
-        }));
-    }
-
-    // Update staff display
-    function updateStaffDisplay() {
-        const tbody = document.getElementById('staff-table');
-        const loading = document.getElementById('loading-indicator');
-        
-        loading.style.display = 'none';
-        
-        if (filteredStaff.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="7" class="px-6 py-12 text-center">
-                        <i data-lucide="inbox" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
-                        <p class="text-gray-500 text-lg">No staff found</p>
-                    </td>
-                </tr>
-            `;
-            lucide.createIcons();
-            return;
-        }
-        
-        tbody.innerHTML = filteredStaff.map(staff => `
-            <tr class="hover:bg-gray-50 transition">
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="font-mono font-semibold text-gray-800">${staff.staff_id}</span>
-                </td>
-                <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                            <span class="text-red-600 font-semibold">${staff.name.charAt(0)}</span>
-                        </div>
-                        <p class="font-medium text-gray-800">${staff.name}</p>
-                    </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="font-mono text-sm text-gray-800">${staff.ic_number}</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    ${getRoleBadge(staff.role)}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    ${getStatusBadge(staff.status)}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    ${formatDate(staff.joined_date)}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center gap-2">
-                        <button onclick="viewStaff(${staff.id})" 
-                                class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                                title="View Details">
-                            <i data-lucide="eye" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="toggleStaffStatus(${staff.id})" 
-                                class="p-2 ${staff.status === 'active' ? 'text-orange-600 hover:bg-orange-50' : 'text-green-600 hover:bg-green-50'} rounded-lg transition"
-                                title="${staff.status === 'active' ? 'Deactivate' : 'Activate'}">
-                            <i data-lucide="${staff.status === 'active' ? 'user-x' : 'user-check'}" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
-        
-        lucide.createIcons();
-    }
-
-    // Update statistics
-    function updateStats() {
-        document.getElementById('total-staff').textContent = allStaff.length;
-        document.getElementById('admin-count').textContent = allStaff.filter(s => s.role === 'admin').length;
-        document.getElementById('staff-count').textContent = allStaff.filter(s => s.role === 'staff').length;
-        document.getElementById('runner-count').textContent = allStaff.filter(s => s.role === 'runner').length;
-    }
-
-    // Filter staff
-    function filterStaff() {
-        const searchTerm = document.getElementById('search-input').value.toLowerCase();
-        const roleFilter = document.getElementById('role-filter').value;
-        const statusFilter = document.getElementById('status-filter').value;
-        
-        filteredStaff = allStaff.filter(staff => {
-            const matchesSearch = !searchTerm || 
-                staff.name.toLowerCase().includes(searchTerm) ||
-                staff.staff_id.toLowerCase().includes(searchTerm) ||
-                staff.ic_number.includes(searchTerm);
-            
-            const matchesRole = !roleFilter || staff.role === roleFilter;
-            const matchesStatus = !statusFilter || staff.status === statusFilter;
-            
-            return matchesSearch && matchesRole && matchesStatus;
+        const response = await fetch("{{ route('api.staff.index') }}", {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
         });
         
-        updateStaffDisplay();
-    }
-
-    // Show add staff modal
-    function showAddStaffModal() {
-        document.getElementById('staff-form').reset();
-        document.getElementById('generated-credentials').classList.add('hidden');
-        document.getElementById('submit-btn').disabled = false;
-        document.getElementById('staff-modal').classList.remove('hidden');
-    }
-
-    // Close staff modal
-    function closeStaffModal() {
-        document.getElementById('staff-modal').classList.add('hidden');
-    }
-
-    // Generate staff ID
-    function generateStaffId() {
-        const maxId = allStaff.length > 0 
-            ? Math.max(...allStaff.map(s => parseInt(s.staff_id.substring(3)))) 
-            : 1000;
-        return `STF${String(maxId + 1).padStart(4, '0')}`;
-    }
-
-    // Generate random password
-    function generatePassword() {
-        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let password = '';
-        for (let i = 0; i < 8; i++) {
-            password += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return password;
-    }
-
-    // Handle form submission
-    document.getElementById('staff-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const name = document.getElementById('staff-name').value;
-        const ic = document.getElementById('staff-ic').value;
-        const role = document.getElementById('staff-role').value;
-        
-        // Validate IC format
-        const icPattern = /^[0-9]{6}-[0-9]{2}-[0-9]{4}$/;
-        if (!icPattern.test(ic)) {
-            showToast('Invalid IC number format', 'error');
-            return;
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        // Generate credentials
-        const staffId = generateStaffId();
-        const password = generatePassword();
-        
-        // Create new staff
-        const newStaff = {
-            id: allStaff.length + 1,
-            staff_id: staffId,
-            name: name,
-            ic_number: ic,
-            role: role,
-            status: 'active',
-            joined_date: new Date().toISOString(),
-            password: password, // In production, this should be hashed
-        };
-        
-        allStaff.push(newStaff);
-        filteredStaff = [...allStaff];
-        
-        // Show generated credentials
-        document.getElementById('generated-id').textContent = staffId;
-        document.getElementById('generated-password').textContent = password;
-        document.getElementById('generated-credentials').classList.remove('hidden');
-        document.getElementById('submit-btn').disabled = true;
+        allStaff = await response.json();
+        console.log('Loaded staff data:', allStaff);
         
         updateStaffDisplay();
         updateStats();
-        showToast('Staff account created successfully!', 'success');
         
-        // In production, send this data to the server
-        // await apiRequest('/api/staff/create', {
-        //     method: 'POST',
-        //     body: JSON.stringify(newStaff)
-        // });
-    });
-
-    // View staff details
-    function viewStaff(staffId) {
-        const staff = allStaff.find(s => s.id === staffId);
-        if (!staff) return;
-        
-        showStaffDetails(staff);
+    } catch (error) {
+        console.error('Error fetching staff:', error);
+        showError('Failed to load staff: ' + error.message);
     }
+}
 
-    // Show staff details modal
-    function showStaffDetails(staff) {
-        const modal = document.getElementById('details-modal');
-        const content = document.getElementById('staff-details-content');
-        
-        content.innerHTML = `
-            <div class="space-y-6">
-                <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span class="text-red-600 font-bold text-2xl">${staff.name.charAt(0)}</span>
+function showLoading() {
+    document.getElementById('staff-table-body').innerHTML = `
+        <tr>
+            <td colspan="7" class="px-6 py-12 text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-red-50 rounded-full mb-3">
+                    <i data-lucide="loader" class="w-6 h-6 text-[#dc2626] animate-spin"></i>
+                </div>
+                <p class="text-gray-500 font-medium">Loading staff members...</p>
+            </td>
+        </tr>
+    `;
+    lucide.createIcons();
+}
+
+function showError(message) {
+    document.getElementById('staff-table-body').innerHTML = `
+        <tr>
+            <td colspan="7" class="px-6 py-12 text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-3">
+                    <i data-lucide="alert-circle" class="w-6 h-6 text-[#dc2626]"></i>
+                </div>
+                <p class="text-red-600 font-medium">Failed to load staff members</p>
+                <p class="text-gray-500 text-sm mt-1">${message}</p>
+                <button onclick="fetchStaff()" class="mt-4 inline-flex items-center px-4 py-2 bg-[#dc2626] hover:bg-[#b91c1c] text-white font-medium rounded-lg transition-colors">
+                    <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i>
+                    Try Again
+                </button>
+            </td>
+        </tr>
+    `;
+    lucide.createIcons();
+}
+
+function updateStaffDisplay() {
+    const tbody = document.getElementById('staff-table-body');
+    
+    if (!Array.isArray(allStaff) || allStaff.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="px-6 py-12 text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-red-50 rounded-full mb-3">
+                        <i data-lucide="users" class="w-6 h-6 text-red-400"></i>
                     </div>
-                    <div class="flex-1">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-xl font-bold text-gray-800">${staff.name}</h4>
-                                <p class="text-sm text-gray-600 mt-1">${staff.staff_id}</p>
-                            </div>
-                            <div class="text-right">
-                                ${getRoleBadge(staff.role)}
-                                <div class="mt-2">${getStatusBadge(staff.status)}</div>
-                            </div>
-                        </div>
+                    <p class="text-gray-500 font-medium">No staff members found</p>
+                    <p class="text-gray-400 text-sm mt-1">Click "Add New Staff" to create your first staff member</p>
+                </td>
+            </tr>
+        `;
+        lucide.createIcons();
+        return;
+    }
+    
+    tbody.innerHTML = allStaff.map(staff => `
+        <tr class="hover:bg-red-50 transition">
+            <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-[#dc2626] font-bold">
+                        ${staff.name ? staff.name.charAt(0).toUpperCase() : '?'}
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">${staff.name || 'N/A'}</p>
+                        <p class="text-sm text-gray-500">${staff.email || 'No email'}</p>
+                        <p class="text-xs text-gray-400 font-mono">${staff.staff_id || 'No ID'}</p>
                     </div>
                 </div>
-
-                <div>
-                    <h5 class="font-semibold text-gray-800 mb-3">Personal Information</h5>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-sm text-gray-600">IC Number</p>
-                            <p class="font-mono font-medium text-gray-800">${staff.ic_number}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600">Joined Date</p>
-                            <p class="font-medium text-gray-800">${formatDate(staff.joined_date)}</p>
-                        </div>
-                    </div>
+            </td>
+            <td class="px-6 py-4 ic-column hidden">
+                <span class="font-mono text-sm text-gray-700">${staff.ic_number || 'N/A'}</span>
+            </td>
+            <td class="px-6 py-4">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
+                    <span class="text-sm text-gray-700">${staff.phone_no || 'Not set'}</span>
                 </div>
-
-                <div class="flex gap-3">
-                    <button onclick="resetPassword(${staff.id})" 
-                            class="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition flex items-center justify-center gap-2">
-                        <i data-lucide="key" class="w-4 h-4"></i>
-                        <span>Reset Password</span>
+            </td>
+            <td class="px-6 py-4">
+                ${getRoleBadge(staff.role)}
+            </td>
+            <td class="px-6 py-4">
+                <div class="text-sm text-gray-600">
+                    ${formatDate(staff.created_at)}
+                </div>
+            </td>
+            <td class="px-6 py-4">
+                ${getStatusBadge(staff.status)}
+            </td>
+            <td class="px-6 py-4">
+                <div class="flex justify-end gap-1">
+                    <button onclick="viewStaffDetails('${staff.id}')" class="p-2 hover:bg-blue-100 rounded-lg transition" title="View Details">
+                        <i data-lucide="eye" class="w-5 h-5 text-blue-600"></i>
                     </button>
-                    <button onclick="toggleStaffStatus(${staff.id})" 
-                            class="flex-1 px-4 py-2 ${staff.status === 'active' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg transition flex items-center justify-center gap-2">
-                        <i data-lucide="${staff.status === 'active' ? 'user-x' : 'user-check'}" class="w-4 h-4"></i>
-                        <span>${staff.status === 'active' ? 'Deactivate' : 'Activate'}</span>
+                    <button onclick="editStaff('${staff.id}')" class="p-2 hover:bg-amber-100 rounded-lg transition" title="Edit">
+                        <i data-lucide="edit" class="w-5 h-5 text-amber-600"></i>
+                    </button>
+                    <button onclick="toggleStaffStatus('${staff.id}')" class="p-2 hover:bg-purple-100 rounded-lg transition" title="${staff.status === 'active' ? 'Deactivate' : 'Activate'}">
+                        <i data-lucide="${staff.status === 'active' ? 'user-x' : 'user-check'}" class="w-5 h-5 text-purple-600"></i>
+                    </button>
+                    <button onclick="resetPassword('${staff.id}')" class="p-2 hover:bg-green-100 rounded-lg transition" title="Reset Password">
+                        <i data-lucide="key" class="w-5 h-5 text-green-600"></i>
+                    </button>
+                    <button onclick="deleteStaff('${staff.id}')" class="p-2 hover:bg-red-100 rounded-lg transition" title="Delete">
+                        <i data-lucide="trash-2" class="w-5 h-5 text-red-600"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    
+    lucide.createIcons();
+}
+
+function updateStats() {
+    const total = Array.isArray(allStaff) ? allStaff.length : 0;
+    const active = Array.isArray(allStaff) ? allStaff.filter(s => s.status === 'active').length : 0;
+    const admin = Array.isArray(allStaff) ? allStaff.filter(s => s.role === 'admin').length : 0;
+    
+    const now = new Date();
+    const thisMonth = Array.isArray(allStaff) ? allStaff.filter(s => {
+        const created = new Date(s.created_at);
+        return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+    }).length : 0;
+    
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-active').textContent = active;
+    document.getElementById('stat-admin').textContent = admin;
+    document.getElementById('stat-new').textContent = thisMonth;
+}
+
+function toggleColumnVisibility() {
+    icColumnVisible = !icColumnVisible;
+    const columns = document.querySelectorAll('.ic-column');
+    const toggleText = document.getElementById('toggle-text');
+    
+    columns.forEach(col => {
+        if (icColumnVisible) {
+            col.classList.remove('hidden');
+        } else {
+            col.classList.add('hidden');
+        }
+    });
+    
+    toggleText.textContent = icColumnVisible ? 'Hide IC' : 'Show IC';
+    lucide.createIcons();
+}
+
+function viewStaffDetails(staffId) {
+    const staff = allStaff.find(s => s.id === staffId);
+    if (!staff) return;
+    
+    const content = document.getElementById('staff-details-content');
+    content.innerHTML = `
+        <div class="space-y-6">
+            <div class="flex items-center gap-4 pb-6 border-b">
+                <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center text-[#dc2626] font-bold text-3xl">
+                    ${staff.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900">${staff.name}</h3>
+                    <p class="text-gray-600">${staff.email}</p>
+                    <p class="text-sm text-gray-500 font-mono">${staff.staff_id}</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">IC Number</p>
+                    <p class="font-mono text-gray-900">${staff.ic_number || 'N/A'}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Phone Number</p>
+                    <p class="text-gray-900">${staff.phone_no || 'Not set'}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Role</p>
+                    <div class="mt-1">${getRoleBadge(staff.role)}</div>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Status</p>
+                    <div class="mt-1">${getStatusBadge(staff.status)}</div>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Enrolled Date</p>
+                    <p class="text-gray-900">${formatDate(staff.created_at)}</p>
+                </div>
+                                <div>
+                    <p class="text-sm font-medium text-gray-500 mb-1">Last Updated</p>
+                    <p class="text-gray-900">${formatDate(staff.updated_at || staff.created_at)}</p>
+                </div>
+            </div>
+            
+            <div class="pt-6 border-t">
+                <h4 class="font-bold text-gray-900 mb-3">Account Actions</h4>
+                <div class="flex gap-3">
+                    <button onclick="editStaff('${staff.id}'); closeViewModal()" class="inline-flex items-center px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-lg transition-colors">
+                        <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
+                        Edit Information
+                    </button>
+                    <button onclick="resetPassword('${staff.id}'); closeViewModal()" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
+                        <i data-lucide="key" class="w-4 h-4 mr-2"></i>
+                        Reset Password
                     </button>
                 </div>
             </div>
-        `;
-        
-        modal.classList.remove('hidden');
-        lucide.createIcons();
-    }
+        </div>
+    `;
+    
+    document.getElementById('viewDetailsModal').classList.remove('hidden');
+    lucide.createIcons();
+}
 
-    // Close details modal
-    function closeDetailsModal() {
-        document.getElementById('details-modal').classList.add('hidden');
-    }
+function editStaff(staffId) {
+    const staff = allStaff.find(s => s.id === staffId);
+    if (!staff) return;
+    
+    document.getElementById('edit-staff-id').value = staff.id;
+    document.getElementById('edit-name').value = staff.name || '';
+    document.getElementById('edit-email').value = staff.email || '';
+    document.getElementById('edit-ic').value = staff.ic_number || '';
+    document.getElementById('edit-phone').value = staff.phone_no || '';
+    document.getElementById('edit-role').value = staff.role || 'staff';
+    
+    document.getElementById('editStaffModal').classList.remove('hidden');
+    lucide.createIcons();
+}
 
-    // Toggle staff status
-    function toggleStaffStatus(staffId) {
-        const staff = allStaff.find(s => s.id === staffId);
-        if (!staff) return;
-        
-        const action = staff.status === 'active' ? 'deactivate' : 'activate';
-        if (confirm(`Are you sure you want to ${action} this staff member?`)) {
-            staff.status = staff.status === 'active' ? 'inactive' : 'active';
-            updateStaffDisplay();
-            closeDetailsModal();
-            showToast(`Staff ${action}d successfully!`, 'success');
-        }
-    }
-
-    // Reset password
-    function resetPassword(staffId) {
-        const staff = allStaff.find(s => s.id === staffId);
-        if (!staff) return;
-        
-        if (confirm(`Reset password for ${staff.name}?`)) {
-            const newPassword = generatePassword();
-            staff.password = newPassword;
+async function deleteStaff(staffId) {
+    const staff = allStaff.find(s => s.id == staffId);
+    if (!staff) return;
+    
+    if (confirm(`Are you sure you want to permanently delete ${staff.name}?\n\nThis action cannot be undone!`)) {
+        try {
+            const response = await fetch(`/api/staff/staff/${staffId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            });
             
-            alert(`New password for ${staff.staff_id}:\n\n${newPassword}\n\nPlease save this password. It cannot be retrieved later.`);
-            showToast('Password reset successfully!', 'success');
+            if (response.ok) {
+                await fetchStaff();
+                alert(`Staff ${staff.name} has been deleted successfully!`);
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to delete staff');
+            }
+        } catch (error) {
+            alert('Error deleting staff: ' + error.message);
         }
     }
+}
 
-    // Refresh staff
-    async function refreshStaff() {
-        showToast('Refreshing staff list...', 'info');
-        await fetchStaff();
-        showToast('Staff list refreshed!', 'success');
-    }
+// Form Submission for Edit
+document.getElementById('editStaffForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('edit-save-btn');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
 
-    // Get role badge
-    function getRoleBadge(role) {
-        const badges = {
-            'admin': '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">Admin</span>',
-            'staff': '<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">Staff</span>',
-            'runner': '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">Runner</span>',
+    try {
+        const staffId = document.getElementById('edit-staff-id').value;
+        const formData = {
+            name: document.getElementById('edit-name').value,
+            email: document.getElementById('edit-email').value,
+            ic_number: document.getElementById('edit-ic').value,
+            phone_no: document.getElementById('edit-phone').value,
+            role: document.getElementById('edit-role').value,
+            _method: 'PUT'
         };
-        return badges[role] || '';
+        
+        const response = await fetch(`/api/staff/staff/${staffId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        
+        if(response.ok) {
+            alert('Staff information updated successfully!');
+            closeEditModal();
+            fetchStaff();
+        } else {
+            throw new Error(data.message || 'Failed to update staff');
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
     }
+};
 
-    // Get status badge
-    function getStatusBadge(status) {
-        const badges = {
-            'active': '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Active</span>',
-            'inactive': '<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">Inactive</span>',
-        };
-        return badges[status] || '';
+// Toggle staff status
+async function toggleStaffStatus(staffId) {
+    const staff = allStaff.find(s => s.id == staffId);
+    if (!staff) return;
+    
+    const action = staff.status === 'active' ? 'deactivate' : 'activate';
+    const newStatus = staff.status === 'active' ? 'inactive' : 'active';
+    
+    if (confirm(`Are you sure you want to ${action} ${staff.name}?`)) {
+        try {
+            const response = await fetch(`/api/staff/staff/${staffId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+            
+            if (response.ok) {
+                await fetchStaff();
+                alert(`Staff ${action}d successfully!`);
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update status');
+            }
+        } catch (error) {
+            alert('Error updating status: ' + error.message);
+        }
     }
+}
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchStaff();
-        startRealTimeUpdates(fetchStaff, 30000);
-    });
+// Reset password
+async function resetPassword(staffId) {
+    const staff = allStaff.find(s => s.id == staffId);
+    if (!staff) return;
+    
+    if (confirm(`Reset password for ${staff.name}?\n\nA new temporary password will be generated.`)) {
+        try {
+            const response = await fetch(`/api/staff/staff/${staffId}/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                alert(`New password for ${staff.staff_id}:\n\n${result.data.new_password}\n\n⚠️ Please save this password. It cannot be retrieved later.`);
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to reset password');
+            }
+        } catch (error) {
+            alert('Error resetting password: ' + error.message);
+        }
+    }
+}
 
-    // Close modals on backdrop click
-    document.getElementById('staff-modal').addEventListener('click', function(e) {
-        if (e.target === this) closeStaffModal();
+// Modal Controls
+function openAddModal() {
+    document.getElementById('addStaffModal').classList.remove('hidden');
+    document.getElementById('addStaffForm').reset();
+    document.getElementById('credentials-display').classList.add('hidden');
+    document.getElementById('save-btn').disabled = false;
+    document.getElementById('save-btn').textContent = 'Create Account';
+    lucide.createIcons();
+}
+
+function closeAddModal() {
+    document.getElementById('addStaffModal').classList.add('hidden');
+}
+
+function closeViewModal() {
+    document.getElementById('viewDetailsModal').classList.add('hidden');
+}
+
+function closeEditModal() {
+    document.getElementById('editStaffModal').classList.add('hidden');
+}
+
+// Form Submission for Add Staff
+document.getElementById('addStaffForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('save-btn');
+    btn.textContent = 'Creating...';
+    btn.disabled = true;
+
+    try {
+        const formData = new FormData(e.target);
+        const response = await fetch("{{ route('api.staff.store') }}", {
+            method: 'POST',
+            body: formData,
+            headers: { 
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
+
+        const data = await response.json();
+        
+        if(data.success) {
+            document.getElementById('new-staff-id').textContent = data.staff_id;
+            document.getElementById('new-staff-pass').textContent = data.password;
+            document.getElementById('credentials-display').classList.remove('hidden');
+            btn.textContent = 'Created Successfully';
+            lucide.createIcons();
+            
+            // Refresh staff list
+            setTimeout(() => {
+                fetchStaff();
+                // Close modal after 3 seconds
+                setTimeout(closeAddModal, 3000);
+            }, 1000);
+        } else {
+            throw new Error(data.message || 'Failed to create staff');
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+    }
+};
+
+// Helper functions
+function getRoleBadge(role) {
+    const badges = {
+        'admin': '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-[#dc2626] border border-red-200">Admin</span>',
+        'staff': '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">Staff</span>',
+        'runner': '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">Runner</span>',
+    };
+    return badges[role] || '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">Unknown</span>';
+}
+
+function getStatusBadge(status) {
+    const badges = {
+        'active': '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">Active</span>',
+        'inactive': '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">Inactive</span>',
+    };
+    return badges[status] || '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">Unknown</span>';
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-MY', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
     });
-    document.getElementById('details-modal').addEventListener('click', function(e) {
-        if (e.target === this) closeDetailsModal();
-    });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    fetchStaff();
+    lucide.createIcons();
+});
+
+// Close modal on backdrop click
+document.getElementById('addStaffModal').addEventListener('click', function(e) {
+    if (e.target === this) closeAddModal();
+});
+
+document.getElementById('viewDetailsModal').addEventListener('click', function(e) {
+    if (e.target === this) closeViewModal();
+});
+
+document.getElementById('editStaffModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+});
 </script>
 @endpush
 
+@endif
 @endsection

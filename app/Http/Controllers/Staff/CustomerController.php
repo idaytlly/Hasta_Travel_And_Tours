@@ -213,4 +213,52 @@ class CustomerController extends Controller
 
         return back()->with('success', 'Password reset successfully!');
     }
+
+    // app/Http/Controllers/Staff/CustomerController.php
+public function getCustomersData(Request $request)
+{
+    $query = Customer::query()
+        ->withCount(['bookings as total_bookings'])
+        ->withSum(['bookings as total_spent' => function ($q) {
+            $q->where('booking_status', '!=', 'cancelled');
+        }])
+        ->when($request->search, function ($q, $search) {
+            $q->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('phone_no', 'like', "%{$search}%")
+                      ->orWhere('ic_number', 'like', "%{$search}%");
+            });
+        })
+        ->when($request->status, function ($q, $status) {
+            if ($status === 'active') {
+                $q->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $q->where('is_active', false);
+            } elseif ($status === 'vip') {
+                $q->whereHas('bookings', function ($query) {
+                    $query->where('booking_status', '!=', 'cancelled')
+                          ->groupBy('customer_id')
+                          ->havingRaw('SUM(total_price) > 5000');
+                });
+            }
+        });
+
+    // Apply sorting
+    switch ($request->sort) {
+        case 'oldest':
+            $query->orderBy('created_at', 'asc');
+            break;
+        case 'name':
+            $query->orderBy('name', 'asc');
+            break;
+        case 'bookings':
+            $query->orderBy('total_bookings', 'desc');
+            break;
+        default:
+            $query->orderBy('created_at', 'desc');
+    }
+
+    return response()->json($query->get());
+}
 }

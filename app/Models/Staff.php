@@ -10,6 +10,7 @@ class Staff extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $table = 'staff';  // Explicitly set table name
     protected $guard = 'staff';
     protected $primaryKey = 'staff_id';
     public $incrementing = false;
@@ -32,7 +33,7 @@ class Staff extends Authenticatable
     ];
 
     protected $casts = [
-        'password' => 'hashed',
+        // REMOVED 'password' => 'hashed' - this can cause issues
         'is_active' => 'boolean',
     ];
 
@@ -132,6 +133,16 @@ class Staff extends Authenticatable
      */
     public function getAuthIdentifierName()
     {
-        return 'email'; // Staff authenticates using email
+        return 'staff_id'; // Staff authenticates using email
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(Staff::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(Staff::class, 'updated_by');
     }
 }

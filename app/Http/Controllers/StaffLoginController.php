@@ -25,6 +25,9 @@ class StaffLoginController extends Controller
             
             $staff = Auth::guard('staff')->user();
             
+            // Store staff_id in session for easy access
+            session(['staff_id' => $staff->staff_id]);
+            
             // Redirect based on role
             switch ($staff->role) {
                 case 'admin':

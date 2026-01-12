@@ -89,4 +89,16 @@ class Booking extends Model
 
         return (int) ceil($pickup->diffInHours($return));
     }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(Staff::class, 'approved_by_staff', 'staff_id');
+    }
+
+    public function lateChargeApprovedBy()
+    {
+        return $this->belongsTo(Staff::class, 'late_charge_approved_by', 'staff_id');
+    }
+
 }
+

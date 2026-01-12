@@ -79,37 +79,71 @@
         </div>
     </div>
 
-    <!-- Quick Actions & Recent Activity -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Quick Actions -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
-            <div class="space-y-3">
-                <button onclick="window.location.href='{{ route('staff.bookings') }}'" 
-                        class="w-full px-4 py-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition flex items-center gap-3">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                    <span class="font-medium">View All Bookings</span>
-                </button>
-                <button onclick="window.location.href='{{ route('staff.vehicles') }}'" 
-                        class="w-full px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition flex items-center gap-3">
-                    <i data-lucide="car" class="w-5 h-5"></i>
-                    <span class="font-medium">Manage Vehicles</span>
-                </button>
-                <button onclick="window.location.href='{{ route('staff.customers') }}'" 
-                        class="w-full px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition flex items-center gap-3">
-                    <i data-lucide="users" class="w-5 h-5"></i>
-                    <span class="font-medium">View Customers</span>
-                </button>
-                <button onclick="window.location.href='{{ route('staff.reports') }}'" 
-                        class="w-full px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition flex items-center gap-3">
-                    <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
-                    <span class="font-medium">Generate Reports</span>
-                </button>
-            </div>
-        </div>
+    <!-- Quick Actions -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+    <div class="space-y-3">
+        @if(Route::has('staff.bookings'))
+            <button onclick="window.location.href='{{ route('staff.bookings') }}'" 
+                    class="w-full px-4 py-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition flex items-center gap-3">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                <span class="font-medium">View All Bookings</span>
+            </button>
+        @else
+            <button onclick="window.location.href='/staff/bookings'" 
+                    class="w-full px-4 py-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition flex items-center gap-3">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                <span class="font-medium">View All Bookings</span>
+            </button>
+        @endif
+        
+        <button onclick="window.location.href='{{ route('staff.vehicles.index') }}'" 
+                class="w-full px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition flex items-center gap-3">
+            <i data-lucide="car" class="w-5 h-5"></i>
+            <span class="font-medium">Manage Vehicles</span>
+        </button>
+        
+        @if(Route::has('staff.customers'))
+            <button onclick="window.location.href='{{ route('staff.customers') }}'" 
+                    class="w-full px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition flex items-center gap-3">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                <span class="font-medium">View Customers</span>
+            </button>
+        @else
+            <button onclick="window.location.href='/staff/customers'" 
+                    class="w-full px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition flex items-center gap-3">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                <span class="font-medium">View Customers</span>
+            </button>
+        @endif
+        
+        @if(Route::has('staff.reports'))
+            <button onclick="window.location.href='{{ route('staff.reports') }}'" 
+                    class="w-full px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition flex items-center gap-3">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                <span class="font-medium">Generate Reports</span>
+            </button>
+        @else
+            <button onclick="window.location.href='/staff/reports'" 
+                    class="w-full px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition flex items-center gap-3">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                <span class="font-medium">Generate Reports</span>
+            </button>
+        @endif
+    </div>
+</div>
 
-        <!-- Recent Bookings -->
-        <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+<!-- Recent Bookings -->
+<div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">Recent Bookings</h3>
+        @if(Route::has('staff.bookings'))
+            <a href="{{ route('staff.bookings') }}" class="text-sm text-red-600 hover:text-red-700 font-medium">View All →</a>
+        @else
+            <a href="/staff/bookings" class="text-sm text-red-600 hover:text-red-700 font-medium">View All →</a>
+        @endif
+    </div>
+    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-800">Recent Bookings</h3>
                 <a href="{{ route('staff.bookings') }}" class="text-sm text-red-600 hover:text-red-700 font-medium">View All →</a>
@@ -123,6 +157,7 @@
             </div>
         </div>
     </div>
+</div>
 
     <!-- Today's Schedule & Vehicle Status -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
