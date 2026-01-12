@@ -9,10 +9,9 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Staff\AuthController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\Staff\BookingController as StaffBookingController;
+use App\Http\Controllers\GuestController;
 
-Route::get('/', function () {
-    return view('guest.home');
-})->name('guest.home');
+Route::get('/', [GuestController::class, 'home'])->name('guest.home');
 
 // Authentication Routes
 Route::get('/register', [RegisterController::class, 'create'])->name('register');
