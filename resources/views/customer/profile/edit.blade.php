@@ -119,12 +119,19 @@
         border-color: #ddd;
     }
 
+    .form-control::placeholder {
+        color: #6c757d;
+        opacity: 0.8;
+        font-weight: 500;
+    }
+
     .input-group-text {
         background-color: #f8f9fa;
         border: 2px solid #e9ecef;
         border-right: none;
         border-radius: 12px 0 0 12px;
         color: #6c757d;
+        font-weight: 600;
     }
 
     .input-group .form-control {
@@ -139,6 +146,138 @@
 
     .input-group:focus-within .form-control {
         border-color: #e53935;
+    }
+
+    /* File Upload Styles */
+    .file-upload-wrapper {
+        position: relative;
+        margin-top: 8px;
+    }
+
+    .file-upload-inline {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+
+    .file-upload-label-compact {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.85rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+    }
+
+    .file-upload-label-compact:hover {
+        background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+        box-shadow: 0 4px 12px rgba(229, 57, 53, 0.4);
+        transform: translateY(-1px);
+    }
+
+    .file-upload-label-compact i {
+        font-size: 1rem;
+    }
+
+    .current-file-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: #e3f2fd;
+        border: 1px solid #64b5f6;
+        border-radius: 6px;
+        font-size: 0.85rem;
+    }
+
+    .current-file-inline i {
+        color: #1976d2;
+        font-size: 0.95rem;
+    }
+
+    .current-file-inline a {
+        color: #1976d2;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .current-file-inline a:hover {
+        text-decoration: underline;
+    }
+
+    .file-input-hidden {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+
+    .file-preview {
+        margin-top: 8px;
+        padding: 8px 12px;
+        background: #e8f5e9;
+        border: 1px solid #81c784;
+        border-radius: 8px;
+        display: none;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+    }
+
+    .file-preview.show {
+        display: flex;
+    }
+
+    .file-preview i {
+        color: #2e7d32;
+        font-size: 1rem;
+    }
+
+    .file-preview-text {
+        flex: 1;
+        color: #2e7d32;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .file-preview-remove {
+        background: transparent;
+        border: none;
+        color: #d32f2f;
+        cursor: pointer;
+        font-size: 1.1rem;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+    }
+
+    .file-preview-remove:hover {
+        background: #ffebee;
+    }
+
+    .current-file {
+        margin-top: 8px;
+        padding: 8px 12px;
+        background: #e3f2fd;
+        border: 1px solid #64b5f6;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
     }
 
     .btn-save {
@@ -234,7 +373,7 @@
 
             <!-- Form Body -->
             <div class="edit-body">
-                <form action="{{ route('customer.profile.update') }}" method="POST">
+                <form action="{{ route('customer.profile.update') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -261,16 +400,53 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">
-                                    <i class="fas fa-id-card"></i>
-                                    Identification Card (IC/NRIC)
+                                    <i class="fas fa-calendar-alt"></i>
+                                    License Expiry Date
                                     <span class="required">*</span>
                                 </label>
-                                <input type="text" class="form-control" name="ic_number" value="{{ old('ic_number', $customer->ic_number ?? '') }}" placeholder="e.g., 990101-01-1234" required>
+                                <input type="date" class="form-control" name="license_expiry" value="{{ old('license_expiry', $customer->license_expiry ?? '') }}" required>
+                                @error('license_expiry')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-id-card"></i>
+                                    Identification Card / Passport
+                                    <span class="required">*</span>
+                                </label>
+                                
+                                <!-- IC File Upload -->
+                                <div class="file-upload-inline">
+                                    <label for="ic_file" class="file-upload-label-compact">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Upload Copy</span>
+                                    </label>
+                                    <input type="file" id="ic_file" name="ic_file" class="file-input-hidden" accept=".pdf,.jpg,.jpeg,.png">
+                                    @if(isset($customer->ic_file_path))
+                                    <div class="current-file-inline">
+                                        <i class="fas fa-file-check"></i>
+                                        <a href="{{ asset('storage/' . $customer->ic_file_path) }}" target="_blank">View Current</a>
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="file-preview" id="ic_preview">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span class="file-preview-text" id="ic_filename"></span>
+                                    <button type="button" class="file-preview-remove" onclick="removeFile('ic_file')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
                                 <div class="info-helper">
                                     <i class="fas fa-info-circle"></i>
-                                    <span>Enter your MyKad number</span>
+                                    <span>Upload your MyKad (PDF, JPG, PNG - Max 2MB)</span>
                                 </div>
-                                @error('ic_number')
+                                @error('ic_file')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
@@ -280,28 +456,35 @@
                             <div class="form-group">
                                 <label class="form-label">
                                     <i class="fas fa-graduation-cap"></i>
-                                    Matric Number
+                                    Matric Card
                                 </label>
-                                <input type="text" class="form-control" name="matricNum" value="{{ old('matricNum', $customer->matricNum ?? '') }}" placeholder="e.g., A21EC0001">
+                                
+                                <!-- Matric File Upload -->
+                                <div class="file-upload-inline">
+                                    <label for="matric_file" class="file-upload-label-compact">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Upload Copy</span>
+                                    </label>
+                                    <input type="file" id="matric_file" name="matric_file" class="file-input-hidden" accept=".pdf,.jpg,.jpeg,.png">
+                                    @if(isset($customer->matric_file_path))
+                                    <div class="current-file-inline">
+                                        <i class="fas fa-file-check"></i>
+                                        <a href="{{ asset('storage/' . $customer->matric_file_path) }}" target="_blank">View Current</a>
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="file-preview" id="matric_preview">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span class="file-preview-text" id="matric_filename"></span>
+                                    <button type="button" class="file-preview-remove" onclick="removeFile('matric_file')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
                                 <div class="info-helper">
                                     <i class="fas fa-info-circle"></i>
-                                    <span>For students only</span>
+                                    <span>For students only (PDF, JPG, PNG - Max 2MB)</span>
                                 </div>
-                                @error('matricNum')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    License Expiry Date
-                                    <span class="required">*</span>
-                                </label>
-                                <input type="date" class="form-control" name="license_expiry" value="{{ old('license_expiry', $customer->license_expiry ?? '') }}" required>
-                                @error('license_expiry')
+                                @error('matric_file')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
@@ -325,7 +508,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text">+60</span>
-                                    <input type="text" class="form-control" name="phone_no" value="{{ old('phone_no', $customer->phone_no ?? '') }}" placeholder="123456789" required>
+                                    <input type="text" class="form-control" name="phone_no" value="{{ old('phone_no', $customer->phone_no ?? '') }}" placeholder="Enter your number without +60" required>
                                 </div>
                                 @error('phone_no')
                                     <small class="text-danger">{{ $message }}</small>
@@ -379,7 +562,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text">+60</span>
-                                    <input type="text" class="form-control" name="emergency_phoneNo" value="{{ old('emergency_phoneNo', $customer->emergency_phoneNo ?? '') }}" placeholder="123456789" required>
+                                    <input type="text" class="form-control" name="emergency_phoneNo" value="{{ old('emergency_phoneNo', $customer->emergency_phoneNo ?? '') }}" placeholder="Enter number without +60" required>
                                 </div>
                                 @error('emergency_phoneNo')
                                     <small class="text-danger">{{ $message }}</small>
@@ -420,4 +603,34 @@
         </div>
     </div>
 </div>
+</div>
+
+<script>
+    // File upload preview functionality
+    function setupFileUpload(inputId, previewId, filenameId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        const filename = document.getElementById(filenameId);
+        
+        input.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                filename.textContent = file.name;
+                preview.classList.add('show');
+            }
+        });
+    }
+
+    function removeFile(inputId) {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(inputId.replace('_file', '_preview'));
+        
+        input.value = '';
+        preview.classList.remove('show');
+    }
+
+    // Initialize file uploads
+    setupFileUpload('ic_file', 'ic_preview', 'ic_filename');
+    setupFileUpload('matric_file', 'matric_preview', 'matric_filename');
+</script>
 @endsection

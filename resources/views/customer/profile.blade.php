@@ -242,14 +242,6 @@
                         <div class="info-label">Full Name</div>
                         <div class="info-value">{{ $customer->name ?? 'Not provided' }}</div>
                     </div>
-                    <div class="info-row">
-                        <div class="info-label">IC/NRIC Number</div>
-                        <div class="info-value {{ !isset($customer->ic_number) ? 'empty' : '' }}">{{ $customer->ic_number ?? 'Not provided' }}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Matric Number</div>
-                        <div class="info-value {{ !isset($customer->matricNum) ? 'empty' : '' }}">{{ $customer->matricNum ?? 'Not provided' }}</div>
-                    </div>
 
                     <div class="info-row">
                         <div class="info-label">
@@ -264,7 +256,7 @@
                                 @endphp
                                 @if($expiryDate->isPast())
                                     <span class="badge-status badge-expired">Expired</span>
-                                @elseif($expiryDate->diffInDays($today) <= 30)
+                                @elseif($expiryDate->diffInDays($today) >= 30)
                                     <span class="badge-status badge-pending">Expiring Soon</span>
                                 @else
                                     <span class="badge-status badge-verified">Valid</span>

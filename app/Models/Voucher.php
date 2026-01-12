@@ -1,13 +1,17 @@
 <?php
+// app/Models/Voucher.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 
 class Voucher extends Model
 {
-    protected $table = 'voucher';
+    use HasFactory;
 
+    protected $table = 'voucher';
     protected $primaryKey = 'voucher_id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -22,9 +26,15 @@ class Voucher extends Model
         'is_used',
         'expiryDate',
         'voucherStatus',
+        'expiryDate',
+        'used_count',
+        'max_usage',
+        'minimum_spend',
+        'description'
     ];
 
     protected $casts = [
+        'voucherAmount' => 'decimal:2',
         'expiryDate' => 'date',
         'is_used' => 'boolean',
     ];

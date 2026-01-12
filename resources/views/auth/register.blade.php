@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register | Hasta Travel And Tours</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
         * {
             margin: 0;
@@ -12,7 +15,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #f3c3a3ff 0%, #FF9792 50%, #FF5850 90%);
             min-height: 100vh;
             display: flex;
@@ -24,9 +27,9 @@
         .register-container {
             background: white;
             border-radius: 24px;
-            padding: 48px 40px;
+            padding: 36px 28px;
             width: 100%;
-            max-width: 440px;
+            max-width: 360px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
@@ -165,20 +168,23 @@
 
         .register-button {
             width: 100%;
-            padding: 16px;
-            background: #EC592B;
+            background: linear-gradient(135deg, #e53935 0%, #d32f2f 100%);
             color: white;
+            padding: 14px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 30px;
+            margin-bottom: 24px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
-            margin-bottom: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(229, 57, 53, 0.3);
         }
 
         .register-button:hover {
-            background: #f4511e;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(229, 57, 53, 0.4);
         }
 
         .login-link {

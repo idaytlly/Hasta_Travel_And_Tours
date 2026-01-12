@@ -370,6 +370,214 @@
         transform: none;
     }
     
+    * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        .agreement-section {
+            margin-bottom: 30px;
+        }
+        
+        h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .terms-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .terms-box h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #111827;
+        }
+        
+        .terms-box p {
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #374151;
+            line-height: 1.5;
+            text-align: justify; 
+        }
+        
+        .terms-box strong {
+            color: #111827;
+            font-weight: 600;
+        }
+        
+        .header-text {
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .terms-box p.header-text {
+            text-align: center !important;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 13px;
+        }
+        
+        table.narrow {
+            width: 60%;
+        }
+        
+        th, td {
+            border: 1px solid #d1d5db;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: start;
+            gap: 10px;
+            margin-bottom: 24px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            margin-top: 3px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-label span {
+            flex: 1;
+            color: #374151;
+        }
+        
+        .signature-box {
+            margin-top: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+        
+        .form-label::after {
+            content: " *";
+            color: #ef4444;
+        }
+        
+        .signature-box > p {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+        
+        .signature-canvas {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            cursor: crosshair;
+            background: #ffffff;
+            touch-action: none;
+        }
+        
+        .signature-actions {
+            margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .btn-clear {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #374151;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-clear:hover {
+            background: #e5e7eb;
+        }
+        
+        .btn-clear:active {
+            transform: scale(0.98);
+        }
+        
+        .preview-note {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 12px;
+        }
+        
+        /* Scrollbar styling */
+        .terms-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .terms-box::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .terms-box::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+        
+        .terms-box::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .signature-canvas {
+                height: 150px;
+            }
+            
+            table {
+                font-size: 11px;
+            }
+            
+            th, td {
+                padding: 6px;
+            }
+        }
     @media (max-width: 768px) {
         .form-row {
             grid-template-columns: 1fr;
@@ -548,30 +756,134 @@
                 </div>
             </div>
             
-            <!-- Rental Agreement -->
-            <div class="agreement-section">
-                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">📄 Rental Agreement</h3>
+        <div class="container">
+        <div class="agreement-section">
+            <h3>Rental Agreement</h3>
+            
+            <div class="terms-box">
                 
-                <div class="terms-box">
-                    <h4>Terms and Conditions</h4>
-                    <p>1. The renter agrees to use the vehicle responsibly and in accordance with traffic laws.</p>
-                    <p>2. The vehicle must be returned on the agreed date and time in the same condition as received.</p>
-                    <p>3. Any damage to the vehicle during the rental period is the responsibility of the renter.</p>
-                    <p>4. The renter must have a valid driving license throughout the rental period.</p>
-                    <p>5. The security deposit will be refunded after inspection of the vehicle upon return.</p>
-                    <p>6. Late returns may incur additional charges at the daily rental rate.</p>
-                    <p>7. The vehicle should not be used for illegal purposes or sub-rented to third parties.</p>
-                    <p>8. In case of accidents, the renter must immediately inform HASTA and relevant authorities.</p>
-                    <p style="font-size: 12px; color: #9ca3af; margin-top: 12px;">* This is a preview. Full rental agreement PDF will be generated upon booking confirmation.</p>
+                <p class="header-text">
+                    HASTA TRAVEL & TOURS SDN. BHD. 202001003057 (1359376T)<br>
+                    KPK/LN 10181
+                </p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Left Column -->
+                    <div>
+                        <h4>Rates</h4>
+                        <p>Rental rates are charged for minimum of 1-hour RM30. Rental with more than 12 hours will be considered as 1-day rental. Extend hours will be calculated at fix rate based on Table 1. Rates include maximum mileage of 300 km per day and replace car breakdown (if car got problem on road because of car maintenance only). Rates are in Ringgit Malaysia (RM).</p>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HOUR</th>
+                                    <th>1</th>
+                                    <th>3</th>
+                                    <th>5</th>
+                                    <th>7</th>
+                                    <th>9</th>
+                                    <th>12</th>
+                                    <th>24</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>RATE AXIA (RM)</td>
+                                    <td>30</td>
+                                    <td>50</td>
+                                    <td>60</td>
+                                    <td>65</td>
+                                    <td>70</td>
+                                    <td>80</td>
+                                    <td>110</td>
+                                </tr>
+                                <tr>
+                                    <td>RATE MYVI/BEZZA/SAGA (RM)</td>
+                                    <td>35</td>
+                                    <td>55</td>
+                                    <td>65</td>
+                                    <td>70</td>
+                                    <td>75</td>
+                                    <td>85</td>
+                                    <td>130</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="text-align: center; font-size: 12px; font-style: italic; margin-bottom: 16px;">Table 1: Price List Hasta</p>
+                        
+                        <h4>Driver's Age and License Requirements</h4>
+                        <p>The driver must be between 19 to 55 years old for all car category vehicles and in possession of a valid national or International Driving License. Probational license holders will not be accepted.</p>
+                        
+                        <h4>Terms of Payment & Deposit</h4>
+                        <p>All rentals are subjected to a compulsory deposit of RM50.00 per car with maximum rental of 5 days. For weekly rental deposit will be RM150 and for one month is equal to one month rental. Our company only accepts the online payment for deposits and rental. Cash is accepted as mode of payment at the counter. Refundable deposit depends on return car condition (fuel, late return, extend and accident).</p>
+                        
+                        <h4>Cancellation Policy</h4>
+                        <p>All paid rental and deposit cannot be cancelled, and payment made are non-refundable.</p>
+
+                        <h4>Excess Fee</h4>
+                        <p>The renter shall be held responsible for accidental damage to third party property and bodily injuries. However, the renter is always responsible for an amount equivalent to the excess fee based on Table 2. A full responsible will be on the renter for damage as a result of illegal, negligence, careless actions, tyre punctures, bust tyre, scratches and dent, lack of battery power because of forgotten turned off car electrical devices, loss or damage to the vehicle and vehicle accessories and damages of windows, mirror and undercarriage. In the event of any accident, the renter must agree to accept the Excess Fee and inform our company first before taking any action and make a police report within 24 hours from the time of the accident or theft. Our company shall be entitled to charge the renter an excess fee which is in accordance with the following Table 2. Upon the renter's acceptance and subject to the terms and conditions stipulated in the Rental Agreement, the renter's liability is limited to the Excess Fee. Excess Fee is used to cover loss of company sales for that particular car while repairing. Any extra charge of the repairing cost will be added if needed by the company. Receipt of any additional cost will be given to the customer.</p>
+                    </div>
+                    
+                    <!-- Right Column -->
+                    <div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>TYPES OF CAR</th>
+                                    <th>EXCESS FEE (RM)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>PERODUA MYVI</td>
+                                    <td>2,500</td>
+                                </tr>
+                                <tr>
+                                    <td>PROTON SAGA</td>
+                                    <td>2,500</td>
+                                </tr>
+                                <tr>
+                                    <td>PERODUA AXIA</td>
+                                    <td>2,000</td>
+                                </tr>
+                                <tr>
+                                    <td>PERODUA BEZZA</td>
+                                    <td>2,500</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <h4>Fuel</h4>
+                        <p>Our company does not provide full tank unless requested by the renter and must be returned the same fuel level. Otherwise the renter will be charged based on 1 bar RM10.</p>
+                        
+                        <h4>Parking Fees and Traffic Fines</h4>
+                        <p>The renter is liable for all parking and traffic fines incurred for the duration of the rental. An additional RM20 administration fee will be charged to the renter over and above any fine and penalty cost for any violation arising from the renter's use of vehicle. Our company retains the right to charge against the renter's charge if and when payment is due for traffic fines committed by the renter, upon receiving notification from the government authorities.</p>
+                        
+                        <h4>Vehicle Condition & Cleanliness</h4>
+                        <p>Upon return, the car must be in the same condition as when it was rented. Failing which, the renter will be liable for the cost of restoring the vehicle to its original condition and loss of company sales for that particular car.</p>
+                        
+                        <h4>Surcharge</h4>
+                        <p>If customer want to meet reservations after operating hours, a fee of RM10 will be charged.</p>
+                        
+                        <h4>Restricted Entry</h4>
+                        <p>The vehicles cannot be driven into Singapore, Thailand, Brunei and Indonesia. Subsequently the vehicles are prohibited from being loaded onto other modes of transportation via sea, river and air for usage from mainland to Langkawi, Tioman, Redang, Pangkor island etc.</p>
+                        
+                        <h4>Prohibited Odours</h4>
+                        <p>All items and goods discharging unpleasant odours are strictly forbidden from being carried in the vehicle (e.g. Durians, salted fish etc). The renter will be liable to reimburse on demand for all costs of eliminating such odours, including the servicing of the whole air conditioner system and the loss of rental days. Please be advised that smoking in vehicles is strictly prohibited.</p>
+                        
+                        <h4>Limitation Destination</h4>
+                        <p>All customer are limit to Johor state area only for 1 day rental. Minimum rental for 2 days for rental area outside Johor state area. If the customer fails to comply, penalty will be charge 1 day rental extra and deposit will be burn.</p>
+                    </div>
                 </div>
-                
-                <label class="checkbox-label">
-                    <input type="checkbox" id="agreeTerms" required>
-                    <span>I have read and agree to the rental terms and conditions stated above.</span>
-                </label>
+            </div>
+            
+            <label class="checkbox-label">
+                <input type="checkbox" id="agreeTerms" required>
+                <span>I have read and agree to the rental terms and conditions stated above.</span>
+            </label>
                 
                 <div class="signature-box">
-                    <label class="form-label">Digital Signature *</label>
+                    <label class="form-label">Digital Signature</label>
                     <p style="font-size: 13px; color: #6b7280; margin-bottom: 12px;">
                         Please sign in the box below. Your signature will be added to the rental agreement PDF.
                     </p>
@@ -579,8 +891,8 @@
                     <div class="signature-actions">
                         <button type="button" class="btn-clear" onclick="clearSignature()">Clear Signature</button>
                     </div>
+                </form>
                 </div>
-            </div>
             
             <button type="submit" class="btn-submit">Confirm Booking</button>
         </form>
