@@ -144,6 +144,8 @@ class BookingController extends Controller
         $customer = Auth::guard('customer')->user();
         DB::beginTransaction();
         try {
+            DB::beginTransaction();
+
             // 1. Get Vehicle
             $vehicle = Vehicle::where('plate_no', $validated['plate_no'])->firstOrFail();
 
@@ -512,7 +514,6 @@ class BookingController extends Controller
         $inspectionType = $type;
         return view('bookings.inspection', compact('booking', 'inspectionType'));
     }
-}
 
     /**
      * Store inspection data
