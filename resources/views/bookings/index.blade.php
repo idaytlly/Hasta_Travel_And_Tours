@@ -366,6 +366,55 @@
         .booking-actions {
             width: 100%;
         }
+
+        /* Add this to your <style> section */
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .page-item {
+            display: inline-block;
+        }
+
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .page-link:hover {
+            background: #f9fafb;
+            border-color: #d93025;
+            color: #d93025;
+        }
+
+        .page-item.active .page-link {
+            background: #d93025;
+            border-color: #d93025;
+            color: white;
+        }
+
+        .page-item.disabled .page-link {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
     }
 </style>
 
