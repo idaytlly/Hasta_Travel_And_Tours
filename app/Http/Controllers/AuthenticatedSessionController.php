@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
-    // Show the login form
+    /**
+     * Display the login view.
+     */
     public function create()
     {
         return view('auth.login');
     }
 
-    // Handle an incoming authentication request
+    /**
+     * Handle an incoming authentication request.
+     */
     public function store(Request $request)
     {
         $credentials = $request->validate([
@@ -21,27 +27,70 @@ class AuthenticatedSessionController extends Controller
             'password' => 'required',
         ]);
 
-        $remember = $request->boolean('remember');
+        // Clear any previous intended URL first
+        $request->session()->forget('url.intended');
 
-        if (Auth::guard('customer')->attempt($credentials, $remember)) {
+        // Try Customer guard first
+        if (Auth::guard('customer')->attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-
-            return redirect()->intended(route('customer.home'));
+            return redirect()->route('customer.home');
         }
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+        // Try Staff guard second
+        if (Auth::guard('staff')->attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            
+            $staff = Auth::guard('staff')->user();
+            
+            // Check if staff is active
+            if (!$staff->is_active) {
+                Auth::guard('staff')->logout();
+                throw ValidationException::withMessages([
+                    'email' => 'Your account is inactive. Please contact administrator.',
+                ]);
+            }
+            
+            // Redirect based on role
+            return $this->redirectStaffBasedOnRole($staff);
+        }
+
+        throw ValidationException::withMessages([
+            'email' => 'These credentials do not match our records.',
         ]);
     }
 
-    // Log the user out of the application
+    /**
+     * Redirect staff based on their role
+     */
+    private function redirectStaffBasedOnRole($staff)
+    {
+        switch ($staff->role) {
+            case 'admin':
+                return redirect()->route('staff.dashboard');
+            case 'staff':
+                return redirect()->route('staff.dashboard');
+            case 'runner':
+                return redirect()->route('staff.delivery');
+            default:
+                return redirect()->route('staff.dashboard');
+        }
+    }
+
+    /**
+     * Destroy an authenticated session.
+     */
     public function destroy(Request $request)
     {
-        Auth::guard('customer')->logout();
+        // Logout from the appropriate guard
+        if (Auth::guard('customer')->check()) {
+            Auth::guard('customer')->logout();
+        } elseif (Auth::guard('staff')->check()) {
+            Auth::guard('staff')->logout();
+        }
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('guest.home');
+        return redirect('/');
     }
 }

@@ -1,26 +1,38 @@
 @extends('staff.layouts.app')
 
-@section('title', 'Bookings - Staff Portal')
-@section('page-title', 'Manage Bookings')
+@section('title', 'Bookings Management - Staff Portal')
+@section('page-title', 'Bookings Management')
 
 @section('content')
 <div class="space-y-6">
     
-    <!-- Filters & Search -->
+    <!-- Header with Filters -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <!-- Search -->
-            <div class="md:col-span-2">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">All Bookings</h2>
+                <p class="text-sm text-gray-600 mt-1">Manage and track all customer bookings</p>
+            </div>
+            <button onclick="refreshBookings()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center gap-2">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                <span>Refresh</span>
+            </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
                 <div class="relative">
-                    <i data-lucide="search" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" id="search-input" placeholder="Search by booking ID, customer name, vehicle..."
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="search-input" placeholder="Search bookings..." 
                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                            onkeyup="filterBookings()">
                 </div>
             </div>
-
-            <!-- Status Filter -->
+            
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                 <select id="status-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                         onchange="filterBookings()">
                     <option value="">All Status</option>
@@ -30,260 +42,208 @@
                     <option value="active">Active</option>
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
-                    <option value="verified">Verified</option>
                 </select>
             </div>
-
-            <!-- Type Filter -->
+            
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
                 <select id="type-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                         onchange="filterBookings()">
                     <option value="">All Types</option>
-                    <option value="self-pickup">Self Pickup</option>
                     <option value="delivery">Delivery</option>
+                    <option value="self-pickup">Self Pickup</option>
                 </select>
             </div>
-
-            <!-- Verification Filter -->
+            
             <div>
-                <select id="verification-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                <label class="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+                <select id="date-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                         onchange="filterBookings()">
-                    <option value="">All</option>
-                    <option value="verified">Verified Only</option>
-                    <option value="not_verified">Not Verified</option>
+                    <option value="">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
                 </select>
             </div>
         </div>
+    </div>
 
-        <!-- Quick Stats for Bookings -->
-        <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mt-6 pt-6 border-t border-gray-200">
-            <div class="text-center">
-                <p class="text-2xl font-bold text-orange-600" id="count-pending">0</p>
-                <p class="text-xs text-gray-600 mt-1">Pending</p>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Total Bookings</p>
+                    <p class="text-2xl font-bold text-gray-800 mt-1" id="total-bookings">0</p>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-lg">
+                    <i data-lucide="calendar" class="w-6 h-6 text-blue-600"></i>
+                </div>
             </div>
-            <div class="text-center">
-                <p class="text-2xl font-bold text-blue-600" id="count-confirmed">0</p>
-                <p class="text-xs text-gray-600 mt-1">Confirmed</p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Pending Approval</p>
+                    <p class="text-2xl font-bold text-orange-600 mt-1" id="pending-bookings">0</p>
+                </div>
+                <div class="bg-orange-100 p-3 rounded-lg">
+                    <i data-lucide="clock" class="w-6 h-6 text-orange-600"></i>
+                </div>
             </div>
-            <div class="text-center">
-                <p class="text-2xl font-bold text-green-600" id="count-approved">0</p>
-                <p class="text-xs text-gray-600 mt-1">Approved</p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Active Rentals</p>
+                    <p class="text-2xl font-bold text-purple-600 mt-1" id="active-bookings">0</p>
+                </div>
+                <div class="bg-purple-100 p-3 rounded-lg">
+                    <i data-lucide="activity" class="w-6 h-6 text-purple-600"></i>
+                </div>
             </div>
-            <div class="text-center">
-                <p class="text-2xl font-bold text-purple-600" id="count-active">0</p>
-                <p class="text-xs text-gray-600 mt-1">Active</p>
-            </div>
-            <div class="text-center">
-                <p class="text-2xl font-bold text-gray-600" id="count-completed">0</p>
-                <p class="text-xs text-gray-600 mt-1">Completed</p>
-            </div>
-            <div class="text-center">
-                <p class="text-2xl font-bold text-green-600" id="count-verified">0</p>
-                <p class="text-xs text-gray-600 mt-1">Verified</p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Completed</p>
+                    <p class="text-2xl font-bold text-green-600 mt-1" id="completed-bookings">0</p>
+                </div>
+                <div class="bg-green-100 p-3 rounded-lg">
+                    <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Bookings Table -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800">Booking List</h3>
+        </div>
+        
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Booking ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Vehicle</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Pickup</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Return</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Verification</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Booking ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Customer</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Vehicle</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Amount</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="bookings-table-body" class="divide-y divide-gray-200">
+                <tbody id="bookings-table" class="divide-y divide-gray-200">
                     <!-- Loading state -->
-                    <tr>
-                        <td colspan="9" class="px-6 py-12 text-center">
-                            <div class="spinner"></div>
-                            <p class="text-gray-500 mt-4">Loading bookings...</p>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>
+        
+        <div class="p-4 border-t border-gray-200 text-center" id="loading-indicator">
+            <div class="spinner mx-auto"></div>
+            <p class="text-gray-500 text-sm mt-2">Loading bookings...</p>
+        </div>
+        
+        <div class="p-4 border-t border-gray-200 hidden" id="no-results">
+            <div class="text-center py-8">
+                <i data-lucide="inbox" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+                <p class="text-gray-500 text-lg">No bookings found</p>
+            </div>
+        </div>
     </div>
-
 </div>
 
 <!-- Booking Details Modal -->
-<div id="booking-details-modal" class="hidden"></div>
+<div id="booking-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-gray-800">Booking Details</h3>
+            <button onclick="closeBookingModal()" class="text-gray-400 hover:text-gray-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+        
+        <div id="booking-details-content" class="p-6">
+            <!-- Content populated by JavaScript -->
+        </div>
+    </div>
+</div>
 
 @push('scripts')
 <script>
-    // Updated bookings data with verification info
-    let allBookings = [
-        { 
-            id: 'BK001', 
-            customer: 'Ahmad Ibrahim', 
-            phone: '+60123456789', 
-            vehicle: 'Perodua Myvi', 
-            pickup: '2026-01-10 10:00', 
-            return: '2026-01-12 10:00', 
-            status: 'pending', 
-            total: 280, 
-            type: 'self-pickup', 
-            deposit: 100,
-            verified: false,
-            verified_by: null,
-            verified_at: null
-        },
-        { 
-            id: 'BK002', 
-            customer: 'Sarah Lee', 
-            phone: '+60198765432', 
-            vehicle: 'Honda City', 
-            pickup: '2026-01-10 14:00', 
-            return: '2026-01-15 14:00', 
-            status: 'confirmed', 
-            total: 750, 
-            type: 'delivery', 
-            deliveryAddress: 'Jalan Ampang, KL', 
-            deposit: 200,
-            verified: true,
-            verified_by: 'STAFF001',
-            verified_at: '2026-01-10 10:30:00'
-        },
-        { 
-            id: 'BK003', 
-            customer: 'Michael Tan', 
-            phone: '+60167890123', 
-            vehicle: 'Toyota Vios', 
-            pickup: '2026-01-11 09:00', 
-            return: '2026-01-11 18:00', 
-            status: 'pending', 
-            total: 120, 
-            type: 'self-pickup', 
-            deposit: 50,
-            verified: false,
-            verified_by: null,
-            verified_at: null
-        },
-        { 
-            id: 'BK004', 
-            customer: 'Lisa Wong', 
-            phone: '+60134567890', 
-            vehicle: 'Perodua Axia', 
-            pickup: '2026-01-10 16:00', 
-            return: '2026-01-13 16:00', 
-            status: 'approved', 
-            total: 360, 
-            type: 'delivery', 
-            deliveryAddress: 'Subang Jaya', 
-            deposit: 100,
-            verified: true,
-            verified_by: 'ADMIN001',
-            verified_at: '2026-01-10 11:45:00'
-        },
-        { 
-            id: 'BK005', 
-            customer: 'David Chen', 
-            phone: '+60145678901', 
-            vehicle: 'Honda Civic', 
-            pickup: '2026-01-12 08:00', 
-            return: '2026-01-14 08:00', 
-            status: 'active', 
-            total: 480, 
-            type: 'self-pickup', 
-            deposit: 150,
-            verified: false,
-            verified_by: null,
-            verified_at: null
+    let allBookings = [];
+    let filteredBookings = [];
+
+    // Fetch bookings from API
+    async function fetchBookings() {
+        try {
+            const data = await apiRequest('/api/staff/bookings');
+            allBookings = data.bookings || [];
+            filteredBookings = [...allBookings];
+            updateBookingsDisplay();
+            updateStats();
+            return data;
+        } catch (error) {
+            console.error('Error fetching bookings:', error);
+            document.getElementById('loading-indicator').style.display = 'none';
+            document.getElementById('no-results').classList.remove('hidden');
         }
-    ];
-
-    let filteredBookings = [...allBookings];
-
-    function loadBookings() {
-        updateBookingCounts();
-        renderBookingsTable();
     }
 
-    function updateBookingCounts() {
-        const counts = {
-            pending: 0,
-            confirmed: 0,
-            approved: 0,
-            active: 0,
-            completed: 0,
-            verified: 0
-        };
-
-        allBookings.forEach(booking => {
-            if (counts.hasOwnProperty(booking.status)) {
-                counts[booking.status]++;
-            }
-            if (booking.verified) {
-                counts.verified++;
-            }
-        });
-
-        document.getElementById('count-pending').textContent = counts.pending;
-        document.getElementById('count-confirmed').textContent = counts.confirmed;
-        document.getElementById('count-approved').textContent = counts.approved;
-        document.getElementById('count-active').textContent = counts.active;
-        document.getElementById('count-completed').textContent = counts.completed;
-        document.getElementById('count-verified').textContent = counts.verified;
-    }
-
-    function renderBookingsTable() {
-        const tbody = document.getElementById('bookings-table-body');
+    // Update bookings table
+    function updateBookingsDisplay() {
+        const tbody = document.getElementById('bookings-table');
+        const loading = document.getElementById('loading-indicator');
+        const noResults = document.getElementById('no-results');
+        
+        loading.style.display = 'none';
         
         if (filteredBookings.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="9" class="px-6 py-12 text-center text-gray-500">
-                        <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 text-gray-400"></i>
-                        <p>No bookings found</p>
-                    </td>
-                </tr>
-            `;
-            lucide.createIcons();
+            tbody.innerHTML = '';
+            noResults.classList.remove('hidden');
             return;
         }
-
+        
+        noResults.classList.add('hidden');
+        
         tbody.innerHTML = filteredBookings.map(booking => `
-            <tr class="hover:bg-gray-50">
+            <tr class="hover:bg-gray-50 transition">
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="font-semibold text-gray-800">${booking.id}</span>
+                    <span class="font-mono font-semibold text-gray-800">${booking.booking_code}</span>
                 </td>
                 <td class="px-6 py-4">
                     <div>
-                        <p class="font-medium text-gray-800">${booking.customer}</p>
-                        <p class="text-sm text-gray-500">${booking.phone}</p>
+                        <p class="font-medium text-gray-800">${booking.customer_name}</p>
+                        <p class="text-sm text-gray-500">${booking.customer_phone}</p>
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="text-gray-800">${booking.vehicle}</span>
+                <td class="px-6 py-4">
+                    <p class="font-medium text-gray-800">${booking.vehicle_name}</p>
+                    <p class="text-sm text-gray-500">${booking.vehicle_plate}</p>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    ${formatDate(booking.start_date)}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="text-sm text-gray-600">${formatDateTime(booking.pickup)}</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="text-sm text-gray-600">${formatDateTime(booking.return)}</span>
+                    ${booking.pickup_type === 'delivery' 
+                        ? '<span class="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium"><i data-lucide="truck" class="w-3 h-3"></i>Delivery</span>'
+                        : '<span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium"><i data-lucide="map-pin" class="w-3 h-3"></i>Self Pickup</span>'}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     ${getStatusBadge(booking.status)}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    ${getVerificationBadge(booking)}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="font-semibold text-gray-800">${formatCurrency(booking.total)}</span>
+                    <span class="font-semibold text-gray-800">${formatCurrency(booking.total_amount)}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center gap-2">
-                        <button onclick="viewBookingDetails('${booking.id}')" 
+                        <button onclick="viewBooking('${booking.id}')" 
                                 class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
                                 title="View Details">
                             <i data-lucide="eye" class="w-4 h-4"></i>
@@ -292,14 +252,26 @@
                             <button onclick="approveBooking('${booking.id}')" 
                                     class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
                                     title="Approve">
-                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="cancelBooking('${booking.id}')" 
+                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                                    title="Cancel">
+                                <i data-lucide="x" class="w-4 h-4"></i>
                             </button>
                         ` : ''}
-                        ${!booking.verified ? `
-                            <button onclick="showVerificationModal('${booking.id}')" 
-                                    class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
-                                    title="Verify Booking">
-                                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        ${booking.status === 'confirmed' && '{{ Auth::guard("staff")->user()->role }}' === 'admin' ? `
+                            <button onclick="verifyPayment('${booking.id}')" 
+                                    class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition"
+                                    title="Verify Payment (Admin Only)">
+                                <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+                            </button>
+                        ` : ''}
+                        ${booking.status === 'payment_verified' ? `
+                            <button onclick="verifyBooking('${booking.id}')" 
+                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                    title="Verify Booking (Complete)">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
                             </button>
                         ` : ''}
                     </div>
@@ -310,379 +282,325 @@
         lucide.createIcons();
     }
 
+    // Update statistics
+    function updateStats() {
+        document.getElementById('total-bookings').textContent = allBookings.length;
+        document.getElementById('pending-bookings').textContent = 
+            allBookings.filter(b => b.status === 'pending').length;
+        document.getElementById('active-bookings').textContent = 
+            allBookings.filter(b => b.status === 'active').length;
+        document.getElementById('completed-bookings').textContent = 
+            allBookings.filter(b => b.status === 'completed').length;
+    }
+
+    // Filter bookings
     function filterBookings() {
         const searchTerm = document.getElementById('search-input').value.toLowerCase();
         const statusFilter = document.getElementById('status-filter').value;
         const typeFilter = document.getElementById('type-filter').value;
-        const verificationFilter = document.getElementById('verification-filter').value;
-
+        const dateFilter = document.getElementById('date-filter').value;
+        
         filteredBookings = allBookings.filter(booking => {
             const matchesSearch = !searchTerm || 
-                booking.id.toLowerCase().includes(searchTerm) ||
-                booking.customer.toLowerCase().includes(searchTerm) ||
-                booking.vehicle.toLowerCase().includes(searchTerm);
+                booking.booking_code.toLowerCase().includes(searchTerm) ||
+                booking.customer_name.toLowerCase().includes(searchTerm) ||
+                booking.vehicle_name.toLowerCase().includes(searchTerm);
             
             const matchesStatus = !statusFilter || booking.status === statusFilter;
-            const matchesType = !typeFilter || booking.type === typeFilter;
+            const matchesType = !typeFilter || booking.pickup_type === typeFilter;
             
-            const matchesVerification = !verificationFilter || 
-                (verificationFilter === 'verified' && booking.verified) ||
-                (verificationFilter === 'not_verified' && !booking.verified);
-
-            return matchesSearch && matchesStatus && matchesType && matchesVerification;
+            let matchesDate = true;
+            if (dateFilter) {
+                const bookingDate = new Date(booking.start_date);
+                const today = new Date();
+                
+                if (dateFilter === 'today') {
+                    matchesDate = bookingDate.toDateString() === today.toDateString();
+                } else if (dateFilter === 'week') {
+                    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    matchesDate = bookingDate >= weekAgo;
+                } else if (dateFilter === 'month') {
+                    matchesDate = bookingDate.getMonth() === today.getMonth() &&
+                                 bookingDate.getFullYear() === today.getFullYear();
+                }
+            }
+            
+            return matchesSearch && matchesStatus && matchesType && matchesDate;
         });
-
-        renderBookingsTable();
+        
+        updateBookingsDisplay();
     }
 
+    // View booking details
+    async function viewBooking(bookingId) {
+        try {
+            const data = await apiRequest(`/api/staff/bookings/${bookingId}`);
+            showBookingModal(data.booking);
+        } catch (error) {
+            showToast('Failed to load booking details', 'error');
+        }
+    }
+
+    // Show booking modal
+    function showBookingModal(booking) {
+        const modal = document.getElementById('booking-modal');
+        const content = document.getElementById('booking-details-content');
+        
+        content.innerHTML = `
+            <div class="space-y-6">
+                <!-- Status -->
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="text-sm text-gray-600">Status</p>
+                        <div class="mt-1">${getStatusBadge(booking.status)}</div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-600">Booking Code</p>
+                        <p class="font-mono font-bold text-gray-800 mt-1">${booking.booking_code}</p>
+                    </div>
+                </div>
+
+                <!-- Customer Info -->
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Customer Information</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-600">Name</p>
+                            <p class="font-medium text-gray-800">${booking.customer_name}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Phone</p>
+                            <p class="font-medium text-gray-800">${booking.customer_phone}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Email</p>
+                            <p class="font-medium text-gray-800">${booking.customer_email}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">IC Number</p>
+                            <p class="font-medium text-gray-800">${booking.customer_ic}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Info -->
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Vehicle Information</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-600">Vehicle</p>
+                            <p class="font-medium text-gray-800">${booking.vehicle_name}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Plate Number</p>
+                            <p class="font-medium text-gray-800">${booking.vehicle_plate}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rental Period -->
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Rental Period</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-600">Start Date</p>
+                            <p class="font-medium text-gray-800">${formatDateTime(booking.start_date)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">End Date</p>
+                            <p class="font-medium text-gray-800">${formatDateTime(booking.end_date)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Duration</p>
+                            <p class="font-medium text-gray-800">${booking.duration_days} days</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600">Pickup Type</p>
+                            <p class="font-medium text-gray-800">${booking.pickup_type === 'delivery' ? 'Delivery' : 'Self Pickup'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Details -->
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Payment Details</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Daily Rate</span>
+                            <span class="font-medium">${formatCurrency(booking.daily_rate)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Duration</span>
+                            <span class="font-medium">${booking.duration_days} days</span>
+                        </div>
+                        ${booking.delivery_fee > 0 ? `
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Delivery Fee</span>
+                                <span class="font-medium">${formatCurrency(booking.delivery_fee)}</span>
+                            </div>
+                        ` : ''}
+                        <div class="border-t pt-2 flex justify-between">
+                            <span class="font-semibold text-gray-800">Total Amount</span>
+                            <span class="font-bold text-red-600 text-lg">${formatCurrency(booking.total_amount)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                ${booking.status === 'pending' ? `
+                    <div class="flex gap-3">
+                        <button onclick="approveBookingFromModal('${booking.id}')" 
+                                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            Approve Booking
+                        </button>
+                        <button onclick="cancelBookingFromModal('${booking.id}')" 
+                                class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                            Cancel Booking
+                        </button>
+                    </div>
+                ` : ''}
+                ${booking.status === 'confirmed' && '{{ Auth::guard("staff")->user()->role }}' === 'admin' ? `
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+                        <p class="text-sm text-orange-800 font-medium mb-2">⚠️ Payment Verification Required</p>
+                        <p class="text-sm text-orange-700">Only administrators can verify payments. After payment is verified, staff can complete the booking verification.</p>
+                    </div>
+                    <button onclick="verifyPaymentFromModal('${booking.id}')" 
+                            class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                        Verify Payment (Admin Only)
+                    </button>
+                ` : ''}
+                ${booking.status === 'confirmed' && '{{ Auth::guard("staff")->user()->role }}' !== 'admin' ? `
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-sm text-blue-800 font-medium mb-2">ℹ️ Waiting for Payment Verification</p>
+                        <p class="text-sm text-blue-700">An administrator needs to verify the payment before you can complete this booking.</p>
+                    </div>
+                ` : ''}
+                ${booking.status === 'payment_verified' ? `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                        <p class="text-sm text-green-800 font-medium mb-2">✓ Payment Verified by Admin</p>
+                        <p class="text-sm text-green-700">You can now complete the booking verification.</p>
+                    </div>
+                    <button onclick="verifyBookingFromModal('${booking.id}')" 
+                            class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        Complete Booking Verification
+                    </button>
+                ` : ''}
+            </div>
+        `;
+        
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+    }
+
+    // Close booking modal
+    function closeBookingModal() {
+        document.getElementById('booking-modal').classList.add('hidden');
+    }
+
+    // Approve booking
+    async function approveBooking(bookingId) {
+        if (confirm('Approve this booking?')) {
+            try {
+                await apiRequest(`/api/staff/bookings/${bookingId}/approve`, { method: 'POST' });
+                showToast('Booking approved successfully!', 'success');
+                await fetchBookings();
+            } catch (error) {
+                showToast('Failed to approve booking', 'error');
+            }
+        }
+    }
+
+    async function approveBookingFromModal(bookingId) {
+        await approveBooking(bookingId);
+        closeBookingModal();
+    }
+
+    // Verify payment (Admin only)
+    async function verifyPayment(bookingId) {
+        if (confirm('Verify that payment has been received for this booking?')) {
+            try {
+                await apiRequest(`/api/staff/bookings/${bookingId}/verify-payment`, { method: 'POST' });
+                showToast('Payment verified successfully! Booking can now be completed by staff.', 'success');
+                await fetchBookings();
+            } catch (error) {
+                showToast('Failed to verify payment', 'error');
+            }
+        }
+    }
+
+    async function verifyPaymentFromModal(bookingId) {
+        await verifyPayment(bookingId);
+        closeBookingModal();
+    }
+
+    // Verify booking (After payment verified)
+    async function verifyBooking(bookingId) {
+        if (confirm('Complete booking verification? The vehicle will be marked as ready for pickup.')) {
+            try {
+                await apiRequest(`/api/staff/bookings/${bookingId}/verify`, { method: 'POST' });
+                showToast('Booking verification completed successfully!', 'success');
+                await fetchBookings();
+            } catch (error) {
+                showToast('Failed to verify booking', 'error');
+            }
+        }
+    }
+
+    async function verifyBookingFromModal(bookingId) {
+        await verifyBooking(bookingId);
+        closeBookingModal();
+    }
+
+    // Cancel booking
+    async function cancelBooking(bookingId) {
+        if (confirm('Are you sure you want to cancel this booking?')) {
+            try {
+                await apiRequest(`/api/staff/bookings/${bookingId}/cancel`, { method: 'POST' });
+                showToast('Booking cancelled successfully!', 'success');
+                await fetchBookings();
+            } catch (error) {
+                showToast('Failed to cancel booking', 'error');
+            }
+        }
+    }
+
+    async function cancelBookingFromModal(bookingId) {
+        await cancelBooking(bookingId);
+        closeBookingModal();
+    }
+
+    // Refresh bookings
+    async function refreshBookings() {
+        showToast('Refreshing bookings...', 'info');
+        await fetchBookings();
+        showToast('Bookings refreshed successfully!', 'success');
+    }
+
+    // Get status badge
     function getStatusBadge(status) {
         const badges = {
             'pending': '<span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">Pending</span>',
             'confirmed': '<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">Confirmed</span>',
+            'payment_verified': '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">Payment Verified</span>',
             'approved': '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Approved</span>',
-            'active': '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">Active</span>',
+            'active': '<span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full font-medium">Active</span>',
             'completed': '<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">Completed</span>',
-            'cancelled': '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">Cancelled</span>',
-            'verified': '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Verified</span>'
+            'cancelled': '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">Cancelled</span>'
         };
-        return badges[status] || '';
+        return badges[status.toLowerCase()] || '';
     }
 
-    function getVerificationBadge(booking) {
-        if (booking.verified) {
-            return `
-                <div class="text-center">
-                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium inline-block mb-1">
-                        ✓ Verified
-                    </span>
-                    <p class="text-xs text-gray-500">by ${booking.verified_by}</p>
-                    <p class="text-xs text-gray-400">${formatDateTime(booking.verified_at)}</p>
-                </div>
-            `;
-        } else {
-            return `
-                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">
-                    Pending Verification
-                </span>
-            `;
-        }
-    }
-
-    function showVerificationModal(bookingId) {
-        const booking = allBookings.find(b => b.id === bookingId);
-        if (!booking) return;
-
-        const modal = document.getElementById('booking-details-modal');
-        modal.innerHTML = `
-            <div class="modal-backdrop" onclick="closeBookingModal()">
-                <div class="modal-content max-w-md" onclick="event.stopPropagation()">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-gray-800">Verify Booking</h3>
-                            <button onclick="closeBookingModal()" class="text-gray-400 hover:text-gray-600">
-                                <i data-lucide="x" class="w-6 h-6"></i>
-                            </button>
-                        </div>
-                        <p class="text-sm text-gray-600 mt-2">Booking ID: <span class="font-semibold">${booking.id}</span></p>
-                    </div>
-                    
-                    <div class="p-6 space-y-4">
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <div class="flex items-start gap-3">
-                                <i data-lucide="info" class="w-5 h-5 text-blue-600 mt-0.5"></i>
-                                <div>
-                                    <p class="text-sm text-blue-800 font-medium">Verification Required</p>
-                                    <p class="text-xs text-blue-600 mt-1">Enter your staff credentials to verify this booking.</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Your Staff ID</label>
-                                <div class="relative">
-                                    <i data-lucide="user" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                                    <input type="text" 
-                                           id="verify_staff_id"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                                           placeholder="STAFF001"
-                                           value="{{ session('staff_id') }}"
-                                           required>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Your Password</label>
-                                <div class="relative">
-                                    <i data-lucide="lock" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                                    <input type="password" 
-                                           id="verify_password"
-                                           class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
-                                           placeholder="6-digit password"
-                                           maxlength="6"
-                                           required>
-                                </div>
-                            </div>
-                            
-                            <div id="verification-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
-                        </div>
-                    </div>
-
-                    <div class="p-6 border-t border-gray-200 flex gap-3">
-                        <button onclick="closeBookingModal()" class="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                            Cancel
-                        </button>
-                        <button onclick="verifyBooking('${booking.id}')" class="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                            <i data-lucide="shield-check" class="w-5 h-5 inline mr-2"></i>
-                            Verify Booking
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        modal.classList.remove('hidden');
-        lucide.createIcons();
-    }
-
-    async function verifyBooking(bookingId) {
-    const staffId = document.getElementById('verify_staff_id').value;
-    const password = document.getElementById('verify_password').value;
-    const errorDiv = document.getElementById('verification-error');
-    
-    // Clear previous errors
-    errorDiv.classList.add('hidden');
-    
-    if (!staffId || !password) {
-        errorDiv.textContent = 'Please enter both staff ID and password';
-        errorDiv.classList.remove('hidden');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`/api/bookings/${bookingId}/verify`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                staff_id: staffId,
-                password: password
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            showToast(result.message, 'success');
-            
-            // Update the booking in our data
-            const bookingIndex = allBookings.findIndex(b => b.id === bookingId);
-            if (bookingIndex !== -1) {
-                allBookings[bookingIndex].verified = true;
-                allBookings[bookingIndex].verified_by = staffId;
-                allBookings[bookingIndex].verified_at = new Date().toISOString();
-                allBookings[bookingIndex].status = 'verified';
-            }
-            
-            // Update UI
-            closeBookingModal();
-            loadBookings();
-        } else {
-            errorDiv.textContent = result.message;
-            errorDiv.classList.remove('hidden');
-        }
-    } catch (error) {
-        errorDiv.textContent = 'Network error. Please try again.';
-        errorDiv.classList.remove('hidden');
-        console.error('Verification error:', error);
-    }
-}
-
-    // Mock API function (replace with real API call)
-    async function mockVerifyBooking(bookingId, staffId, password) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock validation
-        const validStaffIds = ['STAFF001', 'STAFF002', 'RUNNER001', 'ADMIN001'];
-        const validPassword = '123456'; // Example password
-        
-        if (!validStaffIds.includes(staffId) || password !== validPassword) {
-            return {
-                success: false,
-                message: 'Invalid staff credentials'
-            };
-        }
-        
-        return {
-            success: true,
-            message: `Booking ${bookingId} verified successfully!`,
-            booking_id: bookingId,
-            verified_by: staffId,
-            verified_at: new Date().toISOString()
-        };
-    }
-
-    function viewBookingDetails(bookingId) {
-        const booking = allBookings.find(b => b.id === bookingId);
-        if (!booking) return;
-
-        const modal = document.getElementById('booking-details-modal');
-        modal.innerHTML = `
-            <div class="modal-backdrop" onclick="closeBookingModal()">
-                <div class="modal-content" onclick="event.stopPropagation()">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-gray-800">Booking Details</h3>
-                            <button onclick="closeBookingModal()" class="text-gray-400 hover:text-gray-600">
-                                <i data-lucide="x" class="w-6 h-6"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="p-6 space-y-6">
-                        <!-- Booking Info -->
-                        <div>
-                            <div class="flex items-center justify-between mb-4">
-                                <h4 class="font-semibold text-gray-800">Booking Information</h4>
-                                ${getStatusBadge(booking.status)}
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-sm text-gray-600">Booking ID</p>
-                                    <p class="font-semibold text-gray-800">${booking.id}</p>
-                                </div>
-                                <div>
-                                    <p class="text-sm text-gray-600">Type</p>
-                                    <p class="font-semibold text-gray-800">${booking.type === 'delivery' ? 'Delivery' : 'Self Pickup'}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Verification Status -->
-                        <div class="border-t border-gray-200 pt-4">
-                            <h4 class="font-semibold text-gray-800 mb-4">Verification Status</h4>
-                            ${getVerificationBadge(booking)}
-                        </div>
-
-                        <!-- Customer Info -->
-                        <div class="border-t border-gray-200 pt-4">
-                            <h4 class="font-semibold text-gray-800 mb-4">Customer Information</h4>
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-2">
-                                    <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
-                                    <span class="text-gray-800">${booking.customer}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
-                                    <span class="text-gray-800">${booking.phone}</span>
-                                </div>
-                                ${booking.deliveryAddress ? `
-                                    <div class="flex items-start gap-2">
-                                        <i data-lucide="map-pin" class="w-4 h-4 text-gray-400 mt-1"></i>
-                                        <span class="text-gray-800">${booking.deliveryAddress}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-
-                        <!-- Vehicle Info -->
-                        <div class="border-t border-gray-200 pt-4">
-                            <h4 class="font-semibold text-gray-800 mb-4">Vehicle Information</h4>
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <p class="font-semibold text-gray-800">${booking.vehicle}</p>
-                                <div class="grid grid-cols-2 gap-4 mt-3">
-                                    <div>
-                                        <p class="text-sm text-gray-600">Pickup</p>
-                                        <p class="text-sm font-semibold text-gray-800">${formatDateTime(booking.pickup)}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-gray-600">Return</p>
-                                        <p class="text-sm font-semibold text-gray-800">${formatDateTime(booking.return)}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Payment Info -->
-                        <div class="border-t border-gray-200 pt-4">
-                            <h4 class="font-semibold text-gray-800 mb-4">Payment Information</h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Deposit</span>
-                                    <span class="font-semibold text-gray-800">${formatCurrency(booking.deposit)}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Total Amount</span>
-                                    <span class="font-semibold text-gray-800">${formatCurrency(booking.total)}</span>
-                                </div>
-                                <div class="flex justify-between pt-2 border-t border-gray-200">
-                                    <span class="font-semibold text-gray-800">Balance Due</span>
-                                    <span class="font-bold text-red-600">${formatCurrency(booking.total - booking.deposit)}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-6 border-t border-gray-200 flex gap-3">
-                        ${booking.status === 'pending' ? `
-                            <button onclick="approveBooking('${booking.id}')" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                                <i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>
-                                Approve Booking
-                            </button>
-                        ` : ''}
-                        ${!booking.verified ? `
-                            <button onclick="showVerificationModal('${booking.id}')" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                                <i data-lucide="shield-check" class="w-4 h-4 inline mr-2"></i>
-                                Verify Booking
-                            </button>
-                        ` : ''}
-                        <button onclick="closeBookingModal()" class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                            Close
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        modal.classList.remove('hidden');
-        lucide.createIcons();
-    }
-
-    function closeBookingModal() {
-        document.getElementById('booking-details-modal').innerHTML = '';
-        document.getElementById('booking-details-modal').classList.add('hidden');
-    }
-
-    function approveBooking(bookingId) {
-        const booking = allBookings.find(b => b.id === bookingId);
-        if (!booking) return;
-
-        if (confirm(`Approve booking ${bookingId} for ${booking.customer}?`)) {
-            booking.status = 'approved';
-            showToast(`Booking ${bookingId} approved successfully!`, 'success');
-            loadBookings();
-            closeBookingModal();
-        }
-    }
-
-    // Check URL for filters
+    // Initialize with real-time updates
     document.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const status = urlParams.get('status');
-        const bookingId = urlParams.get('id');
+        fetchBookings();
+        startRealTimeUpdates(fetchBookings, 30000);
+    });
 
-        if (status) {
-            document.getElementById('status-filter').value = status;
-            filterBookings();
+    // Close modal on backdrop click
+    document.getElementById('booking-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeBookingModal();
         }
-
-        if (bookingId) {
-            setTimeout(() => viewBookingDetails(bookingId), 500);
-        }
-
-        loadBookings();
     });
 </script>
 @endpush

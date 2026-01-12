@@ -11,7 +11,6 @@ class Booking extends Model
     use HasFactory;
 
     protected $table = 'booking';
-
     protected $primaryKey = 'booking_id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -57,9 +56,8 @@ class Booking extends Model
         'stamp_awarded' => 'boolean',  // NEW
     ];
 
-    /* ================= RELATIONSHIPS ================= */
-
-    public function customer()
+    // Relationships
+    public function customers()
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
     }
