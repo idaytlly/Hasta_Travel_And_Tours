@@ -2,7 +2,11 @@
 
 @section('title', 'Vehicle Details')
 
+@section('noFooter', true)
+
 @section('content')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
 <style>
     /* Page layout */
     body { padding-top: 70px; }
@@ -10,7 +14,7 @@
 
     /* Main card */
     .vehicle-card-main {
-        position: relative;   /* ⬅️ PENTING */
+        position: relative;   
         background: #fff;
         border-radius: 12px;
         padding: 18px;
@@ -141,28 +145,63 @@
     .booking-actions { display:flex; align-items:center; gap:12px; }
     .booking-price { font-size:22px; color:#d14545; font-weight:800; margin:0; }
 
-.gallery-nav {
-    background: #ffd6d6;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    font-weight: 900;
-    font-size: 16px;
+    .gallery-nav {
+        background: #ffd6d6;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        cursor:pointer;
+        font-weight: 900;
+        font-size: 16px;
+        color: #d93025;
+        border:none;
+        transition: all 0.2s ease;
+    }
+    .gallery-nav:hover {
+        transform: scale(1.1);
+        background: #ffcaca;
+    }
+
+    .gallery-nav:active {
+        transform: scale(0.92);
+    }
+
+    .view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;          /* pill shape */
+    background: #fff;
     color: #d93025;
-    border:none;
-    transition: all 0.2s ease;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: 1.5px solid #ffd6d6;
+    transition: all 0.25s ease;
 }
-.gallery-nav:hover {
-    transform: scale(1.1);
-    background: #ffcaca;
+
+.view-all::after {
+    transition: transform 0.25s ease;
 }
-        .gallery-nav:active {
-            transform: scale(0.92);
-        }
+
+.view-all:hover {
+    background: #ffd6d6;
+    box-shadow: 0 4px 12px rgba(217,48,37,0.25);
+}
+
+.view-all:hover::after {
+    transform: translateX(4px);
+}
+
+.view-all:active {
+    transform: scale(0.95);
+}
+
+
 
     /* Responsive: on narrow screens stack price and button and align to right */
     @media (max-width:480px) {
@@ -170,7 +209,30 @@
         .booking-row { flex-direction:column; align-items:flex-end; gap:8px; }
     }
     .btn-book { background:#d93025; color:#fff; border:none; padding:10px 18px; border-radius:8px; font-weight:700; cursor:pointer; }
-    .btn-book:hover { background:#b71c1c; }
+    .btn-book:hover { background: #CB3737; }
+    .btn-view-details {
+    background: #d93025;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    width: 100%;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-view-details:hover {
+    background: #b71c1c;
+    transform: translateY(-1px);
+}
+
+.btn-view-details:active {
+    transform: scale(0.96);
+}
 
     /* Other cars grid (match index look) */
     .other-section { margin-top:34px; }
@@ -180,13 +242,27 @@
     .other-card img { width:100%; height:140px; object-fit:contain; border-radius:8px; }
     .other-card h4 { font-size:16px; margin:10px 0 6px; }
     .other-card .price { color:#e53935; font-weight:700; }
-    .other-card .view { background:#ff8c42; color:#fff; padding:8px 12px; border-radius:8px; display:inline-block; text-decoration:none; margin-top:10px; }
+    .other-card .view { 
+            background: #CB3737;
+            color: #CB3737;
+            border: none;
+            padding: 6px;
+            justify-content: right;
+            font-size: 0.8rem;
+            width: 100%;
+            transition: all 0.2s; }
+    .other-card .view-details:hover {
+        background: #CB3737;
+        color: #CB3737;
+    }
+
 
     /* Responsive */
     @media (max-width:1000px) {
         .vehicle-top { grid-template-columns: 1fr; }
         .vehicle-photo { max-width:100%; aspect-ratio:16/9 }
         .other-grid { grid-template-columns: 1fr; }
+    
     }
 </style>
 
@@ -244,7 +320,11 @@
                 </div>
                 <div class="booking-row">
                     <div class="booking-price">RM{{ number_format($vehicle->price_perHour) }} <medium style="font-size:12px; color:#666; font-weight:600">/hour</medium></div>
-                    <button class="btn-book">Book Now</button>
+                    @if($vehicle->availability_status === 'available')
+                        <a href="{{ route('bookings.create', $vehicle->plate_no) }}" class="btn-book" style="text-decoration: none; display: inline-block;">Book Now</a>
+                    @else
+                        <button class="btn-book" disabled style="opacity: 0.5; cursor: not-allowed;">Unavailable</button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -265,7 +345,7 @@
                         <img src="{{ $other->image_url ?? asset('car_images/axia.jpg') }}" alt="{{ $other->name }}">
                         <h4>{{ $other->name ?? 'Vehicle' }}</h4>
                         <div class="price">RM{{ number_format($other->price_perHour) }} <medium style="font-size:11px;color:#888">/hour</medium></div>
-                        <a href="{{ route('vehicles.show', $other->plate_no ?? '#') }}" class="view">View Details</a>
+                        <a href="{{ route('vehicles.show', $other->plate_no ?? '#') }}" class="btn-view-details">View Details</a>
                     </div>
                 @endforeach
             @else
@@ -275,7 +355,7 @@
                         <img src="{{ asset('car_images/axia.jpg') }}" alt="Placeholder">
                         <h4>Perodua Bezza 2018</h4>
                         <div class="price">RM260 <medium style="font-size:11px;color:#888">per hour</medium></div>
-                        <a href="#" class="view">View Details</a>
+                        <a href="{{ route('vehicles.show', $other->plate_no ?? '#') }}" class="view">View Details</a>
                     </div>
                 @endfor
             @endif

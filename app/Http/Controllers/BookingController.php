@@ -3,23 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\Customer;
 use App\Models\Vehicle;
-use App\Models\RentalRate;
 use App\Models\Voucher;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class BookingController extends Controller
 {
-     /**
-     * Display a listing of the bookings
+    /**
+     * Display a listing of bookings
      */
     public function index()
     {
         $bookings = Booking::with(['vehicle', 'customer'])
-            ->where('matricNum', Auth::user()->matricNum)
+            ->where('customer_id', Auth::guard('customer')->id())
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -31,25 +33,14 @@ class BookingController extends Controller
      */
     public function create($plateNo)
     {
-        $car = Vehicle::findOrFail($plateNo);
+        $vehicle = Vehicle::where('plate_no', $plateNo)->firstOrFail();
         
-        // Check if car is available
-        if (!$car->isAvailable()) {
-            return redirect()->route('cars.index')
+        if ($vehicle->availability_status !== 'available') {
+            return redirect()->route('vehicles.index')
                 ->with('error', 'This vehicle is not available for booking.');
         }
 
-        // Get rental rates for this vehicle
-        $rentalRates = RentalRate::where('plate_no', $plateNo)
-            ->orderBy('hours')
-            ->get();
-
-        if ($rentalRates->isEmpty()) {
-            return redirect()->route('cars.index')
-                ->with('error', 'No rental rates available for this vehicle.');
-        }
-
-        return view('bookings.create', compact('car', 'rentalRates'));
+        return view('bookings.create', compact('vehicle'));
     }
 
     /**
@@ -57,90 +48,174 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the request
+        \Log::info('=== BOOKING STORE METHOD CALLED ===');
+        
         $validated = $request->validate([
-            'plate_no' => 'required|exists:vehicles,plate_no',
-            'pickup_date' => 'required|date|after:now',
-            'return_date' => 'required|date|after:pickup_date',
-            'matricNum' => 'required|string',
-            'voucher_id' => 'nullable|exists:vouchers,voucher_id',
-            'delivery' => 'nullable|boolean',
-            'terms' => 'required|accepted',
+            'plate_no' => 'required|exists:vehicle,plate_no',
+            'pickup_date' => 'required|date|after_or_equal:today',
+            'pickup_time' => 'required|date_format:H:i',
+            'return_date' => 'required|date|after_or_equal:pickup_date',
+            'return_time' => 'required|date_format:H:i',
+            'pickup_location' => 'required|string',
+            'pickup_college' => 'nullable|string|max:255',
+            'pickup_faculty' => 'nullable|string|max:255',
+            'dropoff_location' => 'required|string',
+            'dropoff_college' => 'nullable|string|max:255',
+            'dropoff_faculty' => 'nullable|string|max:255',
+            'voucher_code' => 'nullable|string',
+            'signature' => 'required|string',
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Get the vehicle
-            $vehicle = Vehicle::findOrFail($validated['plate_no']);
+            // 1. Get Vehicle
+            $vehicle = Vehicle::where('plate_no', $validated['plate_no'])->firstOrFail();
 
-            // Check availability again
-            if (!$vehicle->isAvailable()) {
-                return back()->with('error', 'This vehicle is no longer available.')
-                    ->withInput();
+            if ($vehicle->availability_status !== 'available') {
+                return back()->with('error', 'This vehicle is no longer available.')->withInput();
             }
 
-            // Calculate hours
-            $pickupDate = Carbon::parse($validated['pickup_date']);
-            $returnDate = Carbon::parse($validated['return_date']);
-            $totalHours = (int) ceil($pickupDate->diffInHours($returnDate));
+            // 2. Get Customer
+            $customer = Auth::guard('customer')->user();
 
-            // Find applicable rental rate
-            $applicableRate = RentalRate::findRateForHours($validated['plate_no'], $totalHours);
+            // 3. FIX: Sanitize Dates (Take only first 10 chars YYYY-MM-DD)
+            // This prevents "Double time specification" errors if the input has a time component
+            $pickupDateOnly = substr($validated['pickup_date'], 0, 10);
+            $returnDateOnly = substr($validated['return_date'], 0, 10);
+
+            $pickupDateTime = Carbon::parse($pickupDateOnly . ' ' . $validated['pickup_time']);
+            $returnDateTime = Carbon::parse($returnDateOnly . ' ' . $validated['return_time']);
             
-            if (!$applicableRate) {
-                return back()->with('error', 'No rental rate available for this duration.')
-                    ->withInput();
-            }
+            $totalHours = (int) ceil($pickupDateTime->diffInHours($returnDateTime));
+            $totalPrice = $totalHours * $vehicle->price_perHour;
 
-            // Calculate pricing
-            $rentalPrice = $applicableRate->rate_price;
-            $deposit = 50.00;
-            $deliveryCharge = $request->has('delivery') && $request->delivery ? 15.00 : 0.00;
-            $totalPrice = $rentalPrice + $deposit + $deliveryCharge;
-
-            // Apply voucher if provided
-            $voucherDiscount = 0;
-            if ($validated['voucher_id']) {
-                $voucher = Voucher::find($validated['voucher_id']);
-                if ($voucher && $voucher->isValid()) {
-                    // Apply discount logic here (percentage or fixed)
-                    // Example: 10% discount
-                    $voucherDiscount = $rentalPrice * 0.10;
-                    $totalPrice -= $voucherDiscount;
+            // 4. Apply Voucher
+            $voucherId = null;
+            if (!empty($validated['voucher_code'])) {
+                $voucher = Voucher::where('voucher_code', strtoupper($validated['voucher_code']))
+                    ->where('voucherStatus', 'active')
+                    ->where('expiryDate', '>=', now())
+                    ->first();
+                
+                if ($voucher) {
+                    $discount = ($totalPrice * $voucher->voucherAmount) / 100;
+                    $totalPrice -= $discount;
+                    $voucherId = $voucher->voucher_id;
                 }
             }
 
-            // Create the booking
+            // 5. Format Locations
+            $pickupDetails = $this->formatLocationDetails(
+                $validated['pickup_location'],
+                $validated['pickup_college'] ?? null,
+                $validated['pickup_faculty'] ?? null
+            );
+
+            $dropoffDetails = $this->formatLocationDetails(
+                $validated['dropoff_location'],
+                $validated['dropoff_college'] ?? null,
+                $validated['dropoff_faculty'] ?? null
+            );
+
+            $deliveryRequired = ($validated['pickup_location'] !== 'HASTA office') || 
+                               ($validated['dropoff_location'] !== 'HASTA office');
+
+            // 6. Handle Signature
+            $signaturePath = null;
+            if (!empty($validated['signature'])) {
+                $signatureData = $validated['signature'];
+                if (strpos($signatureData, 'base64,') !== false) {
+                    $signatureData = explode('base64,', $signatureData)[1];
+                }
+                $fileName = 'signatures/' . uniqid() . '.png';
+                Storage::disk('public')->put($fileName, base64_decode($signatureData));
+                $signaturePath = $fileName;
+            }
+
+            // 7. Generate ID & Create Booking
+            $bookingId = 'BKG-' . time() . '-' . rand(100, 999);
+
             $booking = Booking::create([
+                'booking_id' => $bookingId,
+                'customer_id' => $customer->customer_id,
                 'plate_no' => $validated['plate_no'],
-                'matricNum' => $validated['matricNum'],
-                'pickup_date' => $pickupDate,
-                'return_date' => $returnDate,
-                'total_hours' => $totalHours,
+                'pickup_date' => $pickupDateOnly,          // <--- UPDATED: Use sanitized date
+                'pickup_time' => $validated['pickup_time'],
+                'pickup_location' => $validated['pickup_location'],
+                'pickup_details' => $pickupDetails,
+                'return_date' => $returnDateOnly,          // <--- UPDATED: Use sanitized date
+                'return_time' => $validated['return_time'],
+                'dropoff_location' => $validated['dropoff_location'],
+                'dropoff_details' => $dropoffDetails,
+                'delivery_required' => $deliveryRequired,
                 'total_price' => $totalPrice,
-                'deposit' => $deposit,
-                'delivery_charge' => $deliveryCharge,
                 'booking_status' => 'pending',
-                'voucher_id' => $validated['voucher_id'] ?? null,
+                'voucher_id' => $voucherId,
+                'signature' => $signaturePath,
             ]);
 
-            // Update vehicle availability
-            $vehicle->update([
-                'availability_status' => 'rented',
-                'customer_id' => Auth::user()->id,
-            ]);
+            $vehicle->update(['availability_status' => 'booked']);
 
             DB::commit();
 
-            return redirect()->route('bookings.show', $booking->booking_id)
-                ->with('success', 'Booking created successfully! Your booking is pending approval.');
+            return redirect()->route('bookings.payment', $booking->booking_id)
+                ->with('success', 'Booking created successfully! Please complete payment.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            return back()->with('error', 'An error occurred while creating the booking. Please try again.')
-                ->withInput();
+            \Log::error('Booking Error: ' . $e->getMessage());
+            return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    /**
+     * Show payment page for a booking
+     */
+    public function payment($bookingId)
+    {
+        $booking = Booking::with(['vehicle', 'customer', 'voucher'])
+            ->where('booking_id', $bookingId)
+            ->firstOrFail();
+
+        return view('bookings.payment', compact('booking'));
+    }
+
+    /**
+     * Process payment submission
+     */
+    public function storePayment(Request $request, $bookingId)
+    {
+        $validated = $request->validate([
+            'payment_proof' => 'required|file|mimes:pdf,png,jpg,jpeg|max:5120', // 5MB max
+            'payment_method' => 'nullable|string',
+        ]);
+
+        try {
+            $booking = Booking::findOrFail($bookingId);
+
+            // Upload payment proof
+            $file = $request->file('payment_proof');
+            $fileName = 'payment_proofs/' . $booking->booking_id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public', $fileName);
+
+            // Create payment record
+            Payment::create([
+                'booking_id' => $booking->booking_id,
+                'amount' => $booking->total_price,
+                'payment_method' => $validated['payment_method'] ?? 'online',
+                'payment_status' => 'pending',
+                'payment_date' => now(),
+                'payment_proof' => $fileName,
+                'deposit' => 0,
+                'remaining_payment' => $booking->total_price,
+            ]);
+
+            return redirect()->route('bookings.show', $booking->booking_id)
+                ->with('success', 'Payment proof uploaded successfully! Your booking is pending approval.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
 
@@ -149,13 +224,9 @@ class BookingController extends Controller
      */
     public function show($id)
     {
-        $booking = Booking::with(['vehicle', 'customer', 'voucher'])
-            ->findOrFail($id);
-
-        // Check if user owns this booking
-        if ($booking->matricNum !== Auth::user()->matricNum && !Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized access to booking.');
-        }
+        $booking = Booking::with(['vehicle', 'customer', 'voucher', 'payments'])
+            ->where('booking_id', $id)
+            ->firstOrFail();
 
         return view('bookings.show', compact('booking'));
     }
@@ -165,15 +236,9 @@ class BookingController extends Controller
      */
     public function cancel($id)
     {
-        $booking = Booking::findOrFail($id);
+        $booking = Booking::where('booking_id', $id)->firstOrFail();
 
-        // Check if user owns this booking
-        if ($booking->matricNum !== Auth::user()->matricNum) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        // Check if booking can be cancelled
-        if (!$booking->isPending() && !$booking->isConfirmed()) {
+        if (!in_array($booking->booking_status, ['pending', 'confirmed'])) {
             return back()->with('error', 'This booking cannot be cancelled.');
         }
 
@@ -181,11 +246,13 @@ class BookingController extends Controller
         try {
             // Update booking status
             $booking->update(['booking_status' => 'cancelled']);
-
+            
             // Make vehicle available again
-            $booking->vehicle->update([
-                'availability_status' => 'available',
-                'customer_id' => null,
+            $booking->vehicle->update(['availability_status' => 'available']);
+
+            // Update payment status if exists
+            $booking->payments()->where('payment_status', 'pending')->update([
+                'payment_status' => 'refunded'
             ]);
 
             DB::commit();
@@ -195,57 +262,22 @@ class BookingController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
             return back()->with('error', 'An error occurred while cancelling the booking.');
         }
     }
 
     /**
-     * Admin: Confirm a booking
+     * Helper method to format location details
      */
-    public function confirm($id)
+    private function formatLocationDetails($location, $college = null, $faculty = null)
     {
-        $booking = Booking::findOrFail($id);
-
-        if (!$booking->isPending()) {
-            return back()->with('error', 'Only pending bookings can be confirmed.');
+        if ($location === 'HASTA office') {
+            return 'HASTA Office';
+        } elseif ($location === 'Residential College' && $college) {
+            return $college;
+        } elseif ($location === 'Faculty' && $faculty) {
+            return $faculty;
         }
-
-        $booking->update(['booking_status' => 'confirmed']);
-
-        return back()->with('success', 'Booking confirmed successfully.');
-    }
-
-    /**
-     * Admin: Complete a booking
-     */
-    public function complete($id)
-    {
-        $booking = Booking::findOrFail($id);
-
-        if (!$booking->isConfirmed()) {
-            return back()->with('error', 'Only confirmed bookings can be completed.');
-        }
-
-        DB::beginTransaction();
-        try {
-            // Update booking status
-            $booking->update(['booking_status' => 'completed']);
-
-            // Make vehicle available again
-            $booking->vehicle->update([
-                'availability_status' => 'available',
-                'customer_id' => null,
-            ]);
-
-            DB::commit();
-
-            return back()->with('success', 'Booking completed successfully.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            return back()->with('error', 'An error occurred while completing the booking.');
-        }
+        return $location;
     }
 }
