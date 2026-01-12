@@ -875,8 +875,6 @@
                         <p>All customer are limit to Johor state area only for 1 day rental. Minimum rental for 2 days for rental area outside Johor state area. If the customer fails to comply, penalty will be charge 1 day rental extra and deposit will be burn.</p>
                     </div>
                 </div>
-
-                <p class="preview-note">* This is a preview. Full rental agreement PDF will be generated upon booking confirmation.</p>
             </div>
             
             <label class="checkbox-label">
