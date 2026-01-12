@@ -6,7 +6,7 @@
 
 @section('content')
 
-    @include('components.booking-timeline', ['bookingStatus' => $booking->booking_status, 'booking' => $booking])
+@include('components.booking-timeline', ['bookingStatus' => $booking->booking_status, 'booking' => $booking])
     
 <style>
     body { 

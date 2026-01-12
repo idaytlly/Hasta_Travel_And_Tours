@@ -6,11 +6,8 @@
 
 @section('content')
 
-    @include('components.booking-timeline', ['currentStep' => 1])
-    
-    <div class="booking-container">
-        <!-- Your existing booking form -->
-    </div>
+@include('components.booking-timeline', ['currentStep' => 1])
+
 
 <style>
     body { padding-top: 70px; }
@@ -513,7 +510,7 @@
             
             <!-- Delivery Notice -->
             <div id="deliveryNotice" class="delivery-notice" style="display: none;">
-                <p>⚠️ Delivery service will be charged for this booking</p>
+                <p>⚠️ RM 15 delivery fee applies (shown at payment).</p>
             </div>
             
             <!-- Voucher Section -->
@@ -775,11 +772,11 @@
         
         if (vouchers[code]) {
             voucherDiscount = vouchers[code];
-            msg.textContent = `✓ Voucher applied: ${voucherDiscount}% discount`;
+            msg.textContent = `Voucher applied: ${voucherDiscount}% discount`;
             msg.style.display = 'block';
             calculatePrice();
         } else if (code) {
-            msg.textContent = '✗ Invalid voucher code';
+            msg.textContent = 'Invalid voucher code';
             msg.style.color = '#dc2626';
             msg.style.display = 'block';
             voucherDiscount = 0;
