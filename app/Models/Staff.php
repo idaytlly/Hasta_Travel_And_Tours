@@ -20,9 +20,10 @@ class Staff extends Authenticatable
         'name',
         'email',
         'phone_no',
+        'ic_number', 
         'password',
         'role',
-        'is_active'
+        'is_active',
     ];
 
     protected $hidden = [
@@ -82,14 +83,14 @@ class Staff extends Authenticatable
         return $this->role === 'admin';
     }
 
-    public function isManager()
-    {
-        return $this->role === 'manager';
-    }
-
     public function isRegularStaff()
     {
         return $this->role === 'staff';
+    }
+
+    public function isRunner()
+    {
+        return $this->role === 'runner';
     }
 
     public function getFullInfo()
@@ -105,7 +106,7 @@ class Staff extends Authenticatable
         ];
     }
 
-    // Check permissions
+    // Check permissions (simplified - no manager)
     public function canAccess($resource)
     {
         // Admin can access everything
@@ -113,16 +114,24 @@ class Staff extends Authenticatable
             return true;
         }
 
-        // Manager can access most things
-        if ($this->isManager()) {
-            return in_array($resource, ['dashboard', 'bookings', 'vehicles', 'customers', 'vouchers', 'reports']);
-        }
-
         // Regular staff can access basic features
         if ($this->isRegularStaff()) {
             return in_array($resource, ['dashboard', 'bookings', 'vehicles', 'customers']);
         }
 
+        // Runner can only access delivery
+        if ($this->isRunner()) {
+            return $resource === 'delivery';
+        }
+
         return false;
+    }
+
+    /**
+     * Get the unique identifier for the user.
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'email'; // Staff authenticates using email
     }
 }

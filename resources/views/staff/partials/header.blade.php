@@ -1,3 +1,4 @@
+@ -1,192 +0,0 @@
 <div class="bg-white border-b border-gray-200 px-8 py-4">
     <div class="flex items-center justify-between">
         <div>
