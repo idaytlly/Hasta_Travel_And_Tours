@@ -273,12 +273,12 @@
             
             <div class="info-group">
                 <div class="info-label">Customer Name</div>
-                <div class="info-value">{{ $booking->customer->name }}</div>
+                <div class="info-value">{{ $booking->customers->name }}</div>
             </div>
             
             <div class="info-group">
                 <div class="info-label">Phone Number</div>
-                <div class="info-value">{{ $booking->customer->phone_no }}</div>
+                <div class="info-value">{{ $booking->customers->phone_no }}</div>
             </div>
             
             <div class="divider"></div>

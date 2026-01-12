@@ -40,16 +40,18 @@ class BookingController extends Controller
     /**
      * Show booking creation form
      */
-    public function create()
+    public function create($plate_no)
     {
         if (!Auth::guard('customer')->check()) {
             return redirect()->route('login')->with('info', 'Please login to make a booking.');
         }
 
+        $vehicle = Vehicle::where('plate_no', $plate_no)->firstOrFail();
+
         $vehicles = Vehicle::where('availability_status', 'available')->get();
         $vouchers = Voucher::where('voucherStatus', 'active')->get();
 
-        return view('bookings.create', compact('vehicles', 'vouchers'));
+        return view('bookings.create', compact('vehicle', 'vehicles', 'vouchers'));
     }
 
     /**
@@ -60,7 +62,7 @@ class BookingController extends Controller
         Log::info('=== BOOKING STORE METHOD CALLED ===');
         
         $validated = $request->validate([
-            'plate_no' => 'required|exists:vehicles,plate_no',
+            'plate_no' => 'required|exists:vehicle,plate_no',
             'pickup_date' => 'required|date|after_or_equal:today',
             'pickup_time' => 'required|date_format:H:i',
             'return_date' => 'required|date|after_or_equal:pickup_date',
@@ -75,6 +77,7 @@ class BookingController extends Controller
             'signature' => 'required|string',
         ]);
 
+        $customer = Auth::guard('customer')->user();
         DB::beginTransaction();
         try {
             // Vehicle
@@ -179,7 +182,7 @@ class BookingController extends Controller
      */
     public function payment($bookingId)
     {
-        $booking = Booking::with(['vehicle', 'customer', 'voucher'])
+        $booking = Booking::with(['vehicle', 'customers', 'voucher'])
             ->where('booking_id', $bookingId)
             ->firstOrFail();
 
