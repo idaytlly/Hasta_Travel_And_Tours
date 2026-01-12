@@ -660,16 +660,6 @@
                             <p>{{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('F j, Y g:i A') : 'N/A' }}</p>
                         </div>
                     </div>
-                    @if($payment->payment_proof)
-                        <div class="customer-field">
-                            <label>Payment Proof</label>
-                            <p>
-                                <a href="{{ asset('storage/' . $payment->payment_proof) }}" target="_blank" style="color: #d93025; font-weight: 600; text-decoration: underline;">
-                                    View Payment Proof →
-                                </a>
-                            </p>
-                        </div>
-                    @endif
                 </div>
             @endif
             
