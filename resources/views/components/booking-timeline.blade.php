@@ -1,6 +1,7 @@
 {{-- 
     Booking Timeline Component
     Usage: @include('components.booking-timeline', ['currentStep' => 1, 'bookingStatus' => 'pending'])
+    Or: @include('components.booking-timeline', ['bookingStatus' => $booking->booking_status, 'booking' => $booking])
     
     Steps:
     1 - Booking Details (creating booking)
@@ -8,6 +9,7 @@
     3 - Pending Approval (waiting for admin approval)
     4 - Pick Up Car (with inspection form)
     5 - Drop Off Car (with inspection form)
+    6 - Completed (rental finished)
 --}}
 
 @php
@@ -17,15 +19,16 @@
         3 => ['title' => 'Pending Approval', 'desc' => 'Waiting for confirmation'],
         4 => ['title' => 'Pick Up Car', 'desc' => 'Vehicle inspection & handover'],
         5 => ['title' => 'Drop Off Car', 'desc' => 'Return & final inspection'],
+        6 => ['title' => 'Completed', 'desc' => 'Rental finished'],
     ];
     
     // Determine current step based on booking status if not explicitly set
     if (!isset($currentStep)) {
         $currentStep = match($bookingStatus ?? 'pending') {
-            'pending' => $booking->payments->isEmpty() ? 2 : 3,
+            'pending' => (isset($booking) && $booking->payments->isEmpty()) ? 2 : 3,
             'confirmed' => 4,
-            'active' => 4,
-            'completed' => 5,
+            'active' => 5, // Car is picked up, next is drop off
+            'completed' => 6, // FIXED: Changed from 5 to 6
             default => 1
         };
     }
@@ -218,15 +221,16 @@
 <div class="booking-timeline">
     <div class="timeline-container">
         <div class="timeline-line">
-            <div class="timeline-progress" style="width: {{ ($currentStep - 1) * 25 }}%"></div>
+            <div class="timeline-progress" style="width: {{ $currentStep >= 6 ? 100 : ($currentStep - 1) * 20 }}%"></div>
         </div>
         
         @foreach($steps as $stepNum => $step)
-            <div class="timeline-step {{ $stepNum < $currentStep ? 'completed' : ($stepNum == $currentStep ? 'active' : 'pending') }}">
+            <div class="timeline-step {{ $stepNum < $currentStep ? 'completed' : ($stepNum == $currentStep ? ($stepNum == 6 ? 'completed' : 'active') : 'pending') }}">
                 <div class="step-circle">
-                    <span>{{ $stepNum }}</span>
-                    @if($stepNum < $currentStep)
-                        <div class="step-checkmark">✓</div>
+                    @if($stepNum < $currentStep || ($stepNum == $currentStep && $stepNum == 6))
+                        <span>✓</span>
+                    @else
+                        <span>{{ $stepNum }}</span>
                     @endif
                 </div>
                 <div class="step-content">

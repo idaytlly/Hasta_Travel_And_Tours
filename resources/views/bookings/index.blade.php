@@ -146,25 +146,31 @@
     .status-pending {
         background: #fef3c7;
         color: #92400e;
-        border: 1px solid #fbbf24;
+        border: 2px solid #fbbf24;
     }
     
     .status-confirmed {
         background: #d1fae5;
         color: #065f46;
-        border: 1px solid #10b981;
+        border: 2px solid #10b981;
+    }
+    
+    .status-active {
+        background: #dbeafe;
+        color: #1e40af;
+        border: 2px solid #3b82f6;
     }
     
     .status-completed {
         background: #e5e7eb;
         color: #374151;
-        border: 1px solid #9ca3af;
+        border: 2px solid #9ca3af;
     }
     
     .status-cancelled {
         background: #fee2e2;
         color: #991b1b;
-        border: 1px solid #ef4444;
+        border: 2px solid #ef4444;
     }
     
     .booking-date-text {
@@ -389,7 +395,6 @@
     
     @if($bookings->isEmpty())
         <div class="empty-state">
-            <div class="empty-state-icon">🚗</div>
             <h2>No Bookings Yet</h2>
             <p>Start by creating your first car rental booking</p>
             <a href="{{ route('vehicles.index') }}" class="btn-new-booking">

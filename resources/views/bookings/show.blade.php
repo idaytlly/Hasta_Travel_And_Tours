@@ -8,10 +8,6 @@
 
     @include('components.booking-timeline', ['bookingStatus' => $booking->booking_status, 'booking' => $booking])
     
-    <div class="booking-details-container">
-        <!-- Your existing booking details -->
-    </div>
-
 <style>
     body { 
         padding-top: 70px;

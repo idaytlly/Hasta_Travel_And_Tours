@@ -515,10 +515,8 @@
     </form>
 </div>
 
-const fuelInput = document.getElementById('fuel-input');
-
 <script>
-// Photo Upload Handlers
+// Photo Upload Handlers for 4 sides
 document.querySelectorAll('.photo-upload-box input[type="file"]').forEach(input => {
     input.addEventListener('change', function(e) {
         const box = this.closest('.photo-upload-box');
@@ -528,36 +526,44 @@ document.querySelectorAll('.photo-upload-box input[type="file"]').forEach(input 
             const reader = new FileReader();
             reader.onload = function(e) {
                 box.classList.add('has-image');
+                const side = input.dataset.side;
+                const sideLabel = side.charAt(0).toUpperCase() + side.slice(1);
+                
                 box.innerHTML = `
                     <div class="photo-preview-container">
                         <img src="${e.target.result}" alt="Preview" class="photo-preview-img">
                         <button type="button" class="remove-photo-btn">×</button>
-                        <div class="photo-label-display">${input.dataset.side ? input.dataset.side.charAt(0).toUpperCase() + input.dataset.side.slice(1) + ' view' : 'Fuel gauge'} uploaded</div>
+                        <div class="photo-label-display">${sideLabel} view uploaded</div>
                     </div>
                 `;
                 
                 // Re-attach input
-                const newInput = input.cloneNode(true);
+                const newInput = document.createElement('input');
+                newInput.type = 'file';
+                newInput.name = input.name;
+                newInput.accept = 'image/*';
+                newInput.dataset.side = side;
                 newInput.style.display = 'none';
+                newInput.files = input.files; // Transfer the file
                 box.appendChild(newInput);
                 
                 // Add remove handler
-                box.querySelector('.remove-photo-btn').addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    resetPhotoBox(box, input.name, input.dataset.side);
+                box.querySelector('.remove-photo-btn').addEventListener('click', function(evt) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    resetPhotoBox(box, input.name, side);
                 });
                 
                 // Re-attach change event
-                newInput.addEventListener('change', input.onchange);
+                newInput.addEventListener('change', arguments.callee);
             };
             reader.readAsDataURL(file);
         }
     });
 });
 
-// Fuel photo upload
-document.getElementById('fuel-input').addEventListener('change', function(e) {
+// Fuel photo upload handler with DataTransfer to preserve file
+const handleFuelUpload = function(e) {
     const box = document.getElementById('fuel-box');
     const file = this.files[0];
     
@@ -579,19 +585,27 @@ document.getElementById('fuel-input').addEventListener('change', function(e) {
             newInput.accept = 'image/*';
             newInput.id = 'fuel-input';
             newInput.style.display = 'none';
+            
+            // Use DataTransfer to properly set the file
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            newInput.files = dataTransfer.files;
+            
             box.appendChild(newInput);
             
-            box.querySelector('.remove-photo-btn').addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+            box.querySelector('.remove-photo-btn').addEventListener('click', function(evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
                 resetFuelBox();
             });
             
-            newInput.addEventListener('change', document.getElementById('fuel-input').onchange);
+            newInput.addEventListener('change', handleFuelUpload);
         };
         reader.readAsDataURL(file);
     }
-});
+};
+
+document.getElementById('fuel-input').addEventListener('change', handleFuelUpload);
 
 function resetPhotoBox(box, inputName, side) {
     const sideLabels = {
@@ -611,8 +625,44 @@ function resetPhotoBox(box, inputName, side) {
         </div>
     `;
     
-    box.querySelector('input').addEventListener('change', function(e) {
-        document.querySelector(`input[name="${inputName}"]`).dispatchEvent(new Event('change'));
+    const newInput = box.querySelector('input');
+    newInput.addEventListener('change', function(e) {
+        const box = this.closest('.photo-upload-box');
+        const file = this.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                box.classList.add('has-image');
+                const sideLabel = side.charAt(0).toUpperCase() + side.slice(1);
+                
+                box.innerHTML = `
+                    <div class="photo-preview-container">
+                        <img src="${e.target.result}" alt="Preview" class="photo-preview-img">
+                        <button type="button" class="remove-photo-btn">×</button>
+                        <div class="photo-label-display">${sideLabel} view uploaded</div>
+                    </div>
+                `;
+                
+                const reInput = document.createElement('input');
+                reInput.type = 'file';
+                reInput.name = inputName;
+                reInput.accept = 'image/*';
+                reInput.dataset.side = side;
+                reInput.style.display = 'none';
+                reInput.files = file;
+                box.appendChild(reInput);
+                
+                box.querySelector('.remove-photo-btn').addEventListener('click', function(evt) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    resetPhotoBox(box, inputName, side);
+                });
+                
+                reInput.addEventListener('change', arguments.callee);
+            };
+            reader.readAsDataURL(file);
+        }
     });
 }
 
@@ -628,11 +678,7 @@ function resetFuelBox() {
         </div>
     `;
     
-    document.getElementById('fuel-input').addEventListener('change', function(e) {
-        // Re-trigger the original handler
-        const event = new Event('change', { bubbles: true });
-        this.dispatchEvent(event);
-    });
+    document.getElementById('fuel-input').addEventListener('change', handleFuelUpload);
 }
 
 // Character counter for remarks
@@ -712,40 +758,35 @@ document.getElementById('clear-signature').addEventListener('click', function() 
     signatureData.value = '';
 });
 
-// Form Validation
+// Form Validation - FIXED VERSION
 document.getElementById('inspection-form').addEventListener('submit', function(e) {
-    console.log('Form submit triggered');
     const errors = [];
     
-    // Check photos
-    const photoInputs = ['photo_front', 'photo_back', 'photo_left', 'photo_right', 'photo_fuel'];
-    // Car photos
+    // Check car photos (4 sides)
     ['photo_front', 'photo_back', 'photo_left', 'photo_right'].forEach(name => {
         const input = document.querySelector(`input[name="${name}"]`);
         if (!input || input.files.length === 0) {
-            errors.push(`${name.replace('photo_', '')} photo is required`);
+            const side = name.replace('photo_', '').charAt(0).toUpperCase() + name.replace('photo_', '').slice(1);
+            errors.push(`${side} photo is required`);
         }
     });
 
-    // Fuel photo (SPECIAL CASE)
-    if (!fuelInput || fuelInput.files.length === 0) {
-        errors.push('fuel photo is required');
+    // Check fuel photo - Query the actual current input element
+    const currentFuelInput = document.querySelector('input[name="photo_fuel"]');
+    
+    if (!currentFuelInput || currentFuelInput.files.length === 0) {
+        errors.push('Fuel gauge photo is required');
     }
-
     
     // Check remarks
-    console.log('Remarks length:', remarksField.value.trim().length);
     if (remarksField.value.trim().length < 10) {
         errors.push('Remarks must be at least 10 characters long');
     }
     
     // Check signature
-    console.log('Signature data exists:', !!signatureData.value);
     if (!signatureData.value) {
         errors.push('Signature is required');
     }
-    
-    console.log('Total errors:', errors.length);
     
     if (errors.length > 0) {
         e.preventDefault();
@@ -762,7 +803,7 @@ document.getElementById('inspection-form').addEventListener('submit', function(e
         return false;
     }
     
-    console.log('Form validation passed, submitting...');
+    return true;
 });
 </script>
 @endsection
