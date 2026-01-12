@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class BookingController extends Controller
@@ -110,7 +111,7 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
-        \Log::info('=== BOOKING STORE METHOD CALLED ===');
+        Log::info('=== BOOKING STORE METHOD CALLED ===');
         
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
@@ -193,16 +194,28 @@ class BookingController extends Controller
             // 5. Apply Voucher Discount
             $voucherId = null;
             $discountAmount = 0;
+
             if (!empty($validated['voucher_code'])) {
                 $voucher = Voucher::where('voucherCode', strtoupper($validated['voucher_code']))
                     ->where('voucherStatus', 'active')
+                    ->where('is_used', false)
                     ->where('expiryDate', '>=', now())
                     ->first();
                 
                 if ($voucher) {
-                    // Calculate discount based on RENTAL PRICE ONLY (not including delivery)
+                    // Check if voucher belongs to this customer
+                    if ($voucher->customer_id && $voucher->customer_id !== $customer->customer_id) {
+                        return back()->with('error', 'This voucher code is not valid for your account.')->withInput();
+                    }
+                    
+                    // Calculate discount based on RENTAL PRICE ONLY
                     $discountAmount = ($rentalPrice * $voucher->voucherAmount) / 100;
                     $voucherId = $voucher->voucher_id;
+                    
+                    // Mark voucher as used immediately
+                    $voucher->markAsUsed();
+                } else {
+                    return back()->with('error', 'Invalid or expired voucher code.')->withInput();
                 }
             }
             
@@ -301,7 +314,7 @@ class BookingController extends Controller
     public function storePayment(Request $request, $bookingId)
     {
         $validated = $request->validate([
-            'payment_proof' => 'required|file|mimes:pdf,png,jpg,jpeg|max:5120', // 5MB max
+            'payment_proof' => 'required|file|mimes:pdf,png,jpg,jpeg|max:5120',
             'payment_method' => 'nullable|string',
         ]);
 
@@ -324,12 +337,100 @@ class BookingController extends Controller
                 'deposit' => 0,
                 'remaining_payment' => $booking->total_price,
             ]);
+            
+            // ⭐ Award stamp if booking >= 7 hours
+            $this->awardStamps($booking);
 
             return redirect()->route('bookings.show', $booking->booking_id)
                 ->with('success', 'Payment proof uploaded successfully! Your booking is pending approval.');
 
         } catch (\Exception $e) {
             return back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
+    }
+    /**
+     * Award stamps after booking completion 
+     */
+    private function awardStamps($booking)
+    {
+        try {
+            // Don't award if already awarded
+            if ($booking->stamp_awarded) {
+                return;
+            }
+            
+            // Calculate booking hours
+            $totalHours = $booking->calculateTotalHours();
+            
+            // Only award stamp if booking is 7+ hours
+            if ($totalHours >= 7) {
+                // Update booking to mark stamp as awarded
+                $booking->update([
+                    'stamps_earned' => 1,
+                    'stamp_awarded' => true,
+                ]);
+                
+                // Check if customer reached a milestone
+                $totalStamps = Booking::where('customer_id', $booking->customer_id)
+                    ->where('stamp_awarded', true)
+                    ->sum('stamps_earned');
+                
+                $this->checkAndGenerateVoucher($booking->customer_id, $totalStamps);
+                
+                \Log::info('Stamp awarded', [
+                    'customer_id' => $booking->customer_id,
+                    'booking_id' => $booking->booking_id,
+                    'total_stamps' => $totalStamps,
+                    'booking_hours' => $totalHours
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error awarding stamp: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Generate voucher when customer reaches milestones (3, 9, 12 stamps)
+     */
+    private function checkAndGenerateVoucher($customerId, $totalStamps)
+    {
+        $milestones = [
+            3 => 20,  // 3 stamps = 20% discount
+            9 => 30,  // 9 stamps = 30% discount
+            12 => 50, // 12 stamps = 50% discount
+        ];
+        
+        foreach ($milestones as $stampCount => $discountPercent) {
+            if ($totalStamps == $stampCount) {
+                // Check if voucher already exists for this milestone
+                $existingVoucher = Voucher::where('customer_id', $customerId)
+                    ->where('stamp_milestone', $stampCount)
+                    ->first();
+                
+                if (!$existingVoucher) {
+                    // Generate unique voucher code
+                    $voucherCode = 'STAMP' . $stampCount . '-' . strtoupper(substr(md5($customerId . time()), 0, 6));
+                    
+                    Voucher::create([
+                        'voucher_id' => 'VOU-' . time() . '-' . rand(100, 999),
+                        'customer_id' => $customerId,
+                        'voucherCode' => $voucherCode,
+                        'voucherAmount' => $discountPercent,
+                        'stamp_milestone' => $stampCount,
+                        'used_count' => 0,
+                        'is_used' => false,
+                        'expiryDate' => now()->addMonths(6), // Valid for 6 months
+                        'voucherStatus' => 'active',
+                    ]);
+                    
+                    \Log::info('Voucher generated', [
+                        'customer_id' => $customerId,
+                        'voucher_code' => $voucherCode,
+                        'discount' => $discountPercent . '%',
+                        'milestone' => $stampCount
+                    ]);
+                }
+            }
         }
     }
 
