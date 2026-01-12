@@ -10,7 +10,7 @@ class Inspection extends Model
 {
     use HasFactory;
 
-    protected $table = 'inspection';
+    protected $table = 'inspections';
     protected $primaryKey = 'inspection_id';
     public $incrementing = false;
     protected $keyType = 'string';

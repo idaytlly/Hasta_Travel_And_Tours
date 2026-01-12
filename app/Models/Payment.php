@@ -103,11 +103,6 @@ class Payment extends Model
         return $query->where('payment_status', 'pending');
     }
 
-    public function scopePaid($query)
-    {
-        return $query->where('payment_status', 'paid');
-    }
-
     public function scopeFailed($query)
     {
         return $query->where('payment_status', 'failed');

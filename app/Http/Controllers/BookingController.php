@@ -44,7 +44,10 @@ class BookingController extends Controller
                 ->with('error', 'This vehicle is not available for booking.');
         }
 
-        return view('bookings.create', compact('vehicle'));
+        $vehicles = Vehicle::where('availability_status', 'available')->get();
+        $vouchers = Voucher::where('voucherStatus', 'active')->get();
+
+        return view('bookings.create', compact('vehicle', 'vehicles', 'vouchers'));
     }
 
     /**
@@ -138,6 +141,7 @@ class BookingController extends Controller
                         ->withInput();
         }
 
+        $customer = Auth::guard('customer')->user();
         DB::beginTransaction();
         try {
             DB::beginTransaction();
@@ -474,6 +478,16 @@ class BookingController extends Controller
         // Validate inspection type
         if (!in_array($type, ['pickup', 'dropoff'])) {
             abort(404, 'Invalid inspection type.');
+
+        $vehicle = Vehicle::where('plate_no', $booking->plate_no)->first();
+        if ($vehicle) $vehicle->update(['availability_status' => 'available']);
+
+        $booking = $customer->bookings()->findOrFail($id);
+
+        $request->validate(['cancellation_reason' => 'required|string|max:500']);
+
+        if (!in_array($booking->booking_status, ['pending', 'confirmed'])) {
+            return back()->with('error', 'Only pending or confirmed bookings can be cancelled.');
         }
         
         // Check if booking status allows inspection
