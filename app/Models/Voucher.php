@@ -28,13 +28,11 @@ class Voucher extends Model
         'voucherStatus',
         'expiryDate',
         'used_count',
-        'max_usage',
-        'minimum_spend',
-        'description'
+        'expiryDate',
+        'voucherStatus',
     ];
 
     protected $casts = [
-        'voucherAmount' => 'decimal:2',
         'expiryDate' => 'date',
         'is_used' => 'boolean',
     ];

@@ -25,9 +25,10 @@ class Payment extends Model
         'payment_proof',
         'payment_method',
         'transaction_id',
-        'payment_notes',
         'verified_by_staff',
-        'verified_at'
+        'verified_at',
+        'refunded_by_staff',
+        'refunded_at',
     ];
 
     protected $casts = [
@@ -65,12 +66,38 @@ class Payment extends Model
         return $this->belongsTo(Staff::class, 'verified_by_staff', 'staff_id');
     }
 
-    // Scopes
-    public function scopePaid($query)
+    public function refundedByStaff()
     {
-        return $query->where('payment_status', 'paid');
+        return $this->belongsTo(Staff::class, 'refunded_by_staff', 'staff_id');
     }
 
+    // Status check methods
+    public function isPending()
+    {
+        return $this->payment_status === 'pending';
+    }
+
+    public function isPaid()
+    {
+        return $this->payment_status === 'paid';
+    }
+
+    public function isFailed()
+    {
+        return $this->payment_status === 'failed';
+    }
+
+    public function isRefunded()
+    {
+        return $this->payment_status === 'refunded';
+    }
+
+    public function isPartiallyPaid()
+    {
+        return $this->payment_status === 'partially_paid';
+    }
+
+    // Scopes
     public function scopePending($query)
     {
         return $query->where('payment_status', 'pending');
@@ -86,50 +113,33 @@ class Payment extends Model
         return $query->where('payment_status', 'refunded');
     }
 
-    public function scopeVerified($query)
+    public function scopePartiallyPaid($query)
     {
-        return $query->whereNotNull('verified_by_staff');
+        return $query->where('payment_status', 'partially_paid');
     }
 
-    // Attributes
-    public function getIsVerifiedAttribute()
+    // Get payment proof URL
+    public function getPaymentProofUrlAttribute()
     {
-        return !is_null($this->verified_by_staff);
-    }
-
-    public function getStatusBadgeAttribute()
-    {
-        $badges = [
-            'pending' => 'warning',
-            'paid' => 'success',
-            'failed' => 'danger',
-            'refunded' => 'info'
-        ];
-        
-        $color = $badges[$this->payment_status] ?? 'secondary';
-        
-        return "<span class='badge bg-{$color}'>{$this->payment_status}</span>";
-    }
-
-    public function getFormattedAmountAttribute()
-    {
-        return 'RM ' . number_format($this->amount, 2);
-    }
-
-    public static function generatePaymentId($type = 'PAY')
-    {
-        $date = now()->format('Ymd');
-        $lastPayment = self::where('payment_id', 'like', "{$type}{$date}%")
-                          ->orderBy('payment_id', 'desc')
-                          ->first();
-        
-        if ($lastPayment) {
-            $lastNumber = intval(substr($lastPayment->payment_id, -3));
-            $nextNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        } else {
-            $nextNumber = '001';
+        if ($this->payment_proof) {
+            return asset('storage/' . $this->payment_proof);
         }
-        
-        return "{$type}{$date}{$nextNumber}";
+        return null;
+    }
+
+    // Calculate if full payment is complete
+    public function isFullyPaid()
+    {
+        return $this->payment_status === 'paid' || $this->remaining_payment <= 0;
+    }
+
+    // Get payment completion percentage
+    public function getPaymentProgressAttribute()
+    {
+        if ($this->amount <= 0) {
+            return 0;
+        }
+        $paid = $this->amount - $this->remaining_payment;
+        return round(($paid / $this->amount) * 100, 2);
     }
 }
