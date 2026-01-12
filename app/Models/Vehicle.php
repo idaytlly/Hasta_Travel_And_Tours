@@ -3,59 +3,148 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Vehicle extends Model
 {
-    protected $table = 'vehicle';
-    // Primary key is plate_no (string), not auto-incrementing
+    use HasFactory;
+
     protected $primaryKey = 'plate_no';
     public $incrementing = false;
     protected $keyType = 'string';
     
+    protected $table = 'vehicle'; // Explicitly set table name
+    
     protected $fillable = [
         'plate_no',
-        'brand',
-        'model',
+        'name',
+        'color',
         'year',
-        'category',
-        'image',
-        'price_per_hour',
-        'availability_status'
+        'vehicle_type',
+        'roadtax_expiry',
+        'transmission',
+        'fuel_type',
+        'seating_capacity',
+        'price_perHour',
+        'display_image',
+        'images',
+        'description',
+        'distance_travelled',
+        'availability_status',
+        'maintenance_notes',
+        'staff_id',
     ];
-
-    public function bookings()
+    
+    protected $casts = [
+        'features' => 'array',
+        'images' => 'array',
+        'year' => 'integer',
+        'seating_capacity' => 'integer',
+        'price_perHour' => 'decimal:2',
+        'distance_travelled' => 'decimal:2',
+    ];
+    
+    // Relationship with staff
+    public function staff()
     {
-        return $this->hasMany(Booking::class);
+        return $this->belongsTo(Staff::class, 'staff_id', 'staff_id');
+    }
+
+
+    /**
+     * Get the vehicle's image URLs
+     * Images are stored in: storage/app/public/vehicles/{plate_no}/
+     */
+    public function getImageUrls(): array
+    {
+        $images = [];
+        
+        // Check if images are stored as JSON in database
+        if ($this->images && is_array($this->images)) {
+            foreach ($this->images as $imagePath) {
+                $images[] = Storage::url($imagePath);
+            }
+        }
+        
+        return $images;
     }
 
     /**
-     * Get a full URL to the vehicle image.
-     *
-     * Priority:
-     * 1. If image exists under public/ (e.g. public/car_images/...), use asset()
-     * 2. If image exists on the public storage disk (storage/app/public/...), use Storage::url()
-     * 3. Fallback to a placeholder in public/images/placeholder-car.png
+     * Get the first image URL
      */
-    public function getImageUrlAttribute()
+    public function getFirstImageUrl(): ?string
     {
-        if (! $this->image) {
-            return asset('images/placeholder-car.png');
-        }
+        $images = $this->getImageUrls();
+        return $images[0] ?? null;
+    }
 
-        // If file exists directly under public/, return that URL
-        if (file_exists(public_path($this->image))) {
-            return asset($this->image);
-        }
+    /**
+     * Relationship with bookings
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'plate_no', 'plate_no');
+    }
 
-        // If file exists on the public storage disk (storage/app/public), return its storage URL
-        if (Storage::disk('public')->exists($this->image)) {
-            return Storage::url($this->image); // typically /storage/<path>
-        }
+    /**
+     * Scope for available vehicles
+     */
+    public function scopeAvailable($query)
+    {
+        return $query->where('availability_status', 'available');
+    }
 
-        // Final fallback
-        return asset('images/placeholder-car.png');
+    /**
+     * Scope for vehicles under maintenance
+     */
+    public function scopeMaintenance($query)
+    {
+        return $query->where('availability_status', 'maintenance');
+    }
+
+    /**
+     * Scope for booked vehicles
+     */
+    public function scopeBooked($query)
+    {
+        return $query->where('availability_status', 'booked');
+    }
+
+    /**
+     * Get formatted price
+     */
+    public function getFormattedPriceAttribute(): string
+    {
+        return 'RM ' . number_format($this->price_perHour, 2) . '/hour';
+    }
+
+    /**
+     * Check if vehicle is available
+     */
+    public function isAvailable(): bool
+    {
+        return $this->availability_status === 'available';
+    }
+
+    /**
+     * Check if vehicle is under maintenance
+     */
+    public function isUnderMaintenance(): bool
+    {
+        return $this->availability_status === 'maintenance';
+    }
+
+    /**
+     * Update vehicle status
+     */
+    public function updateStatus(string $status, ?string $notes = null): bool
+    {
+        $this->availability_status = $status;
+        
+        if ($status === 'maintenance' && $notes) {
+            $this->maintenance_notes = $notes;
+        }
+        
+        return $this->save();
     }
 }
-
-?>

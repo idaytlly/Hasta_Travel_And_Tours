@@ -39,27 +39,43 @@
         
         <!-- Management Section -->
         <div class="nav-section-title">Management</div>
-        
-        <a href="{{ route('staff.vehicles') }}" 
-           class="nav-link {{ request()->routeIs('staff.vehicles') ? 'active' : '' }}">
+
+        <a href="{{ route('staff.vehicles.index') }}" 
+           class="nav-link {{ request()->routeIs('staff.vehicles.*') ? 'active' : '' }}">
             <i data-lucide="car-front" class="w-5 h-5"></i>
-            <span>Vehicles</span>
+            <span>Fleet Management</span>
         </a>
-        
-        <a href="{{ route('staff.customers') }}" 
-           class="nav-link {{ request()->routeIs('staff.customers') ? 'active' : '' }}">
-            <i data-lucide="users" class="w-5 h-5"></i>
-            <span>Customers</span>
-        </a>
-        
+
+        @if(Route::has('staff.customers'))
+            <a href="{{ route('staff.customers') }}" 
+               class="nav-link {{ request()->routeIs('staff.customers') ? 'active' : '' }}">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                <span>Customers</span>
+            </a>
+        @else
+            <a href="/staff/customers" 
+               class="nav-link {{ request()->is('staff/customers*') ? 'active' : '' }}">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                <span>Customers</span>
+            </a>
+        @endif
+
         <!-- Analytics Section -->
         <div class="nav-section-title">Analytics</div>
-        
-        <a href="{{ route('staff.reports') }}" 
-           class="nav-link {{ request()->routeIs('staff.reports') ? 'active' : '' }}">
-            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-            <span>Reports</span>
-        </a>
+
+        @if(Route::has('staff.reports'))
+            <a href="{{ route('staff.reports') }}" 
+               class="nav-link {{ request()->routeIs('staff.reports') ? 'active' : '' }}">
+                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                <span>Reports</span>
+            </a>
+        @else
+            <a href="/staff/reports" 
+               class="nav-link {{ request()->is('staff/reports*') ? 'active' : '' }}">
+                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                <span>Reports</span>
+            </a>
+        @endif
         
         <!-- Admin Only: Staff Management -->
         <a href="{{ route('staff.staff-management') }}" 
@@ -126,7 +142,7 @@
 </div>
 
 <script>
-    // Hide delivery link for non-runners
+    // Hide delivery link for non-runners and staff management for non-admins
     document.addEventListener('DOMContentLoaded', () => {
         const staffRole = '{{ Auth::guard("staff")->user()->role ?? "staff" }}';
         const deliveryLink = document.getElementById('delivery-nav-link');
@@ -143,7 +159,9 @@
         }
         
         // Initialize Lucide icons
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     });
 </script>
 
@@ -165,6 +183,7 @@
     .nav-link:hover {
         background-color: #fef2f2;
         color: #dc2626;
+        transform: translateX(2px);
     }
     
     .nav-link.active {
@@ -204,5 +223,24 @@
     
     .nav-link {
         animation: slideIn 0.3s ease forwards;
+    }
+
+    /* Custom scrollbar for navigation */
+    nav::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    nav::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    nav::-webkit-scrollbar-thumb {
+        background: #dc2626;
+        border-radius: 10px;
+    }
+
+    nav::-webkit-scrollbar-thumb:hover {
+        background: #b91c1c;
     }
 </style>

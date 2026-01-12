@@ -11,10 +11,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Call vehicle seeder
+        // Call seeders in order
         $this->call([
             StaffSeeder::class,
             VehicleSeeder::class,
+            CustomerSeeder::class,
+            BookingSeeder::class,
+            PaymentSeeder::class,
+            CommissionSeeder::class,
         ]);
     }
 }

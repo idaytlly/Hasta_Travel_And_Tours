@@ -1,322 +1,659 @@
 {{-- resources/views/staff/vehicles/edit.blade.php --}}
-@extends('staff.layouts.staff')
+@extends('staff.layouts.app')
 
 @section('title', 'Edit Vehicle')
-@section('page-title', 'Edit Vehicle')
-@section('page-subtitle', 'Update vehicle information')
-
-@section('breadcrumb')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('staff.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('staff.vehicles.index') }}">Vehicles</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('staff.vehicles.show', $vehicle->plate_no) }}">{{ $vehicle->plate_no }}</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Edit</li>
-        </ol>
-    </nav>
-@endsection
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h5 class="mb-0">Edit Vehicle: {{ $vehicle->name }} ({{ $vehicle->plate_no }})</h5>
+<div class="max-w-4xl mx-auto px-4 py-6">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Edit Vehicle</h1>
+                <p class="text-gray-600">Update vehicle details and information</p>
+            </div>
+            <a href="{{ route('staff.vehicles.index') }}" 
+               class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Back to Fleet
+            </a>
+        </div>
     </div>
-    <div class="card-body">
-        <form method="POST" action="{{ route('staff.vehicles.update', $vehicle->plate_no) }}" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
+
+    <form method="POST" action="{{ route('staff.vehicles.update', $vehicle->plate_no) }}" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        
+        <!-- Main Card -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             
-            <div class="row">
-                <!-- Basic Information -->
-                <div class="col-md-6">
-                    <h5 class="mb-3">Basic Information</h5>
-                    
-                    <div class="mb-3">
-                        <label for="plate_no" class="form-label">Plate Number *</label>
-                        <input type="text" class="form-control @error('plate_no') is-invalid @enderror" 
-                               id="plate_no" name="plate_no" value="{{ old('plate_no', $vehicle->plate_no) }}" required readonly>
-                        <div class="form-text">Plate number cannot be changed</div>
-                        @error('plate_no')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Vehicle Name *</label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                               id="name" name="name" value="{{ old('name', $vehicle->name) }}" required>
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="model" class="form-label">Model *</label>
-                        <input type="text" class="form-control @error('model') is-invalid @enderror" 
-                               id="model" name="model" value="{{ old('model', $vehicle->model) }}" required>
-                        @error('model')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="vehicle_type" class="form-label">Vehicle Type *</label>
-                        <select class="form-select @error('vehicle_type') is-invalid @enderror" 
-                                id="vehicle_type" name="vehicle_type" required>
-                            <option value="">Select Type</option>
-                            @foreach($vehicleTypes as $type)
-                                <option value="{{ $type }}" {{ old('vehicle_type', $vehicle->vehicle_type) == $type ? 'selected' : '' }}>
-                                    {{ $type }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('vehicle_type')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+            <!-- Vehicle Type Selection -->
+            <div class="border-b border-gray-200 bg-gradient-to-r from-red-50 to-pink-50 px-8 py-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="car" class="w-5 h-5 text-red-600"></i>
+                    Vehicle Type
+                </h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="vehicle_type" value="car" class="peer sr-only" 
+                               {{ $vehicle->vehicle_type == 'car' ? 'checked' : '' }} required>
+                        <div class="flex items-center gap-4 p-5 border-2 border-gray-200 rounded-xl bg-white transition-all peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:shadow-md hover:border-gray-300">
+                            <div class="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center peer-checked:bg-red-100 transition">
+                                <i data-lucide="car" class="w-7 h-7 text-gray-600 peer-checked:text-red-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-bold text-gray-900">Car</p>
+                                <p class="text-sm text-gray-600">Sedan, SUV, MPV, Hatchback</p>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="vehicle_type" value="motorcycle" class="peer sr-only"
+                               {{ $vehicle->vehicle_type == 'motorcycle' ? 'checked' : '' }} required>
+                        <div class="flex items-center gap-4 p-5 border-2 border-gray-200 rounded-xl bg-white transition-all peer-checked:border-red-600 peer-checked:bg-red-50 peer-checked:shadow-md hover:border-gray-300">
+                            <div class="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center peer-checked:bg-red-100 transition">
+                                <i data-lucide="bike" class="w-7 h-7 text-gray-600 peer-checked:text-red-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-bold text-gray-900">Motorcycle</p>
+                                <p class="text-sm text-gray-600">Scooter, Sport, Cruiser</p>
+                            </div>
+                        </div>
+                    </label>
                 </div>
+            </div>
+
+            <div class="p-8 space-y-8">
                 
+                <!-- Basic Information -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 pb-3 border-b border-gray-100 flex items-center gap-2">
+                        <i data-lucide="info" class="w-5 h-5 text-red-600"></i>
+                        Basic Information
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Plate Number (Read-only) -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Plate Number
+                            </label>
+                            <div class="relative">
+                                <i data-lucide="hash" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="text" value="{{ $vehicle->plate_no }}" readonly
+                                       class="pl-10 w-full px-4 py-3 border border-gray-300 bg-gray-50 rounded-lg">
+                            </div>
+                            <p class="mt-2 text-xs text-gray-600">Plate number cannot be changed</p>
+                        </div>
+
+                        <!-- Vehicle Name -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Vehicle Name <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i data-lucide="tag" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="text" name="name" required value="{{ old('name', $vehicle->name) }}"
+                                       class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                                       placeholder="e.g., Perodua Axia 2024">
+                            </div>
+                            @error('name')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Color -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Color <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i data-lucide="palette" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="text" name="color" required value="{{ old('color', $vehicle->color) }}"
+                                       class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                                       placeholder="e.g., Pearl White">
+                            </div>
+                            @error('color')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Year -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Year <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i data-lucide="calendar" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="number" name="year" required min="2000" max="{{ date('Y') + 1 }}" 
+                                       value="{{ old('year', $vehicle->year) }}"
+                                       class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
+                            </div>
+                            @error('year')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Distance Travelled -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Distance Travelled (km) <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i data-lucide="gauge" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="number" name="distance_travelled" required min="0" step="0.1" 
+                                       value="{{ old('distance_travelled', $vehicle->distance_travelled) }}"
+                                       class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
+                            </div>
+                            @error('distance_travelled')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Road Tax Expiry -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Road Tax Expiry Date <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i data-lucide="file-text" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="date" name="roadtax_expiry" required 
+                                       value="{{ old('roadtax_expiry', $vehicle->roadtax_expiry) }}"
+                                       min="{{ date('Y-m-d') }}"
+                                       class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
+                            </div>
+                            <p class="mt-2 text-xs text-gray-600 flex items-center gap-1">
+                                <i data-lucide="info" class="w-3 h-3"></i>
+                                System will alert you 30 days before expiry
+                            </p>
+                            @error('roadtax_expiry')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Specifications -->
-                <div class="col-md-6">
-                    <h5 class="mb-3">Specifications</h5>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 pb-3 border-b border-gray-100 flex items-center gap-2">
+                        <i data-lucide="settings" class="w-5 h-5 text-red-600"></i>
+                        Specifications
+                    </h3>
                     
-                    <div class="mb-3">
-                        <label for="transmission" class="form-label">Transmission *</label>
-                        <select class="form-select @error('transmission') is-invalid @enderror" 
-                                id="transmission" name="transmission" required>
-                            <option value="">Select Transmission</option>
-                            @foreach($transmissionTypes as $type)
-                                <option value="{{ $type }}" {{ old('transmission', $vehicle->transmission) == $type ? 'selected' : '' }}>
-                                    {{ $type }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('transmission')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="fuel_type" class="form-label">Fuel Type *</label>
-                        <select class="form-select @error('fuel_type') is-invalid @enderror" 
-                                id="fuel_type" name="fuel_type" required>
-                            <option value="">Select Fuel Type</option>
-                            @foreach($fuelTypes as $type)
-                                <option value="{{ $type }}" {{ old('fuel_type', $vehicle->fuel_type) == $type ? 'selected' : '' }}>
-                                    {{ $type }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('fuel_type')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="seating_capacity" class="form-label">Seating Capacity *</label>
-                        <input type="number" class="form-control @error('seating_capacity') is-invalid @enderror" 
-                               id="seating_capacity" name="seating_capacity" 
-                               value="{{ old('seating_capacity', $vehicle->seating_capacity) }}" min="1" max="100" required>
-                        @error('seating_capacity')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-            
-            <hr class="my-4">
-            
-            <!-- Pricing -->
-            <h5 class="mb-3">Pricing</h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="price_perHour" class="form-label">Price per Hour (RM) *</label>
-                        <div class="input-group">
-                            <span class="input-group-text">RM</span>
-                            <input type="number" step="0.01" class="form-control @error('price_perHour') is-invalid @enderror" 
-                                   id="price_perHour" name="price_perHour" 
-                                   value="{{ old('price_perHour', $vehicle->price_perHour) }}" min="0" required>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Transmission -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Transmission <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i data-lucide="settings" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10"></i>
+                                <select name="transmission" required 
+                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition appearance-none bg-white">
+                                    <option value="">Select Transmission</option>
+                                    <option value="automatic" {{ old('transmission', $vehicle->transmission) == 'automatic' ? 'selected' : '' }}>Automatic</option>
+                                    <option value="manual" {{ old('transmission', $vehicle->transmission) == 'manual' ? 'selected' : '' }}>Manual</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"></i>
+                            </div>
+                            @error('transmission')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Fuel Type -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Fuel Type <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i data-lucide="fuel" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10"></i>
+                                <select name="fuel_type" required 
+                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition appearance-none bg-white">
+                                    <option value="">Select Fuel Type</option>
+                                    <option value="petrol" {{ old('fuel_type', $vehicle->fuel_type) == 'petrol' ? 'selected' : '' }}>Petrol</option>
+                                    <option value="diesel" {{ old('fuel_type', $vehicle->fuel_type) == 'diesel' ? 'selected' : '' }}>Diesel</option>
+                                    <option value="electric" {{ old('fuel_type', $vehicle->fuel_type) == 'electric' ? 'selected' : '' }}>Electric</option>
+                                    <option value="hybrid" {{ old('fuel_type', $vehicle->fuel_type) == 'hybrid' ? 'selected' : '' }}>Hybrid</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"></i>
+                            </div>
+                            @error('fuel_type')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Seating Capacity -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Seating Capacity <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i data-lucide="users" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="number" name="seating_capacity" required min="1" max="50" 
+                                       value="{{ old('seating_capacity', $vehicle->seating_capacity) }}"
+                                       class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
+                            </div>
+                            @error('seating_capacity')
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Price per Hour -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Price per Hour (RM) <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 font-semibold">RM</span>
+                                <input type="number" name="price_perHour" required step="0.01" min="0" 
+                                       value="{{ old('price_perHour', $vehicle->price_perHour) }}"
+                                       class="pl-14 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
+                            </div>
+                            <p class="mt-2 text-xs text-gray-600">Daily rate will be calculated automatically (× 24 hours)</p>
                             @error('price_perHour')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                                    {{ $message }}
+                                </p>
                             @enderror
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="price_perDay" class="form-label">Price per Day (RM) *</label>
-                        <div class="input-group">
-                            <span class="input-group-text">RM</span>
-                            <input type="number" step="0.01" class="form-control @error('price_perDay') is-invalid @enderror" 
-                                   id="price_perDay" name="price_perDay" 
-                                   value="{{ old('price_perDay', $vehicle->price_perDay) }}" min="0" required>
-                            @error('price_perDay')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+
+                <!-- Display Images -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 pb-3 border-b border-gray-100 flex items-center gap-2">
+                        <i data-lucide="image" class="w-5 h-5 text-red-600"></i>
+                        Current Images
+                    </h3>
+                    
+                    @if($vehicle->images)
+                        @php 
+                            $currentImages = is_array($vehicle->images) ? $vehicle->images : json_decode($vehicle->images, true);
+                        @endphp
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                            @if(!empty($currentImages))
+                                @foreach($currentImages as $key => $image)
+                                    <div class="bg-gray-100 rounded-xl p-4">
+                                        <p class="text-sm font-medium text-gray-700 mb-2 capitalize">
+                                            {{ str_replace('_', ' ', $key) }}
+                                        </p>
+                                        <img src="{{ asset('storage/' . $image) }}" 
+                                             alt="{{ $key }}"
+                                             class="w-full h-32 object-cover rounded-lg">
+                                    </div>
+                                @endforeach
+                            @endif
                         </div>
-                    </div>
+                    @endif
+
+                    <p class="text-sm text-gray-600 mb-4 flex items-center gap-2">
+                        <i data-lucide="info" class="w-4 h-4"></i>
+                        To update images, upload new ones below (optional)
+                    </p>
                 </div>
-            </div>
-            
-            <!-- Features -->
-            <div class="mb-3">
-                <label class="form-label">Features</label>
-                <div class="row">
-                    @php
-                        $currentFeatures = json_decode($vehicle->features ?? '[]', true);
-                    @endphp
-                    <div class="col-md-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="features[]" value="Air Conditioning" id="feature_ac"
-                                   {{ in_array('Air Conditioning', $currentFeatures) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="feature_ac">
-                                Air Conditioning
+
+                <!-- New Images Upload -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 pb-3 border-b border-gray-100 flex items-center gap-2">
+                        <i data-lucide="upload" class="w-5 h-5 text-red-600"></i>
+                        Update Images (Optional)
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Front View -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                New Front View
                             </label>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="features[]" value="Power Steering" id="feature_steering"
-                                   {{ in_array('Power Steering', $currentFeatures) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="feature_steering">
-                                Power Steering
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="features[]" value="Bluetooth" id="feature_bluetooth"
-                                   {{ in_array('Bluetooth', $currentFeatures) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="feature_bluetooth">
-                                Bluetooth
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="features[]" value="USB Port" id="feature_usb"
-                                   {{ in_array('USB Port', $currentFeatures) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="feature_usb">
-                                USB Port
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="features[]" value="Reverse Camera" id="feature_camera"
-                                   {{ in_array('Reverse Camera', $currentFeatures) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="feature_camera">
-                                Reverse Camera
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="features[]" value="GPS Navigation" id="feature_gps"
-                                   {{ in_array('GPS Navigation', $currentFeatures) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="feature_gps">
-                                GPS Navigation
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Description -->
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control @error('description') is-invalid @enderror" 
-                          id="description" name="description" rows="3">{{ old('description', $vehicle->description) }}</textarea>
-                @error('description')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-            
-            <!-- Current Images -->
-            @if($vehicle->images)
-                @php
-                    $images = json_decode($vehicle->images, true);
-                @endphp
-                <div class="mb-3">
-                    <label class="form-label">Current Images</label>
-                    <div class="row">
-                        @foreach($images as $index => $image)
-                            <div class="col-md-3 mb-3">
-                                <div class="position-relative">
-                                    <img src="{{ asset('storage/' . $image) }}" class="img-thumbnail" style="height: 150px; object-fit: cover;" alt="Vehicle Image">
-                                    <div class="form-check position-absolute top-0 start-0 m-2">
-                                        <input class="form-check-input" type="checkbox" name="delete_images[]" value="{{ $image }}" id="delete_{{ $index }}">
-                                        <label class="form-check-label text-white" for="delete_{{ $index }}" style="text-shadow: 1px 1px 2px black;">Delete</label>
+                            <div class="relative group">
+                                <input type="file" name="front_image" accept="image/*"
+                                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                       onchange="previewImage(this, 'preview-front')">
+                                <div id="preview-front" 
+                                     class="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50 group-hover:border-red-400 group-hover:bg-red-50 transition-all cursor-pointer">
+                                    <div class="text-center">
+                                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <i data-lucide="camera" class="w-6 h-6 text-red-600"></i>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-700 mb-1">Update Front View</p>
+                                        <p class="text-xs text-gray-500">Click to upload</p>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
+
+                        <!-- Right Side View -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                New Right Side View
+                            </label>
+                            <div class="relative group">
+                                <input type="file" name="right_image" accept="image/*"
+                                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                       onchange="previewImage(this, 'preview-right')">
+                                <div id="preview-right" 
+                                     class="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50 group-hover:border-red-400 group-hover:bg-red-50 transition-all cursor-pointer">
+                                    <div class="text-center">
+                                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <i data-lucide="camera" class="w-6 h-6 text-red-600"></i>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-700 mb-1">Update Right Side</p>
+                                        <p class="text-xs text-gray-500">Click to upload</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Back View -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                New Back View
+                            </label>
+                            <div class="relative group">
+                                <input type="file" name="back_image" accept="image/*"
+                                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                       onchange="previewImage(this, 'preview-back')">
+                                <div id="preview-back" 
+                                     class="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50 group-hover:border-red-400 group-hover:bg-red-50 transition-all cursor-pointer">
+                                    <div class="text-center">
+                                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <i data-lucide="camera" class="w-6 h-6 text-red-600"></i>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-700 mb-1">Update Back View</p>
+                                        <p class="text-xs text-gray-500">Click to upload</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Left Side View -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                New Left Side View
+                            </label>
+                            <div class="relative group">
+                                <input type="file" name="left_image" accept="image/*"
+                                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                       onchange="previewImage(this, 'preview-left')">
+                                <div id="preview-left" 
+                                     class="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50 group-hover:border-red-400 group-hover:bg-red-50 transition-all cursor-pointer">
+                                    <div class="text-center">
+                                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <i data-lucide="camera" class="w-6 h-6 text-red-600"></i>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-700 mb-1">Update Left Side</p>
+                                        <p class="text-xs text-gray-500">Click to upload</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interior Front View -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                New Interior Front
+                            </label>
+                            <div class="relative group">
+                                <input type="file" name="interior_front_image" accept="image/*"
+                                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                       onchange="previewImage(this, 'preview-interior-front')">
+                                <div id="preview-interior-front" 
+                                     class="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50 group-hover:border-red-400 group-hover:bg-red-50 transition-all cursor-pointer">
+                                    <div class="text-center">
+                                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <i data-lucide="camera" class="w-6 h-6 text-red-600"></i>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-700 mb-1">Update Interior Front</p>
+                                        <p class="text-xs text-gray-500">Click to upload</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interior Back View -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                New Interior Back
+                            </label>
+                            <div class="relative group">
+                                <input type="file" name="interior_back_image" accept="image/*"
+                                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                       onchange="previewImage(this, 'preview-interior-back')">
+                                <div id="preview-interior-back" 
+                                     class="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50 group-hover:border-red-400 group-hover:bg-red-50 transition-all cursor-pointer">
+                                    <div class="text-center">
+                                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <i data-lucide="camera" class="w-6 h-6 text-red-600"></i>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-700 mb-1">Update Interior Back</p>
+                                        <p class="text-xs text-gray-500">Click to upload</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            @endif
-            
-            <!-- New Images -->
-            <div class="mb-3">
-                <label for="images" class="form-label">Add New Images</label>
-                <input type="file" class="form-control @error('images.*') is-invalid @enderror" 
-                       id="images" name="images[]" multiple accept="image/*">
-                <div class="form-text">You can upload multiple images. Maximum size: 5MB per image. Leave empty to keep current images.</div>
-                @error('images.*')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
+
+                <!-- Display Image (for vehicle listing) -->
+            <div>
+                <h3 class="text-lg font-bold text-gray-900 mb-6 pb-3 border-b border-gray-100 flex items-center gap-2">
+                    <i data-lucide="image" class="w-5 h-5 text-red-600"></i>
+                    Display Image
+                </h3>
+                
+                <!-- Current Display Image -->
+                @if($vehicle->display_image)
+                    <div class="mb-6">
+                        <p class="text-sm font-semibold text-gray-700 mb-3">Current Display Image:</p>
+                        <div class="max-w-xs">
+                            <img src="{{ asset('storage/' . $vehicle->display_image) }}" 
+                                alt="Display Image" 
+                                class="w-full h-48 object-cover rounded-lg border border-gray-200">
+                        </div>
+                    </div>
+                @endif
+                
+                <p class="text-sm text-gray-600 mb-6 flex items-center gap-2">
+                    <i data-lucide="info" class="w-4 h-4"></i>
+                    This image will be shown in the vehicle listing page. Recommended: 400×400px
+                </p>
+                
+                <div class="max-w-md">
+                    <div class="relative group">
+                        <input type="file" name="display_image" accept="image/*"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            onchange="previewImage(this, 'preview-display')">
+                        <div id="preview-display" 
+                            class="border-2 border-dashed border-gray-300 rounded-xl p-8 bg-gray-50 group-hover:border-red-400 group-hover:bg-red-50 transition-all cursor-pointer">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <i data-lucide="image" class="w-8 h-8 text-red-600"></i>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-700 mb-1">
+                                    {{ $vehicle->display_image ? 'Update Display Image' : 'Upload Display Image' }}
+                                </p>
+                                <p class="text-xs text-gray-500">Best size: 400×400px</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-2 text-xs text-gray-600">
+                        This is the main thumbnail image that appears in the vehicle list.
+                    </p>
+                    @error('display_image')
+                        <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+                </div>
+                
+                <!-- Description & Status -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Description (Optional)
+                        </label>
+                        <textarea name="description" rows="6"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                                  placeholder="Additional vehicle information, special notes, or remarks...">{{ old('description', $vehicle->description) }}</textarea>
+                    </div>
+
+                    <!-- Status & Maintenance Notes -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Status <span class="text-red-500">*</span>
+                            </label>
+                            <div class="space-y-3">
+                                <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-emerald-300 hover:bg-emerald-50 transition cursor-pointer has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
+                                    <input type="radio" name="availability_status" value="available" 
+                                           class="w-5 h-5 text-emerald-600" 
+                                           {{ old('availability_status', $vehicle->availability_status) == 'available' ? 'checked' : '' }} required>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                                        <span class="font-semibold text-gray-700">Available</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition cursor-pointer has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                                    <input type="radio" name="availability_status" value="booked" 
+                                           class="w-5 h-5 text-blue-600"
+                                           {{ old('availability_status', $vehicle->availability_status) == 'booked' ? 'checked' : '' }} required>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                        <span class="font-semibold text-gray-700">Booked</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-red-300 hover:bg-red-50 transition cursor-pointer has-[:checked]:border-red-500 has-[:checked]:bg-red-50">
+                                    <input type="radio" name="availability_status" value="maintenance" 
+                                           class="w-5 h-5 text-red-600"
+                                           {{ old('availability_status', $vehicle->availability_status) == 'maintenance' ? 'checked' : '' }} required>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                        <span class="font-semibold text-gray-700">Maintenance</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance Notes -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Maintenance Notes
+                            </label>
+                            <textarea name="maintenance_notes" rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                                      placeholder="Notes about maintenance, repairs, etc.">{{ old('maintenance_notes', $vehicle->maintenance_notes) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="pt-8 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <a href="{{ route('staff.vehicles.index') }}" 
+                           class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                            Cancel
+                        </a>
+                        <button type="submit" 
+                                class="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition flex items-center gap-2">
+                            <i data-lucide="save" class="w-5 h-5"></i>
+                            Update Vehicle
+                        </button>
+                    </div>
+                </div>
             </div>
-            
-            <!-- Status -->
-            <div class="mb-3">
-                <label for="availability_status" class="form-label">Availability Status *</label>
-                <select class="form-select @error('availability_status') is-invalid @enderror" 
-                        id="availability_status" name="availability_status" required>
-                    <option value="available" {{ old('availability_status', $vehicle->availability_status) == 'available' ? 'selected' : '' }}>Available</option>
-                    <option value="maintenance" {{ old('availability_status', $vehicle->availability_status) == 'maintenance' ? 'selected' : '' }}>Under Maintenance</option>
-                    <option value="booked" {{ old('availability_status', $vehicle->availability_status) == 'booked' ? 'selected' : '' }}>Booked</option>
-                </select>
-                @error('availability_status')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-            
-            <!-- Maintenance Notes (if status is maintenance) -->
-            <div class="mb-3" id="maintenanceNotes" style="{{ old('availability_status', $vehicle->availability_status) == 'maintenance' ? '' : 'display: none;' }}">
-                <label for="maintenance_notes" class="form-label">Maintenance Notes</label>
-                <textarea class="form-control @error('maintenance_notes') is-invalid @enderror" 
-                          id="maintenance_notes" name="maintenance_notes" rows="2">{{ old('maintenance_notes', $vehicle->maintenance_notes) }}</textarea>
-                @error('maintenance_notes')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-            
-            <div class="d-flex justify-content-between mt-4">
-                <a href="{{ route('staff.vehicles.show', $vehicle->plate_no) }}" class="btn btn-secondary">
-                    <i class="fas fa-times me-2"></i> Cancel
-                </a>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save me-2"></i> Update Vehicle
-                </button>
-            </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
-@endsection
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const statusSelect = document.getElementById('availability_status');
-        const maintenanceNotes = document.getElementById('maintenanceNotes');
-        
-        statusSelect.addEventListener('change', function() {
-            if (this.value === 'maintenance') {
-                maintenanceNotes.style.display = 'block';
-            } else {
-                maintenanceNotes.style.display = 'none';
-            }
-        });
-    });
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    const file = input.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <div class="relative">
+                    <img src="${e.target.result}" alt="Preview" class="w-full h-32 object-cover rounded-lg">
+                    <button type="button" onclick="removeImage(this, '${input.name}')" 
+                            class="absolute top-2 right-2 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-700 transition">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `;
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeImage(button, inputName) {
+    const preview = button.closest('.relative').parentElement;
+    const input = document.querySelector(`input[name="${inputName}"]`);
+    
+    // Reset file input
+    input.value = '';
+    
+    // Get label text based on input name
+    let labelText = 'Upload';
+    if (inputName.includes('front')) labelText = 'Front View';
+    else if (inputName.includes('right')) labelText = 'Right Side';
+    else if (inputName.includes('back')) labelText = 'Back View';
+    else if (inputName.includes('left')) labelText = 'Left Side';
+    else if (inputName.includes('interior_front')) labelText = 'Interior Front';
+    else if (inputName.includes('interior_back')) labelText = 'Interior Back';
+    
+    // Reset preview
+    preview.innerHTML = `
+        <div class="text-center">
+            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="camera" class="w-6 h-6 text-red-600"></i>
+            </div>
+            <p class="text-sm font-semibold text-gray-700 mb-1">${labelText}</p>
+            <p class="text-xs text-gray-500">Click to upload</p>
+        </div>
+    `;
+}
+
+// Initialize Lucide icons
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+});
 </script>
 @endpush
+@endsection

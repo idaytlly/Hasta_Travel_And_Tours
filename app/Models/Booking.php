@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -70,6 +69,21 @@ class Booking extends Model
         return $this->belongsTo(Voucher::class, 'voucher_id', 'voucher_id');
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'booking_id', 'booking_id');
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(Staff::class, 'approved_by_staff', 'staff_id');
+    }
+
+    public function lateChargeApprovedBy()
+    {
+        return $this->belongsTo(Staff::class, 'late_charge_approved_by', 'staff_id');
+    }
+
     // Scopes
     public function scopePending($query)
     {
@@ -128,21 +142,6 @@ class Booking extends Model
             'cancelled' => 'red',
             default => 'gray',
         };
-    }
-}
-    public function payments()
-    {
-        return $this->hasMany(Payment::class, 'booking_id', 'booking_id');
-    }
-
-    public function approvedBy()
-    {
-        return $this->belongsTo(Staff::class, 'approved_by_staff', 'staff_id');
-    }
-
-    public function lateChargeApprovedBy()
-    {
-        return $this->belongsTo(Staff::class, 'late_charge_approved_by', 'staff_id');
     }
 
     // Calculate if booking is late
@@ -315,4 +314,90 @@ class Booking extends Model
     {
         return $this->booking_status === 'pending' && $this->hasActivePayment();
     }
+
+    /*
+     * Backwards-compatible accessors for older controllers and views
+     * That expect properties like `id`, `status`, `booking_code`, `start_date`, `end_date`, `total_amount`, and a `customer` relation
+     */
+    public function getIdAttribute()
+    {
+        return $this->booking_id;
+    }
+
+    public function getBookingCodeAttribute()
+    {
+        return $this->booking_id;
+    }
+
+    public function getStatusAttribute()
+    {
+        return $this->booking_status;
+    }
+
+    public function getStartDateAttribute()
+    {
+        return $this->pickup_date ? $this->pickup_date->toDateString() : null;
+    }
+
+    public function getEndDateAttribute()
+    {
+        return $this->return_date ? $this->return_date->toDateString() : null;
+    }
+
+    public function getTotalAmountAttribute()
+    {
+        return $this->total_price;
+    }
+
+    // Provide customer as single relation (many places expect $booking->customer)
+    public function getCustomerAttribute()
+    {
+        return $this->customers ?? null;
+    }
+
+    // Helper to return a vehicle display name used elsewhere
+    public function getVehicleNameAttribute()
+    {
+        if ($this->vehicle) {
+            // Vehicle model may store `name`; fallback to plate_no
+            return trim(($this->vehicle->brand ?? '') . ' ' . ($this->vehicle->model ?? '') . ' ' . ($this->vehicle->name ?? '')) ?: ($this->vehicle->name ?? $this->plate_no);
+        }
+
+        return $this->plate_no ?: null;
+    }
+
+    /**
+     * Infer pickup type when the `pickup_type` column is not present.
+     * Heuristics:
+     *  - If the `pickup_type` attribute exists and is not empty, return it
+     *  - If `delivery_fee` > 0 => 'delivery'
+     *  - If `pickup_address` exists => 'delivery'
+     *  - If `special_requests` contains keywords like 'deliver' or 'delivery' => 'delivery'
+     *  - Otherwise return 'self-pickup'
+     */
+    public function getPickupTypeAttribute()
+    {
+        // If column exists natively
+        if (array_key_exists('pickup_type', $this->attributes) && !empty($this->attributes['pickup_type'])) {
+            return $this->attributes['pickup_type'];
+        }
+
+        // delivery_fee check (may not exist on all setups)
+        if (isset($this->delivery_fee) && floatval($this->delivery_fee) > 0) {
+            return 'delivery';
+        }
+
+        // pickup_address present
+        if (!empty($this->pickup_address)) {
+            return 'delivery';
+        }
+
+        // keyword check in special_requests
+        if (!empty($this->special_requests) && (stripos($this->special_requests, 'deliver') !== false || stripos($this->special_requests, 'delivery') !== false)) {
+            return 'delivery';
+        }
+
+        return 'self-pickup';
+    }
 }
+

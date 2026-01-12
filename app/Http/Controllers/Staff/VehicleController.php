@@ -1,235 +1,285 @@
 <?php
-// app/Http/Controllers/Staff/VehicleController.php
 
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Vehicle;
-use Illuminate\Support\Facades\DB;
+use App\Models\Staff;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class VehicleController extends Controller
 {
+    /**
+     * Display a listing of the vehicles.
+     */
     public function index()
     {
-        $vehicles = Vehicle::orderBy('created_at', 'desc')->paginate(20);
+        $query = Vehicle::query();
         
-        $stats = [
-            'total' => Vehicle::count(),
-            'available' => Vehicle::where('availability_status', 'available')->count(),
-            'booked' => Vehicle::where('availability_status', 'booked')->count(),
-            'maintenance' => Vehicle::where('availability_status', 'maintenance')->count(),
-        ];
+        // Apply filters
+        if (request()->has('search') && request('search')) {
+            $search = request('search');
+            $query->where(function($q) use ($search) {
+                $q->where('plate_no', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%")
+                  ->orWhere('color', 'like', "%{$search}%");
+            });
+        }
         
-        return view('staff.vehicles.index', compact('vehicles', 'stats'));
+        if (request()->has('vehicle_type') && request('vehicle_type')) {
+            $query->where('vehicle_type', request('vehicle_type'));
+        }
+        
+        if (request()->has('status') && request('status')) {
+            $query->where('availability_status', request('status'));
+        }
+        
+        $vehicles = $query->orderBy('created_at', 'desc')->paginate(10);
+        
+        return view('staff.vehicles.index', compact('vehicles'));
     }
 
+    /**
+     * Show the form for creating a new vehicle.
+     */
     public function create()
     {
-        $vehicleTypes = Vehicle::distinct()->pluck('vehicle_type')->sort();
-        $transmissionTypes = ['Manual', 'Automatic'];
-        $fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid'];
-        
-        return view('staff.vehicles.create', compact('vehicleTypes', 'transmissionTypes', 'fuelTypes'));
+        return view('staff.vehicles.create');
     }
 
+    /**
+     * Store a newly created vehicle in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'plate_no' => 'required|unique:vehicles|max:20',
+        // Validation
+        $validated = $request->validate([
+            'vehicle_type' => 'required|in:car,motorcycle',
+            'plate_no' => 'required|string|unique:vehicle',
             'name' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'vehicle_type' => 'required|string|max:50',
-            'transmission' => 'required|in:Manual,Automatic',
-            'fuel_type' => 'required|in:Petrol,Diesel,Electric,Hybrid',
-            'seating_capacity' => 'required|integer|min:1|max:100',
-            'price_perHour' => 'required|numeric|min:0',
-            'price_perDay' => 'required|numeric|min:0',
-            'description' => 'nullable|string|max:1000',
-            'features' => 'nullable|array',
+            'color' => 'required|string|max:100',
+            'year' => 'required|integer|min:2000|max:' . (date('Y') + 1),
+            'distance_travelled' => 'required|numeric|min:0',
+            'roadtax_expiry' => 'required|date|after_or_equal:today',
+            'transmission' => 'required|in:automatic,manual',
+            'fuel_type' => 'required|in:petrol,diesel,electric,hybrid',
+            'seating_capacity' => 'required|integer|min:1|max:50',
+            'price_perHour' => 'required|numeric|min:0|max:9999',
+            'description' => 'nullable|string',
+            'maintenance_notes' => 'nullable|string',
             'availability_status' => 'required|in:available,booked,maintenance',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'maintenance_notes' => 'nullable|string|max:500',
+            
+            // Display Image
+            'display_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            
+            // Detail Images (6 images)
+            'front_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'right_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'back_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'left_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'interior_front_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'interior_back_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        DB::beginTransaction();
-        try {
-            // Handle images
-            $imagePaths = [];
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $path = $image->store('vehicles', 'public');
-                    $imagePaths[] = $path;
-                }
-            }
-
-            // Create vehicle
-            $vehicle = Vehicle::create([
-                'plate_no' => $request->plate_no,
-                'name' => $request->name,
-                'model' => $request->model,
-                'vehicle_type' => $request->vehicle_type,
-                'transmission' => $request->transmission,
-                'fuel_type' => $request->fuel_type,
-                'seating_capacity' => $request->seating_capacity,
-                'price_perHour' => $request->price_perHour,
-                'price_perDay' => $request->price_perDay,
-                'description' => $request->description,
-                'features' => $request->features ? json_encode($request->features) : null,
-                'availability_status' => $request->availability_status,
-                'images' => !empty($imagePaths) ? json_encode($imagePaths) : null,
-                'maintenance_notes' => $request->maintenance_notes,
-            ]);
-
-            DB::commit();
-            
-            return redirect()->route('staff.vehicles.index')
-                           ->with('success', 'Vehicle added successfully!');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Failed to add vehicle: ' . $e->getMessage())
-                        ->withInput();
+        // Handle display image upload
+        if ($request->hasFile('display_image')) {
+            $displayImagePath = $request->file('display_image')->store('vehicles/display', 'public');
+            $validated['display_image'] = $displayImagePath;
         }
+
+        // Handle the 6 detail images
+        $detailImages = [];
+        $imageFields = [
+            'front_image' => 'front',
+            'right_image' => 'right',
+            'back_image' => 'back',
+            'left_image' => 'left',
+            'interior_front_image' => 'interior_front',
+            'interior_back_image' => 'interior_back',
+        ];
+
+        foreach ($imageFields as $field => $key) {
+            if ($request->hasFile($field)) {
+                $path = $request->file($field)->store('vehicles/detail', 'public');
+                $detailImages[$key] = $path;
+            }
+        }
+
+        // Store detail images as JSON
+        if (!empty($detailImages)) {
+            $validated['images'] = json_encode($detailImages);
+        }
+
+        // FIXED: Get staff_id properly from authenticated user
+        $staff = Auth::guard('staff')->user();
+        
+        if (!$staff) {
+            return redirect()->route('staff.login')
+                ->with('error', 'You must be logged in as staff to add a vehicle.');
+        }
+        
+        // Use staff_id property, not Auth::id()
+        $validated['staff_id'] = $staff->staff_id;
+
+        // Create the vehicle
+        Vehicle::create($validated);
+
+        return redirect()->route('staff.vehicles.index')
+            ->with('success', 'Vehicle added successfully.');
     }
 
-    public function show(Vehicle $vehicle)
+    /**
+     * Display the specified vehicle.
+     */
+    public function show($plate_no)
     {
-        $vehicle->load('bookings.customer'); // Load relationships if needed
+        $vehicle = Vehicle::where('plate_no', $plate_no)->firstOrFail();
         return view('staff.vehicles.show', compact('vehicle'));
     }
 
-    public function edit(Vehicle $vehicle)
+    /**
+     * Show the form for editing the specified vehicle.
+     */
+    public function edit($plate_no)
     {
-        $vehicleTypes = Vehicle::distinct()->pluck('vehicle_type')->sort();
-        $transmissionTypes = ['Manual', 'Automatic'];
-        $fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid'];
-        
-        return view('staff.vehicles.edit', compact('vehicle', 'vehicleTypes', 'transmissionTypes', 'fuelTypes'));
+        $vehicle = Vehicle::where('plate_no', $plate_no)->firstOrFail();
+        return view('staff.vehicles.edit', compact('vehicle'));
     }
 
-    public function update(Request $request, Vehicle $vehicle)
+    /**
+     * Update the specified vehicle in storage.
+     */
+    public function update(Request $request, $plate_no)
     {
-        $request->validate([
-            'plate_no' => 'required|max:20|unique:vehicles,plate_no,' . $vehicle->plate_no . ',plate_no',
+        $vehicle = Vehicle::where('plate_no', $plate_no)->firstOrFail();
+
+        // Validation
+        $validated = $request->validate([
+            'vehicle_type' => 'required|in:car,motorcycle',
             'name' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'vehicle_type' => 'required|string|max:50',
-            'transmission' => 'required|in:Manual,Automatic',
-            'fuel_type' => 'required|in:Petrol,Diesel,Electric,Hybrid',
-            'seating_capacity' => 'required|integer|min:1|max:100',
-            'price_perHour' => 'required|numeric|min:0',
-            'price_perDay' => 'required|numeric|min:0',
-            'description' => 'nullable|string|max:1000',
-            'features' => 'nullable|array',
+            'color' => 'required|string|max:100',
+            'year' => 'required|integer|min:2000|max:' . (date('Y') + 1),
+            'distance_travelled' => 'required|numeric|min:0',
+            'roadtax_expiry' => 'required|date',
+            'transmission' => 'required|in:automatic,manual',
+            'fuel_type' => 'required|in:petrol,diesel,electric,hybrid',
+            'seating_capacity' => 'required|integer|min:1|max:50',
+            'price_perHour' => 'required|numeric|min:0|max:9999',
+            'description' => 'nullable|string',
+            'maintenance_notes' => 'nullable|string',
             'availability_status' => 'required|in:available,booked,maintenance',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-            'maintenance_notes' => 'nullable|string|max:500',
+            
+            // Display Image (optional for update)
+            'display_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            
+            // Detail Images (optional for update)
+            'front_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'right_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'back_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'left_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'interior_front_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'interior_back_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        DB::beginTransaction();
-        try {
-            // Handle images
-            $imagePaths = json_decode($vehicle->images ?? '[]', true) ?: [];
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $path = $image->store('vehicles', 'public');
-                    $imagePaths[] = $path;
-                }
+        // Handle display image update
+        if ($request->hasFile('display_image')) {
+            // Delete old display image if exists
+            if ($vehicle->display_image && Storage::disk('public')->exists($vehicle->display_image)) {
+                Storage::disk('public')->delete($vehicle->display_image);
             }
             
-            // Handle image removal
-            if ($request->has('remove_images')) {
-                foreach ($request->remove_images as $imagePath) {
-                    if (($key = array_search($imagePath, $imagePaths)) !== false) {
-                        Storage::disk('public')->delete($imagePath);
-                        unset($imagePaths[$key]);
-                    }
-                }
-                $imagePaths = array_values($imagePaths); // Reindex array
-            }
-
-            $vehicle->update([
-                'plate_no' => $request->plate_no,
-                'name' => $request->name,
-                'model' => $request->model,
-                'vehicle_type' => $request->vehicle_type,
-                'transmission' => $request->transmission,
-                'fuel_type' => $request->fuel_type,
-                'seating_capacity' => $request->seating_capacity,
-                'price_perHour' => $request->price_perHour,
-                'price_perDay' => $request->price_perDay,
-                'description' => $request->description,
-                'features' => $request->features ? json_encode($request->features) : null,
-                'availability_status' => $request->availability_status,
-                'images' => !empty($imagePaths) ? json_encode($imagePaths) : null,
-                'maintenance_notes' => $request->maintenance_notes,
-            ]);
-
-            DB::commit();
-            
-            return redirect()->route('staff.vehicles.index')
-                           ->with('success', 'Vehicle updated successfully!');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Failed to update vehicle: ' . $e->getMessage())
-                        ->withInput();
+            $displayImagePath = $request->file('display_image')->store('vehicles/display', 'public');
+            $validated['display_image'] = $displayImagePath;
+        } else {
+            // Keep existing display image
+            $validated['display_image'] = $vehicle->display_image;
         }
+
+        // Handle detail images update
+        $currentImages = $vehicle->images ? json_decode($vehicle->images, true) : [];
+        
+        $imageFields = [
+            'front_image' => 'front',
+            'right_image' => 'right',
+            'back_image' => 'back',
+            'left_image' => 'left',
+            'interior_front_image' => 'interior_front',
+            'interior_back_image' => 'interior_back',
+        ];
+
+        foreach ($imageFields as $field => $key) {
+            if ($request->hasFile($field)) {
+                // Delete old image if exists
+                if (isset($currentImages[$key]) && Storage::disk('public')->exists($currentImages[$key])) {
+                    Storage::disk('public')->delete($currentImages[$key]);
+                }
+                
+                // Upload new image
+                $path = $request->file($field)->store('vehicles/detail', 'public');
+                $currentImages[$key] = $path;
+            } elseif (isset($currentImages[$key])) {
+                // Keep existing image
+                $currentImages[$key] = $currentImages[$key];
+            }
+        }
+
+        // Store updated images as JSON
+        if (!empty($currentImages)) {
+            $validated['images'] = json_encode($currentImages);
+        } else {
+            $validated['images'] = null;
+        }
+
+        // Update the vehicle
+        $vehicle->update($validated);
+
+        return redirect()->route('staff.vehicles.index')
+            ->with('success', 'Vehicle updated successfully.');
     }
 
-    public function destroy(Vehicle $vehicle)
+    /**
+     * Remove the specified vehicle from storage.
+     */
+    public function destroy($plate_no)
     {
-        DB::beginTransaction();
-        try {
-            // Delete images
-            if ($vehicle->images) {
-                $images = json_decode($vehicle->images, true);
-                foreach ($images as $imagePath) {
+        $vehicle = Vehicle::where('plate_no', $plate_no)->firstOrFail();
+        
+        // Delete display image if exists
+        if ($vehicle->display_image && Storage::disk('public')->exists($vehicle->display_image)) {
+            Storage::disk('public')->delete($vehicle->display_image);
+        }
+        
+        // Delete detail images if exist
+        if ($vehicle->images) {
+            $detailImages = json_decode($vehicle->images, true);
+            foreach ($detailImages as $imagePath) {
+                if (Storage::disk('public')->exists($imagePath)) {
                     Storage::disk('public')->delete($imagePath);
                 }
             }
-            
-            $vehicle->delete();
-            
-            DB::commit();
-            
-            return redirect()->route('staff.vehicles.index')
-                           ->with('success', 'Vehicle deleted successfully!');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Failed to delete vehicle: ' . $e->getMessage());
         }
-    }
-
-    public function toggleAvailability(Vehicle $vehicle)
-    {
-        $newStatus = $vehicle->availability_status === 'available' ? 'maintenance' : 'available';
-        $vehicle->update(['availability_status' => $newStatus]);
         
-        return back()->with('success', "Vehicle status changed to {$newStatus}!");
+        // Delete the vehicle
+        $vehicle->delete();
+
+        return redirect()->route('staff.vehicles.index')
+            ->with('success', 'Vehicle deleted successfully.');
     }
 
-    public function maintenance(Vehicle $vehicle)
-    {
-        return view('staff.vehicles.maintenance', compact('vehicle'));
-    }
-
-    public function updateMaintenance(Request $request, Vehicle $vehicle)
+    /**
+     * Update vehicle status quickly (for AJAX requests if needed).
+     */
+    public function updateStatus(Request $request, $plate_no)
     {
         $request->validate([
-            'maintenance_notes' => 'required|string|max:500',
-            'availability_status' => 'required|in:available,maintenance',
+            'status' => 'required|in:available,booked,maintenance'
         ]);
-        
-        $vehicle->update([
-            'maintenance_notes' => $request->maintenance_notes,
-            'availability_status' => $request->availability_status,
-        ]);
-        
-        return redirect()->route('staff.vehicles.index')
-                       ->with('success', 'Maintenance details updated successfully!');
+
+        $vehicle = Vehicle::where('plate_no', $plate_no)->firstOrFail();
+        $vehicle->update(['availability_status' => $request->status]);
+
+        return response()->json(['success' => true]);
     }
 }

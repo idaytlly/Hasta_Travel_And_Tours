@@ -44,6 +44,18 @@ class Customer extends Authenticatable
         ];
     }
 
+    // Backwards-compatible accessor for `phone` used in some controllers/views
+    public function getPhoneAttribute()
+    {
+        return $this->phone_no;
+    }
+
+    // Friendly accessor for `fullname` if needed
+    public function getFullnameAttribute()
+    {
+        return $this->name;
+    }
+
     /**
      * Auto-generate a customer_id when creating a new record if not provided.
      */
