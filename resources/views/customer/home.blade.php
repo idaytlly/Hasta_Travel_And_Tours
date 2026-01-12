@@ -134,21 +134,29 @@ body {
     font-weight: 300;
 }
 
-.btn-view-details {
-    background: #CB3737;
-    color: white;
-    border: none;
-    padding: 6px;
-    justify-content: right;
-    font-size: 0.8rem;
-    width: 100%;
-    transition: all 0.2s;
-}
+    .btn-view-details { 
+            background: #d93025;
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        width: 100%;
+        text-align: center;
+        display: inline-block;
+        text-decoration: none;
+        transition: all 0.2s ease; 
+    }
 
-.btn-view-details:hover {
-    background: #CB3737;
-    color: white;
-}
+    .btn-view-details:hover {
+        background: #b71c1c;
+        transform: translateY(-1px);
+    }
+
+    .btn-view-details:active {
+        transform: scale(0.96);
+    }
 
 .section-header {
     display: flex;
@@ -253,46 +261,32 @@ body {
     </div>
 </div>
 
-<!-- Car Listings -->
-    <div class="section-header" style="margin-top: 3rem;">
+<!-- Section Header -->
+<div class="section-header" style="margin-top: 3rem;">
     <h2>Our Car Models</h2>
-    </div>
-
-
-    <!-- Car Listings -->
-    <div class="d-flex justify-content-center flex-wrap gap-5 mb-5">
-    <!-- Car 1 -->
+</div>
+<div class="d-flex justify-content-center flex-wrap gap-5 mb-5">
+@foreach ($vehicles as $vehicle)
     <div class="car-card" style="width: 350px;">
-        <img src="{{ asset('car_images/axia2ndgen.jpg') }}" alt="Car">
-        <h3 class="car-name">Perodua Axia (2nd Gen)</h3>
-        <p class="car-type">Hatchback</p>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM40.00 <small>/hour</small></div>
-        </div>
-        <button class="btn btn-view-details">View Details</button>
-    </div>
+        <img src="{{ $vehicle->image_url }}" alt="{{ $vehicle->name }}">
 
-    <!-- Car 2 -->
-    <div class="car-card" style="width: 350px;">
-        <img src="{{ asset('car_images/bezza2ndgen.jpg') }}" alt="Car">
-        <h3 class="car-name">Perodua Bezza (2nd Gen)</h3>
-        <p class="car-type">Sedan</p>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM50.00 <small>/hour</small></div>
-        </div>
-        <button class="btn btn-view-details">View Details</button>
-    </div>
+        <h3 class="car-name">{{ $vehicle->name }}</h3>
+        <p class="car-type">{{ $vehicle->vehicle_type }}</p>
 
-    <!-- Car 3 -->
-    <div class="car-card" style="width: 350px;">
-        <img src="{{ asset('car_images/myvi2ndgen.jpg') }}" alt="Car">
-        <h3 class="car-name">Perodua Myvi (2nd Gen)</h3>
-        <p class="car-type">Hatchback</p>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="car-price">RM40.00 <small>/hour</small></div>
+            <div class="car-price">
+                RM{{ number_format($vehicle->price_perHour, 2) }}
+                <small>/hour</small>
+            </div>
         </div>
-        <button class="btn btn-view-details">View Details</button>
+
+        <!-- VIEW DETAILS BUTTON -->
+        <a href="{{ route('vehicles.show', $vehicle->plate_no) }}"
+           class="btn btn-view-details">
+           View Details
+        </a>
     </div>
+@endforeach
 </div>
 </div>  
 

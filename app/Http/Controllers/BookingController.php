@@ -45,7 +45,66 @@ class BookingController extends Controller
 
         return view('bookings.create', compact('vehicle'));
     }
-    
+
+    /**
+     * Validate voucher code via AJAX
+    */
+    public function validateVoucher(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string'
+        ]);
+        
+        $code = strtoupper(trim($request->code));
+        
+        \Log::info('Validating voucher', ['code' => $code]);
+        
+        // Find the voucher using your actual column names
+        $voucher = Voucher::where('voucherCode', $code)->first();
+        
+        // Check if voucher exists
+        if (!$voucher) {
+            \Log::info('Voucher not found', ['code' => $code]);
+            return response()->json([
+                'valid' => false,
+                'message' => 'Invalid voucher code'
+            ]);
+        }
+        
+        // Check if voucher is active
+        if ($voucher->voucherStatus !== 'active') {
+            \Log::info('Voucher not active', ['code' => $code, 'status' => $voucher->voucherStatus]);
+            return response()->json([
+                'valid' => false,
+                'message' => 'This voucher is no longer active'
+            ]);
+        }
+        
+        // Check expiry date (if expiryDate exists)
+        if ($voucher->expiryDate) {
+            $expiryDate = Carbon::parse($voucher->expiryDate);
+            if (now()->gt($expiryDate)) {
+                \Log::info('Voucher expired', ['code' => $code, 'expiry' => $voucher->expiryDate]);
+                return response()->json([
+                    'valid' => false,
+                    'message' => 'This voucher has expired'
+                ]);
+            }
+        }
+        
+        // Voucher is valid
+        \Log::info('Voucher validated successfully', [
+            'code' => $code,
+            'discount' => $voucher->voucherAmount
+        ]);
+        
+        return response()->json([
+            'valid' => true,
+            'discount' => $voucher->voucherAmount,
+            'code' => $voucher->voucherCode
+        ]);
+    }
+
     /**
      * Store a newly created booking
      */

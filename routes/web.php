@@ -40,6 +40,8 @@ Route::middleware(['auth:customer'])->group(function () {
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::get('/vehicles/{plate_no}/book', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+
+    Route::post('/vouchers/validate', [BookingController::class, 'validateVoucher'])->name('vouchers.validate');
     
     // === ADD THESE TWO MISSING LINES ===
     Route::get('/bookings/{id}/payment', [BookingController::class, 'payment'])->name('bookings.payment');

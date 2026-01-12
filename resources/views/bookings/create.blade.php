@@ -586,7 +586,6 @@
         </form>
     </div>
 </div>
-
 <script>
     const pricePerHour = {{ $vehicle->price_perHour }};
     let voucherDiscount = 0;
@@ -750,6 +749,8 @@
             document.getElementById('discountRow').style.display = 'flex';
             document.getElementById('discountPercent').textContent = voucherDiscount;
             document.getElementById('discountDisplay').textContent = `- RM ${discount.toFixed(2)}`;
+        } else {
+            document.getElementById('discountRow').style.display = 'none';
         }
         
         document.getElementById('priceSummary').style.display = 'block';
@@ -759,28 +760,70 @@
         document.getElementById(id).addEventListener('change', calculatePrice);
     });
     
-    // Voucher
+    // Voucher - NEW AJAX VALIDATION
     function applyVoucher() {
-        const code = document.getElementById('voucherCode').value.toUpperCase();
-        const vouchers = {
-            'HASTA10': 10,
-            'STUDENT15': 15,
-            'WELCOME20': 20
-        };
-        
+        const code = document.getElementById('voucherCode').value.trim().toUpperCase();
         const msg = document.getElementById('voucherMessage');
+        const applyBtn = document.querySelector('.btn-apply');
         
-        if (vouchers[code]) {
-            voucherDiscount = vouchers[code];
-            msg.textContent = `Voucher applied: ${voucherDiscount}% discount`;
+        if (!code) {
+            msg.textContent = '⚠️ Please enter a voucher code';
+            msg.style.color = '#dc2626';
             msg.style.display = 'block';
-            calculatePrice();
-        } else if (code) {
-            msg.textContent = 'Invalid voucher code';
+            return;
+        }
+        
+        // Disable button and show loading
+        applyBtn.disabled = true;
+        applyBtn.textContent = 'Checking...';
+        msg.textContent = '⏳ Validating voucher...';
+        msg.style.color = '#4b5563';
+        msg.style.display = 'block';
+        
+        // AJAX call to validate voucher
+        fetch('{{ route("vouchers.validate") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ code: code })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                voucherDiscount = data.discount;
+                msg.textContent = `✓ Voucher applied successfully: ${voucherDiscount}% discount!`;
+                msg.style.color = '#059669';
+                msg.style.display = 'block';
+                applyBtn.textContent = 'Applied ✓';
+                applyBtn.style.background = '#059669';
+                
+                // Update the voucher input to show the validated code
+                document.getElementById('voucherCode').value = data.code;
+                
+                calculatePrice();
+            } else {
+                msg.textContent = '✗ ' + (data.message || 'Invalid voucher code');
+                msg.style.color = '#dc2626';
+                msg.style.display = 'block';
+                voucherDiscount = 0;
+                applyBtn.disabled = false;
+                applyBtn.textContent = 'Apply';
+                applyBtn.style.background = '#4b5563';
+                calculatePrice();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            msg.textContent = '✗ Error validating voucher. Please try again.';
             msg.style.color = '#dc2626';
             msg.style.display = 'block';
             voucherDiscount = 0;
-        }
+            applyBtn.disabled = false;
+            applyBtn.textContent = 'Apply';
+            applyBtn.style.background = '#4b5563';
+        });
     }
     
     // Form submission
