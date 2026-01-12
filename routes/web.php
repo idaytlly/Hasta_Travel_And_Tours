@@ -78,11 +78,13 @@ Route::middleware(['staff.auth'])->prefix('staff')->group(function () {
     Route::get('/bookings/{id}/edit', [Staff\BookingController::class, 'edit'])->name('staff.bookings.edit');
     Route::put('/bookings/{id}', [Staff\BookingController::class, 'update'])->name('staff.bookings.update');
     Route::delete('/bookings/{id}', [Staff\BookingController::class, 'destroy'])->name('staff.bookings.destroy');
+
+    });
 Route::get('/test-auth', function () {
-    \Log::info('=== TEST AUTH ROUTE ===');
-    \Log::info('Session ID: ' . session()->getId());
-    \Log::info('Customer auth: ' . (Auth::guard('customer')->check() ? 'YES' : 'NO'));
-    \Log::info('Staff auth: ' . (Auth::guard('staff')->check() ? 'YES' : 'NO'));
+    Log::info('=== TEST AUTH ROUTE ===');
+    Log::info('Session ID: ' . session()->getId());
+    Log::info('Customer auth: ' . (Auth::guard('customer')->check() ? 'YES' : 'NO'));
+    Log::info('Staff auth: ' . (Auth::guard('staff')->check() ? 'YES' : 'NO'));
     
     if (Auth::guard('staff')->check()) {
         $staff = Auth::guard('staff')->user();
