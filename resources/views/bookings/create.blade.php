@@ -793,7 +793,7 @@
         .then(data => {
             if (data.valid) {
                 voucherDiscount = data.discount;
-                msg.textContent = `✓ Voucher applied successfully: ${voucherDiscount}% discount!`;
+                msg.textContent = `Voucher applied successfully: ${voucherDiscount}% discount!`;
                 msg.style.color = '#059669';
                 msg.style.display = 'block';
                 applyBtn.textContent = 'Applied ✓';
@@ -804,7 +804,7 @@
                 
                 calculatePrice();
             } else {
-                msg.textContent = '✗ ' + (data.message || 'Invalid voucher code');
+                msg.textContent = (data.message || 'Invalid voucher code');
                 msg.style.color = '#dc2626';
                 msg.style.display = 'block';
                 voucherDiscount = 0;
@@ -816,7 +816,7 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            msg.textContent = '✗ Error validating voucher. Please try again.';
+            msg.textContent = 'Error validating voucher. Please try again.';
             msg.style.color = '#dc2626';
             msg.style.display = 'block';
             voucherDiscount = 0;
