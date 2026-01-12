@@ -119,12 +119,19 @@
         border-color: #ddd;
     }
 
+    .form-control::placeholder {
+        color: #6c757d;
+        opacity: 0.8;
+        font-weight: 500;
+    }
+
     .input-group-text {
         background-color: #f8f9fa;
         border: 2px solid #e9ecef;
         border-right: none;
         border-radius: 12px 0 0 12px;
         color: #6c757d;
+        font-weight: 600;
     }
 
     .input-group .form-control {
@@ -198,6 +205,20 @@
         color: #17a2b8;
     }
 
+    .phone-example {
+        font-size: 0.85rem;
+        color: #495057;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 600;
+    }
+
+    .phone-example i {
+        color: #28a745;
+    }
+
     @media (max-width: 768px) {
         .edit-header h1 {
             font-size: 1.5rem;
@@ -265,7 +286,7 @@
                                     Identification Card (IC/NRIC)
                                     <span class="required">*</span>
                                 </label>
-                                <input type="text" class="form-control" name="ic_number" value="{{ old('ic_number', $customer->ic_number ?? '') }}" placeholder="e.g., 990101-01-1234" required>
+                                <input type="text" class="form-control" name="ic_number" value="{{ old('ic_number', $customer->ic_number ?? '') }}" placeholder="990101-01-1234" required>
                                 <div class="info-helper">
                                     <i class="fas fa-info-circle"></i>
                                     <span>Enter your MyKad number</span>
@@ -282,7 +303,7 @@
                                     <i class="fas fa-graduation-cap"></i>
                                     Matric Number
                                 </label>
-                                <input type="text" class="form-control" name="matricNum" value="{{ old('matricNum', $customer->matricNum ?? '') }}" placeholder="e.g., A21EC0001">
+                                <input type="text" class="form-control" name="matricNum" value="{{ old('matricNum', $customer->matricNum ?? '') }}" placeholder="A21EC0001">
                                 <div class="info-helper">
                                     <i class="fas fa-info-circle"></i>
                                     <span>For students only</span>
@@ -325,7 +346,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text">+60</span>
-                                    <input type="text" class="form-control" name="phone_no" value="{{ old('phone_no', $customer->phone_no ?? '') }}" placeholder="123456789" required>
+                                    <input type="text" class="form-control" name="phone_no" value="{{ old('phone_no', $customer->phone_no ?? '') }}" placeholder="Enter your number without +60" required>
                                 </div>
                                 @error('phone_no')
                                     <small class="text-danger">{{ $message }}</small>
@@ -379,7 +400,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text">+60</span>
-                                    <input type="text" class="form-control" name="emergency_phoneNo" value="{{ old('emergency_phoneNo', $customer->emergency_phoneNo ?? '') }}" placeholder="123456789" required>
+                                    <input type="text" class="form-control" name="emergency_phoneNo" value="{{ old('emergency_phoneNo', $customer->emergency_phoneNo ?? '') }}" placeholder="Enter number without +60" required>
                                 </div>
                                 @error('emergency_phoneNo')
                                     <small class="text-danger">{{ $message }}</small>
@@ -419,5 +440,6 @@
            </div>
         </div>
     </div>
+</div>
 </div>
 @endsection
