@@ -15,6 +15,9 @@ use Carbon\Carbon;
 
 class BookingController extends Controller
 {
+    // Delivery fee constant
+    const DELIVERY_FEE = 15.00;
+
     /**
      * Display a listing of bookings
      */
@@ -42,7 +45,7 @@ class BookingController extends Controller
 
         return view('bookings.create', compact('vehicle'));
     }
-
+    
     /**
      * Store a newly created booking
      */
@@ -51,6 +54,8 @@ class BookingController extends Controller
         \Log::info('=== BOOKING STORE METHOD CALLED ===');
         
         $validated = $request->validate([
+            'customer_name' => 'required|string|max:255',
+            'customer_phone' => 'required|string|max:20',
             'plate_no' => 'required|exists:vehicle,plate_no',
             'pickup_date' => 'required|date|after_or_equal:today',
             'pickup_time' => 'required|date_format:H:i',
@@ -76,36 +81,76 @@ class BookingController extends Controller
                 return back()->with('error', 'This vehicle is no longer available.')->withInput();
             }
 
-            // 2. Get Customer
+            // 2. Get Customer and verify their information
             $customer = Auth::guard('customer')->user();
+            
+            // Verify that the customer name and phone match the authenticated user
+            if (trim($validated['customer_name']) !== trim($customer->name)) {
+                return back()->with('error', 'Customer name does not match your profile.')->withInput();
+            }
+            
+            if (trim($validated['customer_phone']) !== trim($customer->phone_no)) {
+                return back()->with('error', 'Phone number does not match your profile.')->withInput();
+            }
+            
+            // Check if customer profile is complete
+            if (empty($customer->name) || empty($customer->phone_no)) {
+                return redirect()->route('customer.profile.edit')
+                    ->with('error', 'Please complete your profile before making a booking.');
+            }
 
             // 3. FIX: Sanitize Dates (Take only first 10 chars YYYY-MM-DD)
-            // This prevents "Double time specification" errors if the input has a time component
             $pickupDateOnly = substr($validated['pickup_date'], 0, 10);
             $returnDateOnly = substr($validated['return_date'], 0, 10);
 
             $pickupDateTime = Carbon::parse($pickupDateOnly . ' ' . $validated['pickup_time']);
             $returnDateTime = Carbon::parse($returnDateOnly . ' ' . $validated['return_time']);
             
+            // Validate that return is after pickup
+            if ($returnDateTime->lte($pickupDateTime)) {
+                return back()->with('error', 'Return date/time must be after pickup date/time.')->withInput();
+            }
+            
             $totalHours = (int) ceil($pickupDateTime->diffInHours($returnDateTime));
-            $totalPrice = $totalHours * $vehicle->price_perHour;
+            
+            // Validate minimum rental duration (e.g., at least 1 hour)
+            if ($totalHours < 1) {
+                return back()->with('error', 'Minimum rental duration is 1 hour.')->withInput();
+            }
+            
+            // Calculate base price (rental only)
+            $rentalPrice = $totalHours * $vehicle->price_perHour;
 
-            // 4. Apply Voucher
+            // 4. Check if delivery is required
+            $deliveryRequired = ($validated['pickup_location'] !== 'HASTA office') || 
+                               ($validated['dropoff_location'] !== 'HASTA office');
+            
+            // Add delivery fee if required
+            $deliveryFee = $deliveryRequired ? self::DELIVERY_FEE : 0;
+            
+            // Calculate subtotal (rental + delivery)
+            $subtotal = $rentalPrice + $deliveryFee;
+            
+            // 5. Apply Voucher Discount
             $voucherId = null;
+            $discountAmount = 0;
             if (!empty($validated['voucher_code'])) {
-                $voucher = Voucher::where('voucher_code', strtoupper($validated['voucher_code']))
+                $voucher = Voucher::where('voucherCode', strtoupper($validated['voucher_code']))
                     ->where('voucherStatus', 'active')
                     ->where('expiryDate', '>=', now())
                     ->first();
                 
                 if ($voucher) {
-                    $discount = ($totalPrice * $voucher->voucherAmount) / 100;
-                    $totalPrice -= $discount;
+                    // Calculate discount based on RENTAL PRICE ONLY (not including delivery)
+                    $discountAmount = ($rentalPrice * $voucher->voucherAmount) / 100;
                     $voucherId = $voucher->voucher_id;
                 }
             }
+            
+            // Calculate final total price
+            $totalPrice = $subtotal - $discountAmount;
 
-            // 5. Format Locations
+            // 6. Format Locations
             $pickupDetails = $this->formatLocationDetails(
                 $validated['pickup_location'],
                 $validated['pickup_college'] ?? null,
@@ -118,10 +163,7 @@ class BookingController extends Controller
                 $validated['dropoff_faculty'] ?? null
             );
 
-            $deliveryRequired = ($validated['pickup_location'] !== 'HASTA office') || 
-                               ($validated['dropoff_location'] !== 'HASTA office');
-
-            // 6. Handle Signature
+            // 7. Handle Signature
             $signaturePath = null;
             if (!empty($validated['signature'])) {
                 $signatureData = $validated['signature'];
@@ -133,18 +175,18 @@ class BookingController extends Controller
                 $signaturePath = $fileName;
             }
 
-            // 7. Generate ID & Create Booking
+            // 8. Generate ID & Create Booking
             $bookingId = 'BKG-' . time() . '-' . rand(100, 999);
 
             $booking = Booking::create([
                 'booking_id' => $bookingId,
                 'customer_id' => $customer->customer_id,
                 'plate_no' => $validated['plate_no'],
-                'pickup_date' => $pickupDateOnly,          // <--- UPDATED: Use sanitized date
+                'pickup_date' => $pickupDateOnly,
                 'pickup_time' => $validated['pickup_time'],
                 'pickup_location' => $validated['pickup_location'],
                 'pickup_details' => $pickupDetails,
-                'return_date' => $returnDateOnly,          // <--- UPDATED: Use sanitized date
+                'return_date' => $returnDateOnly,
                 'return_time' => $validated['return_time'],
                 'dropoff_location' => $validated['dropoff_location'],
                 'dropoff_details' => $dropoffDetails,
@@ -155,7 +197,18 @@ class BookingController extends Controller
                 'signature' => $signaturePath,
             ]);
 
+            // Update vehicle availability
             $vehicle->update(['availability_status' => 'booked']);
+            
+            // Log the booking creation
+            \Log::info('Booking created successfully', [
+                'booking_id' => $bookingId,
+                'customer_id' => $customer->customer_id,
+                'rental_price' => $rentalPrice,
+                'delivery_fee' => $deliveryFee,
+                'discount_applied' => $discountAmount,
+                'total_price' => $totalPrice
+            ]);
 
             DB::commit();
 
@@ -164,8 +217,10 @@ class BookingController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Booking Error: ' . $e->getMessage());
-            return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
+            \Log::error('Booking Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Error creating booking: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -229,6 +284,175 @@ class BookingController extends Controller
             ->firstOrFail();
 
         return view('bookings.show', compact('booking'));
+    }
+
+    /**
+     * Show inspection form for pickup or dropoff
+     */
+    public function inspection($id, $type)
+    {
+        $booking = Booking::with('vehicle', 'customer')->findOrFail($id);
+        
+        // Verify customer owns this booking
+        if ($booking->customer_id !== Auth::guard('customer')->id()) {
+            abort(403, 'Unauthorized access to this booking.');
+        }
+        
+        // Validate inspection type
+        if (!in_array($type, ['pickup', 'dropoff'])) {
+            abort(404, 'Invalid inspection type.');
+        }
+        
+        // Check if booking status allows inspection
+        if ($type === 'pickup' && $booking->booking_status !== 'confirmed') {
+            return redirect()->route('bookings.show', $id)
+                ->with('error', 'Pick-up inspection can only be done for confirmed bookings.');
+        }
+        
+        if ($type === 'dropoff' && $booking->booking_status !== 'active') {
+            return redirect()->route('bookings.show', $id)
+                ->with('error', 'Drop-off inspection can only be done for active rentals.');
+        }
+        
+        // Check if inspection already exists
+        $existingInspection = \App\Models\Inspection::where('booking_id', $id)
+            ->where('inspection_type', $type)
+            ->first();
+        
+        if ($existingInspection) {
+            return redirect()->route('bookings.show', $id)
+                ->with('error', ucfirst($type) . ' inspection has already been completed.');
+        }
+        
+        $inspectionType = $type;
+        return view('bookings.inspection', compact('booking', 'inspectionType'));
+    }
+
+    /**
+     * Store inspection data
+     */
+    public function storeInspection(Request $request, $id, $type)
+    {
+        $booking = Booking::findOrFail($id);
+        
+        // Verify customer owns this booking
+        if ($booking->customer_id !== Auth::guard('customer')->id()) {
+            abort(403, 'Unauthorized access to this booking.');
+        }
+        
+        // Validate inspection type
+        if (!in_array($type, ['pickup', 'dropoff'])) {
+            abort(404, 'Invalid inspection type.');
+        }
+        
+        $validated = $request->validate([
+            'photo_front' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+            'photo_back' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+            'photo_left' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+            'photo_right' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+            'photo_fuel' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+            'remarks' => 'required|string|min:10|max:1000',
+            'signature' => 'required|string',
+        ]);
+        
+        try {
+            DB::beginTransaction();
+            
+            // Generate inspection ID
+            $inspectionId = 'INS-' . time() . '-' . rand(100, 999);
+            
+            // Handle 4 sides car photos
+            $carPhotos = [];
+            $photoTypes = ['front', 'back', 'left', 'right'];
+            
+            foreach ($photoTypes as $side) {
+                $photoField = 'photo_' . $side;
+                if ($request->hasFile($photoField)) {
+                    $file = $request->file($photoField);
+                    $fileName = 'inspections/' . $id . '_' . $type . '_' . $side . '_' . time() . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs('public', $fileName);
+                    $carPhotos[$side] = $fileName;
+                }
+            }
+            
+            // Handle fuel gauge photo
+            $fuelPhotoPath = null;
+            if ($request->hasFile('photo_fuel')) {
+                $file = $request->file('photo_fuel');
+                $fileName = 'inspections/' . $id . '_' . $type . '_fuel_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('public', $fileName);
+                $fuelPhotoPath = $fileName;
+            }
+            
+            // Handle signature
+            $signaturePath = null;
+            if (!empty($validated['signature'])) {
+                $signatureData = $validated['signature'];
+                if (strpos($signatureData, 'base64,') !== false) {
+                    $signatureData = explode('base64,', $signatureData)[1];
+                }
+                $fileName = 'inspections/signatures/' . $id . '_' . $type . '_' . time() . '.png';
+                Storage::disk('public')->put($fileName, base64_decode($signatureData));
+                $signaturePath = $fileName;
+            }
+            
+            // Create inspection record
+            \App\Models\Inspection::create([
+                'inspection_id' => $inspectionId,
+                'booking_id' => $id,
+                'inspection_type' => $type,
+                'inspection_date' => now()->toDateString(),
+                'car_photos' => json_encode($carPhotos),
+                'fuel_photo' => $fuelPhotoPath,
+                'remarks' => $validated['remarks'],
+                'signature' => $signaturePath,
+                'inspection_status' => 'completed',
+                'damage_notes' => $validated['remarks'],
+                'inspected_by' => Auth::guard('customer')->id(),
+                'inspected_at' => now(),
+            ]);
+            
+            // Update booking status based on inspection type
+            if ($type === 'pickup') {
+                $booking->update(['booking_status' => 'active']);
+                
+                // Update vehicle status to in-use
+                $booking->vehicle->update(['availability_status' => 'in-use']);
+                
+                $message = 'Pick-up inspection completed successfully! You can now use the vehicle.';
+            } elseif ($type === 'dropoff') {
+                $booking->update(['booking_status' => 'completed']);
+                
+                // Update vehicle status back to available
+                $booking->vehicle->update(['availability_status' => 'available']);
+                
+                $message = 'Drop-off inspection completed successfully! Thank you for using our service.';
+            }
+            
+            // Log the inspection
+            \Log::info('Inspection completed', [
+                'inspection_id' => $inspectionId,
+                'booking_id' => $id,
+                'type' => $type,
+                'customer_id' => Auth::guard('customer')->id(),
+                'photos_uploaded' => count($carPhotos) + 1
+            ]);
+            
+            DB::commit();
+            
+            return redirect()->route('bookings.show', $id)
+                ->with('success', $message);
+                
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Inspection Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'booking_id' => $id,
+                'type' => $type
+            ]);
+            
+            return back()->with('error', 'Error submitting inspection: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
