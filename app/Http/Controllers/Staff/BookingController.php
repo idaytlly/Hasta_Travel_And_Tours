@@ -157,7 +157,7 @@ class BookingController extends Controller
                     $oldVehicle->update(['availability_status' => 'available']);
                 }
             }
-            // Commit the changes for the old 
+        
 
             $vehicle = Vehicle::findOrFail($request->plate_no);
             
