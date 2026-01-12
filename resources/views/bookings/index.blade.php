@@ -466,7 +466,7 @@
                         </div>
                         <div class="meta-item">
                             <span>👤</span>
-                            <span>{{ $booking->customers->name }}</span>
+                            <span>{{ $booking->customer->name }}</span>
                         </div>
                     </div>
                     <div class="booking-price">
