@@ -63,6 +63,40 @@ class Customer extends Authenticatable
             }
         });
     }
+
+    // Add these methods to your Customer model
+
+    public function vouchers()
+    {
+        return $this->hasMany(Voucher::class, 'customer_id', 'customer_id');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'customer_id', 'customer_id');
+    }
+
+    /**
+     * Get total stamps earned from completed bookings (7+ hours)
+     */
+    public function getTotalStampsAttribute()
+    {
+        return $this->bookings()
+            ->where('stamp_awarded', true)
+            ->sum('stamps_earned');
+    }
+
+    /**
+     * Get available vouchers
+     */
+    public function getAvailableVouchersAttribute()
+    {
+        return $this->vouchers()
+            ->where('voucherStatus', 'active')
+            ->where('is_used', false)
+            ->where('expiryDate', '>=', now())
+            ->get();
+    }
 }
 ?>
 

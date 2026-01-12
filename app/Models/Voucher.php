@@ -14,26 +14,44 @@ class Voucher extends Model
 
     protected $fillable = [
         'voucher_id',
+        'customer_id',
         'voucherCode',
         'voucherAmount',
+        'stamp_milestone',
         'used_count',
+        'is_used',
         'expiryDate',
         'voucherStatus',
     ];
 
     protected $casts = [
         'expiryDate' => 'date',
+        'is_used' => 'boolean',
     ];
 
-    // Relationships
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
+    }
+
     public function bookings()
     {
         return $this->hasMany(Booking::class, 'voucher_id', 'voucher_id');
     }
 
-    // Helper methods
     public function isValid()
     {
-        return $this->voucherStatus === 'active' && $this->expiryDate >= now();
+        return $this->voucherStatus === 'active' 
+            && $this->expiryDate >= now() 
+            && !$this->is_used;
+    }
+
+    public function markAsUsed()
+    {
+        $this->update([
+            'is_used' => true,
+            'voucherStatus' => 'used',
+            'used_count' => $this->used_count + 1,
+        ]);
     }
 }
