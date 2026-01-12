@@ -15,12 +15,11 @@ class Booking extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    // Fix 2: Add ALL missing fields to fillable to prevent save errors
     protected $fillable = [
         'booking_id',
         'customer_id',
         'plate_no',
-        'vehicle_id', // Add this if your controller uses it, otherwise 'plate_no' is enough
+        'vehicle_id',
         'pickup_date',
         'pickup_time',
         'pickup_location',
@@ -35,6 +34,8 @@ class Booking extends Model
         'voucher_id',
         'signature',
         'special_requests',
+        'stamps_earned',         // NEW
+        'stamp_awarded',         // NEW
         'actual_return_date',
         'actual_return_time',
         'late_return_hours',
@@ -47,13 +48,12 @@ class Booking extends Model
         'approved_at',
     ];
 
-    // Fix 3: Removed 'date' casts to prevent "Double time specification" errors
-    // When cast to 'date', Laravel adds '00:00:00', which causes crashes when combining with time.
     protected $casts = [
         'approved_at' => 'datetime',
         'late_charge_approved_at' => 'datetime',
         'late_charge_paid' => 'boolean',
         'delivery_required' => 'boolean',
+        'stamp_awarded' => 'boolean',  // NEW
     ];
 
     // Relationships

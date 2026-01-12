@@ -84,7 +84,7 @@
                 @if (($currentStamps ?? 0) >= 12)
                     <div class="text-center">
                         <p class="mb-1" style="color: #28a745; font-weight: 600; font-size: 1.1rem;">
-                            🎉 Congratulations!
+                            Congratulations!
                         </p>
                         <p class="mb-0" style="color: #28a745;">
                             You've completed your stamp card! Redeem your 50% discount on your next booking.
@@ -93,7 +93,7 @@
                 @elseif (($currentStamps ?? 0) >= 9)
                     <div class="text-center">
                         <p class="mb-1" style="color: #ffc107; font-weight: 600; font-size: 1.1rem;">
-                            🌟 Almost There!
+                            Almost There!
                         </p>
                         <p class="mb-0" style="color: #856404;">
                             You've unlocked 30% discount! {{ 12 - ($currentStamps ?? 0) }} more stamps to get 50% discount.
@@ -102,7 +102,7 @@
                 @elseif (($currentStamps ?? 0) >= 3)
                     <div class="text-center">
                         <p class="mb-1" style="color: #17a2b8; font-weight: 600; font-size: 1.1rem;">
-                            ✨ Congratulations!
+                            Congratulations!
                         </p>
                         <p class="mb-0" style="color: #0c5460;">
                             You've unlocked 20% discount! {{ 9 - ($currentStamps ?? 0) }} more stamps to get 30% discount.
@@ -132,9 +132,9 @@
                             <p class="reward-desc">First 3 stamps</p>
                             <div class="reward-requirement">Each 7-hour booking = 1 stamp</div>
                             @if (($currentStamps ?? 0) >= 3)
-                                <span class="mt-2" style="background: rgba(40, 167, 69, 0.1); color: #28a745; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">✓ Unlocked</span>
+                                <span class="mt-2" style="background: rgba(40, 167, 69, 0.1); color: #28a745; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">Unlocked</span>
                             @else
-                                <span class="mt-2" style="background: rgba(108, 117, 125, 0.1); color: #6c757d; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">🔒 Locked</span>
+                                <span class="mt-2" style="background: rgba(108, 117, 125, 0.1); color: #6c757d; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">Locked</span>
                             @endif
                         </div>
                     </div>
@@ -152,9 +152,9 @@
                             <p class="reward-desc">Collected 9 stamps</p>
                             <div class="reward-requirement">Each 7-hour booking = 1 stamp</div>
                             @if (($currentStamps ?? 0) >= 9)
-                                <span class="mt-2" style="background: rgba(40, 167, 69, 0.1); color: #28a745; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">✓ Unlocked</span>
+                                <span class="mt-2" style="background: rgba(40, 167, 69, 0.1); color: #28a745; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">Unlocked</span>
                             @else
-                                <span class="mt-2" style="background: rgba(108, 117, 125, 0.1); color: #6c757d; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">🔒 Locked</span>
+                                <span class="mt-2" style="background: rgba(108, 117, 125, 0.1); color: #6c757d; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">Locked</span>
                             @endif
                         </div>
                     </div>
@@ -169,18 +169,158 @@
                                 </svg>
                             </div>
                             <h5 class="reward-title">50% Discount</h5>
-                            <p class="reward-desc">Complete stamp card! 🎉</p>
+                            <p class="reward-desc">Complete stamp card!</p>
                             <div class="reward-requirement">Each 7-hour booking = 1 stamp</div>
                             @if (($currentStamps ?? 0) >= 12)
-                                <span class="mt-2" style="background: rgba(40, 167, 69, 0.1); color: #28a745; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">✓ Unlocked</span>
+                                <span class="mt-2" style="background: rgba(40, 167, 69, 0.1); color: #28a745; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">Unlocked</span>
                             @else
-                                <span class="mt-2" style="background: rgba(108, 117, 125, 0.1); color: #6c757d; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">🔒 Locked</span>
+                                <span class="mt-2" style="background: rgba(108, 117, 125, 0.1); color: #6c757d; font-weight: 600; padding: 6px 16px; border-radius: 6px; display: inline-block; font-size: 0.875rem;">Locked</span>
                             @endif
                         </div>
                     </div>
                 </div>
             </div>
+            
+    <!-- Available Vouchers Section -->
+    <div class="vouchers-section mb-4">
+        <h5 class="mb-3 fw-bold" style="color: #dc3545;">Your Available Vouchers</h5>
+        @if($availableVouchers->count() > 0)
+            <div class="row g-3">
+                @foreach($availableVouchers as $voucher)
+                    <div class="col-md-6">
+                        <div class="voucher-card">
+                            <div class="voucher-header">
+                                <span class="voucher-discount">{{ $voucher->voucherAmount }}% OFF</span>
+                                <span class="voucher-milestone">
+                                    @if($voucher->stamp_milestone == 3)
+                                        3 Stamps Reward
+                                    @elseif($voucher->stamp_milestone == 9)
+                                        9 Stamps Reward
+                                    @else
+                                        12 Stamps Reward
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="voucher-code">
+                                <strong>Code:</strong> 
+                                <span class="code-display">{{ $voucher->voucherCode }}</span>
+                                <button class="btn-copy" onclick="copyVoucherCode('{{ $voucher->voucherCode }}')">
+                                    Copy
+                                </button>
+                            </div>
+                            <div class="voucher-expiry">
+                                Valid until: {{ $voucher->expiryDate->format('d M Y') }}
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="text-center py-4" style="background: #f8f9fa; border-radius: 10px;">
+                <p class="mb-0" style="color: #666;">
+                    No vouchers available yet. Keep collecting stamps to earn discount vouchers!
+                </p>
+            </div>
+        @endif
+    </div>
 
+    <style>
+    .voucher-card {
+        background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
+        border: 2px solid #dc3545;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
+        transition: transform 0.2s;
+    }
+
+    .voucher-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.25);
+    }
+
+    .voucher-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .voucher-discount {
+        font-size: 28px;
+        font-weight: 800;
+        color: #dc3545;
+    }
+
+    .voucher-milestone {
+        font-size: 13px;
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .voucher-code {
+        background: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .code-display {
+        font-family: 'Courier New', monospace;
+        font-size: 16px;
+        font-weight: bold;
+        color: #111;
+        letter-spacing: 1px;
+    }
+
+    .btn-copy {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .btn-copy:hover {
+        background: #c82333;
+        transform: scale(1.05);
+    }
+
+    .voucher-expiry {
+        font-size: 13px;
+        color: #666;
+        text-align: center;
+    }
+    </style>
+
+    <script>
+    function copyVoucherCode(code) {
+        navigator.clipboard.writeText(code).then(function() {
+            alert('✅ Voucher code copied: ' + code);
+        }).catch(function() {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = code;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('✅ Voucher code copied: ' + code);
+        });
+    }
+    </script>
             <!-- Stamp History -->
             <div class="history-section mb-4">
                 <h5 class="mb-3 fw-bold" style="color: #dc3545;">Stamp History</h5>
@@ -227,22 +367,18 @@
                 <h5 class="mb-4 text-center fw-bold" style="color: #dc3545;">How It Works</h5>
                 <div class="row text-center">
                     <div class="col-6 col-md-3 mb-3">
-                        <div class="how-icon">⏰</div>
                         <h6 class="fw-bold">Book 7 Hours</h6>
                         <p class="small text-muted mb-0">Each 7-hour booking counts</p>
                     </div>
                     <div class="col-6 col-md-3 mb-3">
-                        <div class="how-icon">🔴</div>
                         <h6 class="fw-bold">Earn 1 Stamp</h6>
                         <p class="small text-muted mb-0">A red stamp is added</p>
                     </div>
                     <div class="col-6 col-md-3 mb-3">
-                        <div class="how-icon">📊</div>
                         <h6 class="fw-bold">Collect Stamps</h6>
                         <p class="small text-muted mb-0">3, 9, or 12 stamps</p>
                     </div>
                     <div class="col-6 col-md-3 mb-3">
-                        <div class="how-icon">🎁</div>
                         <h6 class="fw-bold">Get Discounts</h6>
                         <p class="small text-muted mb-0">20%, 30%, or 50%</p>
                     </div>

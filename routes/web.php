@@ -63,10 +63,10 @@ Route::middleware(['auth:customer'])->group(function () {
 
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
     Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('bookings.show');
-});
 
-//Rewards
-Route::get('/customer/reward', [CustomerController::class, 'rewards'])->name('customer.reward');
+    Route::get('/rewards', [App\Http\Controllers\RewardsController::class, 'index'])->name('customer.reward');
+
+});
 
 // Staff Booking Routes
 Route::middleware(['staff.auth'])->prefix('staff')->group(function () {
