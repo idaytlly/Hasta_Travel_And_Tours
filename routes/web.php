@@ -78,6 +78,8 @@ Route::middleware(['staff.auth'])->prefix('staff')->group(function () {
     Route::get('/bookings/{id}/edit', [Staff\BookingController::class, 'edit'])->name('staff.bookings.edit');
     Route::put('/bookings/{id}', [Staff\BookingController::class, 'update'])->name('staff.bookings.update');
     Route::delete('/bookings/{id}', [Staff\BookingController::class, 'destroy'])->name('staff.bookings.destroy');
+});
+
 Route::get('/test-auth', function () {
     \Log::info('=== TEST AUTH ROUTE ===');
     \Log::info('Session ID: ' . session()->getId());
