@@ -422,6 +422,7 @@
         border-radius: 4px;
     }
     
+        
     @media (max-width: 768px) {
         .info-grid,
         .customer-row {

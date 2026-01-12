@@ -327,10 +327,165 @@
         background: #059669;
     }
     
+    /* Pagination Styles - Move this BEFORE @media (max-width: 768px) */
     .pagination-wrapper {
         margin-top: 32px;
         display: flex;
         justify-content: center;
+        align-items: center;
+    }
+
+    .pagination {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        list-style: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .pagination .page-item {
+        display: inline-block !important;
+        margin: 0 !important;
+    }
+
+    .pagination .page-link,
+    .pagination li a,
+    .pagination li span {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 38px !important;
+        height: 38px !important;
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        color: #374151 !important;
+        background: white !important;
+        border: 2px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        text-decoration: none !important;
+        transition: all 0.2s ease !important;
+        line-height: 1 !important;
+    }
+
+    .pagination .page-link:hover,
+    .pagination li a:hover {
+        background: #fef2f2 !important;
+        border-color: #d93025 !important;
+        color: #d93025 !important;
+        transform: translateY(-1px);
+    }
+
+    .pagination .page-item.active .page-link,
+    .pagination li.active a,
+    .pagination li.active span {
+        background: #d93025 !important;
+        border-color: #d93025 !important;
+        color: white !important;
+        box-shadow: 0 2px 8px rgba(217, 48, 37, 0.3);
+    }
+
+    .pagination .page-item.disabled .page-link,
+    .pagination .page-item.disabled span,
+    .pagination li.disabled a,
+    .pagination li.disabled span {
+        opacity: 0.4 !important;
+        cursor: not-allowed !important;
+        pointer-events: none !important;
+        background: #f9fafb !important;
+    }
+
+    /* Previous/Next buttons */
+    .pagination .page-link[rel="prev"],
+    .pagination .page-link[rel="next"],
+    .pagination a[rel="prev"],
+    .pagination a[rel="next"] {
+        font-weight: 700 !important;
+        padding: 8px 16px !important;
+    }
+
+    /* Icons/SVG inside pagination - FORCE SMALL SIZE */
+    .pagination .page-link svg,
+    .pagination .page-link i,
+    .pagination .page-link .fa,
+    .pagination a svg,
+    .pagination a i,
+    .pagination span svg,
+    .pagination span i,
+    .pagination .fa-chevron-left,
+    .pagination .fa-chevron-right {
+        font-size: 14px !important;
+        width: 14px !important;
+        height: 14px !important;
+        max-width: 14px !important;
+        max-height: 14px !important;
+    }
+
+    /* Ellipsis (...) */
+    .pagination .page-item.disabled span {
+        border: none !important;
+        background: transparent !important;
+        padding: 8px 4px !important;
+    }
+
+    /* Remove transforms that might enlarge items */
+    .pagination .page-link svg,
+    .pagination .page-link i {
+        transform: none !important;
+    }
+
+    /* Laravel specific pagination classes */
+    .pagination > li > a,
+    .pagination > li > span {
+        font-size: 14px !important;
+        padding: 8px 12px !important;
+        line-height: 1.2 !important;
+    }
+
+    .pagination > .active > a,
+    .pagination > .active > span {
+        background-color: #d93025 !important;
+        border-color: #d93025 !important;
+    }
+
+    .page-item {
+        display: inline-block;
+    }
+
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .page-link:hover {
+        background: #f9fafb;
+        border-color: #d93025;
+        color: #d93025;
+    }
+
+    .page-item.active .page-link {
+        background: #d93025;
+        border-color: #d93025;
+        color: white;
+    }
+
+    .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
     }
     
     @media (max-width: 768px) {

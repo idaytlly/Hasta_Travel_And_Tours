@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Pagination\Paginator;
 
 class BookingController extends Controller
 {
@@ -24,13 +25,16 @@ class BookingController extends Controller
      */
     public function index()
     {
-        $bookings = Booking::with(['vehicle', 'customer'])
-            ->where('customer_id', Auth::guard('customer')->id())
+         Paginator::useBootstrapFive(); // set Bootstrap 5 pagination style
+
+        $bookings = Booking::where('customer_id', auth()->user()->customer_id)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
-        
+            ->paginate(6)  // paginate once
+            ->withQueryString(); // optional if you want to keep query params in links
+
         return view('bookings.index', compact('bookings'));
     }
+    
 
     /**
      * Show the form for creating a new booking
