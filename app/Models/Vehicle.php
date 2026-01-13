@@ -12,6 +12,8 @@ class Vehicle extends Model
     protected $primaryKey = 'plate_no';
     public $incrementing = false;
     protected $keyType = 'string';
+    protected $casts = ['pickup_location' => 'array',];
+
     
     protected $table = 'vehicle'; // Explicitly set table name
     

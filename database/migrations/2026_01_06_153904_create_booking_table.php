@@ -15,12 +15,23 @@ return new class extends Migration
             // Booking details
             $table->date('pickup_date');
             $table->time('pickup_time');
+            $table->string('pickup_location');          
+            $table->string('pickup_details')->nullable();
+
             $table->date('return_date');
             $table->time('return_time');
+            $table->string('dropoff_location');         
+            $table->string('dropoff_details')->nullable(); 
+            $table->boolean('delivery_required')->default(false);
+            $table->text('signature')->nullable();  
+
             $table->double('total_price');
             $table->enum('booking_status', ['pending', 'confirmed', 'active', 'completed', 'cancelled'])->default('pending');
             $table->text('special_requests')->nullable();
-            
+
+            $table->integer('stamps_earned')->default(0);
+            $table->boolean('stamp_awarded')->default(false);
+
             // Late return charges
             $table->date('actual_return_date')->nullable();
             $table->time('actual_return_time')->nullable();

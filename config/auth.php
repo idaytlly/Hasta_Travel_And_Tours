@@ -2,14 +2,14 @@
 
 return [
     'defaults' => [
-        'guard' => 'customer',  // Changed from 'web' to 'customer'
-        'passwords' => 'users',
+        'guard' => 'customer',          // Default guard (for general web authentication)
+        'passwords' => 'customers',    // Default password reset
     ],
 
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'customers',      // For general web authentication (usually customers)
         ],
 
         'api' => [

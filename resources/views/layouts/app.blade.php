@@ -39,7 +39,7 @@
             background-color: var(--bg-light);
             overflow-x: hidden;
             padding-top: 70px;
-            padding-bottom: 60px; /* Height of footer */
+            padding-bottom: 60px;
         }
 
         /* MINIMALIST NAVBAR */
@@ -107,6 +107,31 @@
 
         .nav-link-custom.active::after {
             width: 100%;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-msg {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .welcome-msg i {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .user-name-display {
+            font-weight: 600;
+            color: white;
         }
 
         .profile-dropdown {
@@ -247,19 +272,13 @@
             transition: all 0.3s ease;
         }
 
-        .welcome-msg {
-            font-weight: 500;
-            font-size: 0.95rem;
-            color: white;
-        }
-
         /* Main content area */
         main {
             flex: 1 0 auto;
         }
 
         .footer-spacer {
-            height: 90px; /* lebih sikit dari footer height (60px) */
+            height: 90px;
         }
 
         /* MINIMALIST FOOTER */
@@ -276,18 +295,16 @@
             border-top-right-radius: 10px;
             box-shadow: 0 -8px 24px rgba(0,0,0,0.12);
             z-index: 999;
-
-            /* 👇 default hidden */
             transform: translateY(100%);
             opacity: 0;
             transition: all 0.3s ease;
         }
 
-        /* 👇 only show when at bottom */
         .footer-hasta.show {
             transform: translateY(0);
             opacity: 1;
         }
+
         .footer-content {
             display: flex;
             justify-content: space-between;
@@ -356,6 +373,7 @@
             color: white;
             transform: translateY(-3px);
         }
+
         /* RESPONSIVE */
         @media (max-width: 991px) {
             .nav-links {
@@ -367,12 +385,16 @@
             .navbar-collapse {
                 margin-top: 1rem;
             }
+
+            .welcome-msg {
+                display: none;
+            }
         }
 
         @media (max-width: 768px) {
             body {
                 padding-top: 60px;
-                padding-bottom: 120px; /* Increased for mobile */
+                padding-bottom: 120px;
             }
 
             .footer-hasta {
@@ -431,36 +453,44 @@
                 </div>
             </div>
 
-            <!-- Profile Dropdown -->
-            <div class="profile-dropdown d-none d-lg-block">
-                <button class="profile-btn" onclick="toggleDropdown()">
-                    <i class="fas fa-user"></i>
-                </button>
-                
-                <div class="dropdown-menu-custom" id="profileDropdown">
-                    <a href="{{ route('customer.profile') }}" class="dropdown-item-custom">
-                        <i class="fas fa-user-circle"></i>
-                        <span>My Profile</span>
-                    </a>
-                    
-                    <a href="#" class="dropdown-item-custom">
-                        <i class="fas fa-car"></i>
-                        <span>My Bookings</span>
-                    </a>
-                    
-                    <div class="dropdown-divider-custom"></div>
-                    
-                    <!-- LOGOUT FORM -->
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <a href="#" 
-                        onclick="event.preventDefault(); this.closest('form').submit();" 
-                        class="dropdown-item-custom logout">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Log Out</span>
-                        </a>
-                    </form>
+            <!-- Profile Section with Welcome Message -->
+            <div class="profile-section d-none d-lg-flex">
+                <!-- Welcome Message -->
+                <div class="welcome-msg">
+                    <i class="fas fa-hand-wave"></i>
+                    <span>Welcome, <span class="user-name-display">{{ auth('customer')->user()?->name }}</span></span>
+                </div>
 
+                <!-- Profile Dropdown -->
+                <div class="profile-dropdown">
+                    <button class="profile-btn" onclick="toggleDropdown()">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    
+                    <div class="dropdown-menu-custom" id="profileDropdown">
+                        <a href="{{ route('customer.profile') }}" class="dropdown-item-custom">
+                            <i class="fas fa-user-circle"></i>
+                            <span>My Profile</span>
+                        </a>
+                        
+                        <a href="{{ route('bookings.index') }}" class="dropdown-item-custom">
+                            <i class="fas fa-car"></i>
+                            <span>My Bookings</span>
+                        </a>
+                        
+                        <div class="dropdown-divider-custom"></div>
+                        
+                        <!-- LOGOUT FORM -->
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <a href="#" 
+                            onclick="event.preventDefault(); this.closest('form').submit();" 
+                            class="dropdown-item-custom logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Log Out</span>
+                            </a>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -529,30 +559,27 @@
             }
         });
 
+        // Footer scroll behavior
         (function () {
-    const footer = document.querySelector('.footer-hasta');
-    if (!footer) return;
+            const footer = document.querySelector('.footer-hasta');
+            if (!footer) return;
 
-    let lastScrollY = window.scrollY;
+            let lastScrollY = window.scrollY;
 
-    function handleScroll() {
-        const currentScrollY = window.scrollY;
+            function handleScroll() {
+                const currentScrollY = window.scrollY;
 
-        // scroll down
-        if (currentScrollY > lastScrollY && currentScrollY > 50) {
-            footer.classList.add('show');
-        } 
-        // scroll up
-        else {
-            footer.classList.remove('show');
-        }
+                if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                    footer.classList.add('show');
+                } else {
+                    footer.classList.remove('show');
+                }
 
-        lastScrollY = currentScrollY;
-    }
+                lastScrollY = currentScrollY;
+            }
 
-    window.addEventListener('scroll', handleScroll);
-})();
-
+            window.addEventListener('scroll', handleScroll);
+        })();
     </script>
 </body>
 </html>

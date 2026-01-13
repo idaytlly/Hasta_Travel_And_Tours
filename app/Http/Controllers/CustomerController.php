@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Vehicle;
 
 class CustomerController extends Controller
 {
     public function home()
     {
-        return view('customer.home');
+        $vehicles = Vehicle::inRandomOrder()
+                ->limit(3)
+                ->get();
+
+    return view('customer.home', compact('vehicles'));
     }
 
     public function rewards()
