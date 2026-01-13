@@ -6,19 +6,17 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // Call seeders in order
+        // Call seeders in correct order to respect foreign key constraints
         $this->call([
-            StaffSeeder::class,
-            VehicleSeeder::class,
-            CustomerSeeder::class,
-            BookingSeeder::class,
-            PaymentSeeder::class,
-            CommissionSeeder::class,
+            StaffSeeder::class,      // First create staff
+            CustomerSeeder::class,   // Then customers
+            VehicleSeeder::class,    // Then vehicles (needs staff_id)
+            VoucherSeeder::class,    // Then vouchers
+            BookingSeeder::class,    // Then bookings (needs customers and vehicles)
+            PaymentSeeder::class,    // Then payments (needs bookings)
+            CommissionSeeder::class, // Then commissions (needs staff)
         ]);
     }
 }

@@ -3,44 +3,54 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Commission;
+use Carbon\Carbon;
 
 class CommissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Remove old test commissions
-        DB::table('commission')->where('commission_id', 'like', 'COMM%')->delete();
-
         $commissions = [
             [
-                'commission_id' => 'COMM' . time() . '001',
-                'staff_id' => 'STR001',
-                'comm_date' => now()->toDateString(),
-                'comm_hour' => now()->toTimeString(),
-                'reason' => 'Delivery for BK2026010002',
-                'status' => 'completed',
-                'total_commission' => 80,
-                'created_at' => now()->subDays(1),
-                'updated_at' => now()->subDays(1),
+                'commission_id' => 'COMM001',
+                'comm_date' => Carbon::today(),
+                'comm_hour' => '4 hours',
+                'reason' => 'Vehicle delivery to KLIA',
+                'status' => 'pending',
+                'total_commission' => 80.00,
+                'staff_id' => 'STF002', // John Delivery
             ],
             [
-                'commission_id' => 'COMM' . (time()+1) . '002',
-                'staff_id' => 'STR002',
-                'comm_date' => now()->toDateString(),
-                'comm_hour' => now()->toTimeString(),
-                'reason' => 'Pickup for BK2026010003',
+                'commission_id' => 'COMM002',
+                'comm_date' => Carbon::today(),
+                'comm_hour' => '3 hours',
+                'reason' => 'Pickup from customer location',
                 'status' => 'completed',
-                'total_commission' => 80,
-                'created_at' => now()->subHours(6),
-                'updated_at' => now()->subHours(6),
+                'total_commission' => 60.00,
+                'staff_id' => 'STF003', // Sarah Pickup
+            ],
+            [
+                'commission_id' => 'COMM003',
+                'comm_date' => Carbon::yesterday(),
+                'comm_hour' => '5 hours',
+                'reason' => 'Multiple deliveries',
+                'status' => 'completed',
+                'total_commission' => 100.00,
+                'staff_id' => 'STF002',
+            ],
+            [
+                'commission_id' => 'COMM004',
+                'comm_date' => Carbon::today()->subDays(2),
+                'comm_hour' => '2 hours',
+                'reason' => 'Emergency pickup',
+                'status' => 'paid',
+                'total_commission' => 40.00,
+                'staff_id' => 'STF003',
             ],
         ];
 
-        foreach ($commissions as $c) {
-            DB::table('commission')->insert($c);
+        foreach ($commissions as $commission) {
+            Commission::create($commission);
         }
-
-        $this->command->info('Seeded commission records for runners.');
     }
 }

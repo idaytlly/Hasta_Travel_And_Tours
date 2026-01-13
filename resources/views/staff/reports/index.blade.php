@@ -21,10 +21,6 @@
                 <i data-lucide="file-text" class="w-4 h-4"></i>
                 <span class="hidden sm:inline">PDF</span>
             </button>
-            <button onclick="exportReport('excel')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2">
-                <i data-lucide="download" class="w-4 h-4"></i>
-                <span class="hidden sm:inline">Excel</span>
-            </button>
         </div>
     </div>
 

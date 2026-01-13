@@ -9,15 +9,15 @@ use App\Http\Controllers\Staff\AuthController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\Staff\VehicleController as StaffVehicleController;
 use App\Http\Controllers\Staff\BookingController as StaffBookingController;
-use App\Http\Controllers\Staff\ReportController; // ADD THIS LINE
-use App\Http\Controllers\Staff\ReportExportController; // ADD THIS LINE
+use App\Http\Controllers\Staff\ReportController;
+use App\Http\Controllers\Staff\ReportExportController;
 use App\Http\Controllers\Api\Staff\StaffReportsController;
 use App\Http\Controllers\Api\Staff\StaffDashboardController;
 use App\Http\Controllers\Api\Staff\StaffBookingsController;
 use App\Http\Controllers\Api\Staff\StaffDeliveryController;
 use App\Http\Controllers\Staff\StaffManagementController;
 use App\Http\Controllers\StaffController;
-use Illuminate\Support\Facades\Auth; // ADD THIS LINE
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,7 +79,7 @@ Route::middleware(['auth:staff'])->prefix('staff')->name('staff.')->group(functi
         return view('staff.bookings.index');
     })->name('bookings');
     
-    // Reports Views - FIXED THIS SECTION
+    // Reports Views
     Route::get('/reports', function () {
         return view('staff.reports.index');
     })->name('reports');
@@ -117,7 +117,7 @@ Route::middleware(['auth:staff'])->prefix('staff')->name('staff.')->group(functi
 
 /*
 |--------------------------------------------------------------------------
-| Report Export Routes - MOVE OUTSIDE MAIN STAFF GROUP
+| Report Export Routes
 |--------------------------------------------------------------------------
 */
 
@@ -156,17 +156,22 @@ Route::prefix('api/staff')->middleware(['auth:staff'])->group(function () {
     Route::get('/dashboard/recent-bookings', [StaffDashboardController::class, 'getRecentBookings']);
     Route::get('/dashboard/schedule', [StaffDashboardController::class, 'getTodaySchedule']);
     
-    // Reports API (optional, keep for backward compatibility)
+    // Reports API
     Route::get('/reports/data', [StaffReportsController::class, 'getReportData']);
     Route::post('/reports/export', [StaffReportsController::class, 'exportReport']);
     
+    // Bookings API - FIXED: ADDED MISSING ROUTES
     // Bookings API
-    Route::get('/bookings', [StaffBookingsController::class, 'getBookings']);
-    Route::get('/bookings/{id}', [StaffBookingsController::class, 'getBookingDetails']);
-    Route::post('/bookings/{id}/approve', [StaffBookingsController::class, 'approveBooking']);
-    Route::post('/bookings/{id}/verify', [StaffBookingsController::class, 'verifyBooking']);
-    Route::post('/bookings/{id}/cancel', [StaffBookingsController::class, 'cancelBooking']);
-    
+
+    Route::get('/bookings', [StaffBookingsController::class, 'index'])->name('api.staff.bookings.index');
+    Route::get('/bookings/{id}', [StaffBookingsController::class, 'show'])->name('api.staff.bookings.show');
+    Route::post('/bookings/{id}/approve', [StaffBookingsController::class, 'approve'])->name('api.staff.bookings.approve');
+    Route::post('/bookings/{id}/verify-payment', [StaffBookingsController::class, 'verifyPayment'])->name('api.staff.bookings.verify-payment');
+    Route::post('/bookings/{id}/verify', [StaffBookingsController::class, 'verify'])->name('api.staff.bookings.verify');
+    Route::post('/bookings/{id}/cancel', [StaffBookingsController::class, 'cancel'])->name('api.staff.bookings.cancel');
+    Route::post('/bookings/{id}/complete', [StaffBookingsController::class, 'complete'])->name('api.staff.bookings.complete');
+    Route::get('/bookings/export', [StaffBookingsController::class, 'export'])->name('api.staff.bookings.export');
+        
     // Delivery/Pickup API (for runners)
     Route::get('/delivery/tasks', [StaffDeliveryController::class, 'getTasks']);
     Route::get('/delivery/tasks/{id}', [StaffDeliveryController::class, 'getTaskDetails']);
