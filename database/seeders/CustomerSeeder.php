@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class CustomerSeeder extends Seeder
 {
@@ -68,9 +69,13 @@ class CustomerSeeder extends Seeder
 
         foreach ($customers as $c) {
             $attrs = array_merge($c, ['created_at' => now(), 'updated_at' => now()]);
+
+            // Force a unique customer_id for seed data to avoid collisions
+            $attrs['customer_id'] = 'CUS' . strtoupper(Str::random(6));
+
             Customer::create($attrs);
         }
 
-        $this->command->info('Seeded customers (replaced).');
+        $this->command->info('Seeded customers (replaced with deterministic ids).');
     }
 }
