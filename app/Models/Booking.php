@@ -92,7 +92,10 @@ class Booking extends Model
 
     public function approvedBy()
     {
-        return $this->belongsTo(Staff::class, 'approved_by_staff', 'staff_id');
+        $pickup = Carbon::parse($this->pickup_date . ' ' . $this->pickup_time);
+        $return = Carbon::parse($this->return_date . ' ' . $this->return_time);
+
+        return (int) ceil($pickup->diffInHours($return));
     }
 
     public function lateChargeApprovedBy()
@@ -102,3 +105,4 @@ class Booking extends Model
 
 }
 
+}

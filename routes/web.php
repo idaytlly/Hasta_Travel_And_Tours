@@ -5,12 +5,14 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerProfileController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Staff\AuthController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\Staff\VehicleController as StaffVehicleController;
 use App\Http\Controllers\Staff\BookingController as StaffBookingController;
 use App\Http\Controllers\Staff\ReportController;
 use App\Http\Controllers\Staff\ReportExportController;
+use App\Http\Controllers\GuestController;
 use App\Http\Controllers\Api\Staff\StaffReportsController;
 use App\Http\Controllers\Api\Staff\StaffDashboardController;
 use App\Http\Controllers\Api\Staff\StaffBookingsController;
@@ -25,9 +27,7 @@ use Illuminate\Support\Facades\Auth;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return view('guest.home');
-})->name('guest.home');
+Route::get('/', [GuestController::class, 'home'])->name('guest.home');
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +41,82 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('l
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
+// Customer Routes
+Route::get('/customer/home', [CustomerController::class, 'home'])->name('customer.home');
+
+// Customer Profile
+Route::get('/profile', [CustomerProfileController::class, 'showProfile'])->name('customer.profile');
+Route::get('/profile/edit', [CustomerProfileController::class, 'edit'])->name('customer.profile.edit');
+Route::put('/profile', [CustomerProfileController::class, 'update'])->name('customer.profile.update');
+
+Route::resource('vehicles', VehicleController::class)->only(['index', 'show']);
+
+// Customer Booking
+Route::middleware(['auth:customer'])->group(function () {
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/vehicles/{plate_no}/book', [BookingController::class, 'create'])->name('bookings.create');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+
+    Route::post('/vouchers/validate', [BookingController::class, 'validateVoucher'])->name('vouchers.validate');
+    
+    // === ADD THESE TWO MISSING LINES ===
+    Route::get('/bookings/{id}/payment', [BookingController::class, 'payment'])->name('bookings.payment');
+    Route::post('/bookings/{id}/payment', [BookingController::class, 'storePayment'])->name('bookings.payment.store');
+    // ===================================
+
+    Route::get('/bookings/{id}/inspection/{type}', [BookingController::class, 'inspection'])->name('bookings.inspection');
+    Route::post('/bookings/{id}/inspection/{type}', [BookingController::class, 'storeInspection'])->name('bookings.inspection.store');
+
+    Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+    Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('bookings.show');
+
+    Route::get('/rewards', [App\Http\Controllers\RewardsController::class, 'index'])->name('customer.reward');
+
+});
+
+// Staff Booking Routes
+Route::middleware(['staff.auth'])->prefix('staff')->group(function () {
+    // Bookings
+    Route::get('/bookings', [Staff\BookingController::class, 'index'])->name('staff.bookings.index');
+    Route::get('/bookings/create', [Staff\BookingController::class, 'create'])->name('staff.bookings.create');
+    Route::post('/bookings', [Staff\BookingController::class, 'store'])->name('staff.bookings.store');
+    Route::get('/bookings/{id}', [Staff\BookingController::class, 'show'])->name('staff.bookings.show');
+    Route::get('/bookings/{id}/edit', [Staff\BookingController::class, 'edit'])->name('staff.bookings.edit');
+    Route::put('/bookings/{id}', [Staff\BookingController::class, 'update'])->name('staff.bookings.update');
+    Route::delete('/bookings/{id}', [Staff\BookingController::class, 'destroy'])->name('staff.bookings.destroy');
+
+    });
+Route::get('/test-auth', function () {
+    Log::info('=== TEST AUTH ROUTE ===');
+    Log::info('Session ID: ' . session()->getId());
+    Log::info('Customer auth: ' . (Auth::guard('customer')->check() ? 'YES' : 'NO'));
+    Log::info('Staff auth: ' . (Auth::guard('staff')->check() ? 'YES' : 'NO'));
+    
+    if (Auth::guard('staff')->check()) {
+        $staff = Auth::guard('staff')->user();
+        return response()->json([
+            'status' => 'authenticated',
+            'guard' => 'staff',
+            'user' => [
+                'id' => $staff->staff_id,
+                'name' => $staff->name,
+                'role' => $staff->role,
+            ],
+            'session_id' => session()->getId()
+        ]);
+    }
+    
+    if (Auth::guard('customer')->check()) {
+        return response()->json([
+            'status' => 'authenticated',
+            'guard' => 'customer'
+        ]);
+    }
+    
+    return response()->json([
+        'status' => 'not_authenticated'
+    ]);
+});
 /*
 |--------------------------------------------------------------------------
 | Customer Routes
