@@ -371,7 +371,7 @@
                         <img src="{{ asset('car_images/axia.jpg') }}" alt="Placeholder">
                         <h4>Perodua Bezza 2018</h4>
                         <div class="price">RM260 <medium style="font-size:11px;color:#888">per hour</medium></div>
-                        <a href="{{ route('vehicles.show', $other->plate_no ?? '#') }}" class="view">View Details</a>
+                        <a href="{{ route('vehicles.show', $other->plate_no ?? '#') }}" class="btn-view-details">View Details</a>
                     </div>
                 @endfor
             @endif
