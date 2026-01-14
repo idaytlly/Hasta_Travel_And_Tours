@@ -54,6 +54,9 @@ class VehicleController extends Controller
     {
         // Also load some other vehicles to show as suggestions
         $otherVehicles = Vehicle::where('plate_no', '!=', $vehicle->plate_no)->limit(6)->get();
+        $images = json_decode($vehicle->images, true);
+
+        return view('vehicles.show', compact('vehicle', 'images'));
 
         return view('vehicles.show', compact('vehicle', 'otherVehicles'));
     }

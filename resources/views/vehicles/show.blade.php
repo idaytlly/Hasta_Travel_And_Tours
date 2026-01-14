@@ -136,11 +136,27 @@
 
     /* Gallery */
     .gallery-row { display:flex; gap:14px; align-items:center; justify-content:center; margin:18px 0; }
-    .gallery-thumb { width:150px; height:90px; border-radius:8px; overflow:hidden; background:#fafafa; display:flex; align-items:center; justify-content:center; }
+    .gallery-thumbs {
+        display: flex;
+        gap: 20px;
+        transition: transform 0.3s ease;
+    }   
+    .gallery-thumb {
+    width: 150px;
+    height: 90px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fafafa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Prevents thumbnails from shrinking */
+}
     .gallery-thumb img { width:100%; height:100%; object-fit:cover; }
-
-    /* Footer booking */
-    /* Place price beside the Book button and align them to the right side */
+    .gallery-window {
+        width: calc(150px * 2 + 20px); /* Shows exactly 2 thumbnails */
+        overflow: hidden;
+    }    /* Place price beside the Book button and align them to the right side */
     .booking-row { display:flex; justify-content:flex-end; align-items:center; gap:12px; margin-top:16px; width:100%; }
     .booking-actions { display:flex; align-items:center; gap:12px; }
     .booking-price { font-size:22px; color:#d14545; font-weight:800; margin:0; }
@@ -274,7 +290,7 @@
         <div class="vehicle-top">
             <div class="vehicle-photo">
                 {{-- image from DB if available otherwise placeholder --}}
-                <img src="{{ $vehicle->image_url ?? asset('car_images/axia.jpg') }}" alt="{{ $vehicle->name ?? 'Vehicle' }}">
+                <img src="{{ asset('storage/' . $vehicle->display_image) }}" alt="{{ $vehicle->name }}">
             </div>
 
             <div class="vehicle-header">
@@ -300,24 +316,24 @@
                 </div>
 
                 <div class="vehicle-stats">
-                    <div class="stat">Passengers: <strong style="margin-left:6px">{{ $vehicle->passengers }}</strong></div>
+                    <div class="stat">Passengers: <strong style="margin-left:6px">{{ $vehicle->seating_capacity }}</strong></div>
                     <div class="stat">Distance Travelled (km):  <strong style="margin-left:6px">{{ $vehicle->distance_travelled }}</strong></div>
                 </div>
 
                 {{-- gallery thumbnails (placeholders) --}}
                 <div class="gallery-row">
                     <button class="gallery-nav prev" onclick="prevThumbs()">❮</button>
-
-                    <div class="gallery-thumb">
-                        <img id="thumb1" src="{{ asset($vehicle->front_image ?? 'car_images/axia.jpg') }}">
+                    <div class="gallery-window">
+                        <div class="gallery-thumbs">
+                            @foreach ($images as $image)
+                                <div class="gallery-thumb">
+                                    <img src="{{ asset('storage/' . $image) }}">
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
-
-                    <div class="gallery-thumb">
-                        <img id="thumb2" src="{{ asset($vehicle->right_image ?? 'car_images/axia.jpg') }}">
-                    </div>
-
                     <button class="gallery-nav next" onclick="nextThumbs()">❯</button>
-                </div>
+                </div>                
                 <div class="booking-row">
                     <div class="booking-price">RM{{ number_format($vehicle->price_perHour) }} <medium style="font-size:12px; color:#666; font-weight:600">/hour</medium></div>
                     @if($vehicle->availability_status === 'available')
@@ -363,36 +379,30 @@
     </div>
 </div>
 <script>
-    const thumbSets = [
-        [
-            "{{ asset($vehicle->front_image ?? 'car_images/axia.jpg') }}",
-            "{{ asset($vehicle->right_image ?? 'car_images/axia.jpg') }}"
-        ],
-        [
-            "{{ asset($vehicle->left_image ?? 'car_images/axia.jpg') }}",
-            "{{ asset($vehicle->back_image ?? 'car_images/axia.jpg') }}"
-        ],
-        [
-            "{{ asset($vehicle->interior1_image ?? 'car_images/axia.jpg') }}",
-            "{{ asset($vehicle->interior2_image ?? 'car_images/axia.jpg') }}"
-        ]
-    ];
+let currentIndex = 0;
+const visibleCount = 2; // Number of visible thumbnails
 
-    let currentSet = 0;
+function nextThumbs() {
+    const thumbs = document.querySelectorAll('.gallery-thumb');
+    const maxIndex = thumbs.length - visibleCount;
 
-    function updateThumbs() {
-        document.getElementById('thumb1').src = thumbSets[currentSet][0];
-        document.getElementById('thumb2').src = thumbSets[currentSet][1];
+    if (currentIndex < maxIndex) {
+        currentIndex += 1; // Move by 1 to show next set smoothly
+        updateGallery();
     }
+}
 
-    function nextThumbs() {
-        currentSet = (currentSet + 1) % thumbSets.length;
-        updateThumbs();
+function prevThumbs() {
+    if (currentIndex > 0) {
+        currentIndex -= 1; // Move by 1 to show previous set smoothly
+        updateGallery();
     }
+}
 
-    function prevThumbs() {
-        currentSet = (currentSet - 1 + thumbSets.length) % thumbSets.length;
-        updateThumbs();
-    }
+function updateGallery() {
+    const thumbWidth = 150 + 20; // thumb width + gap
+    const gallery = document.querySelector('.gallery-thumbs');
+    gallery.style.transform = `translateX(-${currentIndex * thumbWidth}px)`;
+}
 </script>
 @endsection

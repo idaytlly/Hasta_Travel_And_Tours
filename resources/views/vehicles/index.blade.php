@@ -133,8 +133,8 @@
                         <div class="col-lg-8">
                             <div class="vehicle-info">
                                 <div class="vehicle-image">
-                                    @if($vehicle->image_url)
-                                        <img src="{{ $vehicle->image_url }}" alt="{{ $vehicle->name }}">
+                                    @if($vehicle->display_image)
+                                        <img src="{{ asset('storage/' . $vehicle->display_image) }}" alt="{{ $vehicle->name }}">
                                     @else
                                         <i class="fas fa-car fa-3x"></i>
                                     @endif

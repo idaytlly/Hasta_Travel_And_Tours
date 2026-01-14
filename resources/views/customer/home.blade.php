@@ -268,8 +268,7 @@ body {
 <div class="d-flex justify-content-center flex-wrap gap-5 mb-5">
 @foreach ($vehicles as $vehicle)
     <div class="car-card" style="width: 350px;">
-        <img src="{{ $vehicle->image_url }}" alt="{{ $vehicle->name }}">
-
+        <img src="{{ asset('storage/' . $vehicle->display_image) }}" alt="{{ $vehicle->name }}" 
         <h3 class="car-name">{{ $vehicle->name }}</h3>
         <p class="car-type">{{ $vehicle->vehicle_type }}</p>
 
