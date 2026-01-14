@@ -37,14 +37,17 @@ class Vehicle extends Model
         'staff_id',
     ];
     
-    protected $casts = [
-        'features' => 'array',
-        'images' => 'array',
-        'year' => 'integer',
-        'seating_capacity' => 'integer',
-        'price_perHour' => 'decimal:2',
-        'distance_travelled' => 'decimal:2',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'features' => 'array',
+            'images' => 'array',
+            'year' => 'integer',
+            'seating_capacity' => 'integer',
+            'price_perHour' => 'decimal:2',
+            'distance_travelled' => 'decimal:2',
+        ];
+    }
     
     // Relationship with staff
     public function staff()
