@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage; 
 
 class Vehicle extends Model
 {
@@ -12,8 +13,6 @@ class Vehicle extends Model
     protected $primaryKey = 'plate_no';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $casts = ['pickup_location' => 'array',];
-
     
     protected $table = 'vehicle'; // Explicitly set table name
     
@@ -37,7 +36,9 @@ class Vehicle extends Model
         'staff_id',
     ];
     
+    // Single casts declaration (merged both)
     protected $casts = [
+        'pickup_location' => 'array', // From first casts
         'features' => 'array',
         'images' => 'array',
         'year' => 'integer',
