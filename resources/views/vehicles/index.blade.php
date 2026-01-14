@@ -107,7 +107,7 @@
 
                         <li>
                             <a class="dropdown-item {{ request('status') == 'unavailable' ? 'active' : '' }}"
-                            href="{{ route('vehicles.index', array_merge(request()->query(), ['status' => 'unavailable'])) }}">
+                            href="{{ route('vehicles.index', array_merge(request()->query(), ['status' => 'booked', 'maintenance'])) }}">
                                 Unavailable
                             </a>
                         </li>

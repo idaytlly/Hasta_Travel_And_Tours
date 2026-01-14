@@ -759,6 +759,7 @@ document.getElementById('clear-signature').addEventListener('click', function() 
 });
 
 // Form Validation - FIXED VERSION
+// Form Validation - FIXED
 document.getElementById('inspection-form').addEventListener('submit', function(e) {
     const errors = [];
     
@@ -771,9 +772,8 @@ document.getElementById('inspection-form').addEventListener('submit', function(e
         }
     });
 
-    // Check fuel photo - Query the actual current input element
+    // Check fuel photo
     const currentFuelInput = document.querySelector('input[name="photo_fuel"]');
-    
     if (!currentFuelInput || currentFuelInput.files.length === 0) {
         errors.push('Fuel gauge photo is required');
     }
@@ -788,8 +788,9 @@ document.getElementById('inspection-form').addEventListener('submit', function(e
         errors.push('Signature is required');
     }
     
+    // If there are errors, prevent submission and show them
     if (errors.length > 0) {
-        e.preventDefault();
+        e.preventDefault();  // Only prevent if there are errors
         const errorDiv = document.getElementById('validation-errors');
         errorDiv.innerHTML = `
             <div class="validation-message">
@@ -800,10 +801,7 @@ document.getElementById('inspection-form').addEventListener('submit', function(e
             </div>
         `;
         errorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        return false;
     }
-    
-    return true;
-});
-</script>
+    // If no errors, let the form submit naturally (don't prevent default)
+});</script>
 @endsection
