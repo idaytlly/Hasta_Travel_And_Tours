@@ -104,9 +104,13 @@ class Booking extends Model
     }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 }
 
 
+=======
+}
+>>>>>>> Stashed changes
 =======
 }
 >>>>>>> Stashed changes
