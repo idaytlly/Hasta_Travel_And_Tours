@@ -12,6 +12,7 @@ use App\Models\Vehicle;
 use App\Models\Customer;
 use App\Models\Voucher;
 use App\Models\Payment;
+use App\Events\BookingUpdated; // 🔥 ADD THIS
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
@@ -103,6 +104,13 @@ class BookingController extends Controller
             }
 
             DB::commit();
+            
+            // 🔥 BROADCAST BOOKING CREATED
+            try {
+                broadcast(new BookingUpdated($booking, 'created'))->toOthers();
+            } catch (\Exception $e) {
+                \Log::error('Booking creation broadcast failed: ' . $e->getMessage());
+            }
             
             return redirect()->route('staff.bookings.show', $booking->booking_id)
                            ->with('success', 'Booking created successfully!');
@@ -216,6 +224,13 @@ class BookingController extends Controller
 
             DB::commit();
             
+            // 🔥 BROADCAST UPDATE
+            try {
+                broadcast(new BookingUpdated($booking, 'updated'))->toOthers();
+            } catch (\Exception $e) {
+                \Log::error('Booking update broadcast failed: ' . $e->getMessage());
+            }
+            
             return redirect()->route('staff.bookings.show', $booking->booking_id)
                            ->with('success', 'Booking updated successfully!');
 
@@ -250,6 +265,14 @@ class BookingController extends Controller
             
             DB::commit();
             
+            // 🔥 BROADCAST DELETION (Optional)
+            try {
+                // You might want to create a separate BookingDeleted event
+                broadcast(new BookingUpdated($booking, 'deleted'))->toOthers();
+            } catch (\Exception $e) {
+                \Log::error('Booking deletion broadcast failed: ' . $e->getMessage());
+            }
+            
             return redirect()->route('staff.bookings.index')
                            ->with('success', 'Booking deleted successfully!');
 
@@ -268,6 +291,13 @@ class BookingController extends Controller
         }
         
         $booking->update(['booking_status' => 'confirmed']);
+        
+        // 🔥 BROADCAST APPROVAL
+        try {
+            broadcast(new BookingUpdated($booking, 'approved'))->toOthers();
+        } catch (\Exception $e) {
+            \Log::error('Approve broadcast failed: ' . $e->getMessage());
+        }
         
         return back()->with('success', 'Booking approved successfully!');
     }
@@ -300,6 +330,13 @@ class BookingController extends Controller
             
             DB::commit();
             
+            // 🔥 BROADCAST CANCELLATION
+            try {
+                broadcast(new BookingUpdated($booking, 'cancelled'))->toOthers();
+            } catch (\Exception $e) {
+                \Log::error('Cancel broadcast failed: ' . $e->getMessage());
+            }
+            
             return back()->with('success', 'Booking cancelled successfully!');
 
         } catch (\Exception $e) {
@@ -317,6 +354,13 @@ class BookingController extends Controller
         }
         
         $booking->update(['booking_status' => 'active']);
+        
+        // 🔥 BROADCAST MARKED ACTIVE
+        try {
+            broadcast(new BookingUpdated($booking, 'marked_active'))->toOthers();
+        } catch (\Exception $e) {
+            \Log::error('Mark active broadcast failed: ' . $e->getMessage());
+        }
         
         return back()->with('success', 'Booking marked as active!');
     }
@@ -340,6 +384,13 @@ class BookingController extends Controller
             }
             
             DB::commit();
+            
+            // 🔥 BROADCAST COMPLETED
+            try {
+                broadcast(new BookingUpdated($booking, 'completed'))->toOthers();
+            } catch (\Exception $e) {
+                \Log::error('Complete broadcast failed: ' . $e->getMessage());
+            }
             
             return back()->with('success', 'Booking marked as completed!');
 
@@ -384,6 +435,13 @@ class BookingController extends Controller
             ]);
             
             DB::commit();
+            
+            // 🔥 BROADCAST EXTENSION
+            try {
+                broadcast(new BookingUpdated($booking, 'extended'))->toOthers();
+            } catch (\Exception $e) {
+                \Log::error('Extension broadcast failed: ' . $e->getMessage());
+            }
             
             return back()->with('success', 'Booking extended successfully! Additional charge: RM' . number_format($additionalPrice, 2));
 
