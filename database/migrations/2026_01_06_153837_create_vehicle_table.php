@@ -24,13 +24,6 @@ return new class extends Migration
             $table->string('return_date')->nullable();
             $table->string('return_time')->nullable();
             $table->string('vehicle_type')->nullable();
-            $table->string('image')->nullable();
-            $table->string('front_image')->nullable();
-            $table->string('back_image')->nullable();
-            $table->string('left_image')->nullable();
-            $table->string('right_image')->nullable();
-            $table->string('interior1_image')->nullable();
-            $table->string('interior2_image')->nullable();
             
             // New Fields
             $table->date('roadtax_expiry')->nullable();
