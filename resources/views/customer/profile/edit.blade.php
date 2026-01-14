@@ -594,8 +594,8 @@
                         <button type="submit" class="btn btn-save">
                             <i class="fas fa-save"></i> Save Changes
                         </button>
-                        <a href="{{ route('customer.profile.edit') }}" class="btn btn-cancel">
-                            <i class="fas fa-times"></i> Cancel
+                        <a href="{{ route('customer.profile') }}" class="btn btn-cancel">
+                            <i class="fas fa-times"></i> Discard Changes
                         </a>
                     </div>
                 </form>
