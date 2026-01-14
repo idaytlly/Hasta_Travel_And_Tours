@@ -1,503 +1,355 @@
 @extends('staff.layouts.app')
 
-@section('title', 'Delivery & Pickup - Staff Portal')
-@section('page-title', 'Delivery & Pickup Tasks')
+@section('title', 'Delivery & Pickup Management')
+@section('page-title', 'Delivery & Pickup')
 
 @section('content')
-<div class="space-y-6">
+<div class="max-w-7xl mx-auto space-y-6">
     
-    <!-- Runner Stats -->
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Delivery & Pickup Management</h2>
+            <p class="text-gray-600 mt-1">Manage vehicle deliveries and pickups for today's bookings</p>
+        </div>
+        <button onclick="refreshTasks()" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition flex items-center gap-2">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span>Refresh</span>
+        </button>
+    </div>
+
+    <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-gradient-to-br from-red-600 to-red-700 rounded-lg shadow-lg p-6 text-white">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-red-100">This Month's Commission</p>
-                    <p class="text-3xl font-bold mt-2">RM <span id="commission-total">380.00</span></p>
-                    <p class="text-xs text-red-100 mt-2">From <span id="completed-count">5</span> deliveries</p>
+                    <p class="text-sm font-medium text-gray-600">Today's Tasks</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-2" id="total-tasks">0</p>
                 </div>
-                <div class="bg-white bg-opacity-20 p-3 rounded-lg">
-                    <i data-lucide="dollar-sign" class="w-8 h-8"></i>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i data-lucide="clipboard-list" class="w-6 h-6 text-blue-600"></i>
                 </div>
             </div>
         </div>
-
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Today's Tasks</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2" id="today-tasks">0</p>
-                    <p class="text-xs text-blue-600 mt-2">Scheduled</p>
+                    <p class="text-sm font-medium text-gray-600">Pending</p>
+                    <p class="text-3xl font-bold text-orange-600 mt-2" id="pending-tasks">0</p>
                 </div>
-                <div class="bg-blue-100 p-3 rounded-lg">
-                    <i data-lucide="calendar" class="w-8 h-8 text-blue-600"></i>
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <i data-lucide="clock" class="w-6 h-6 text-orange-600"></i>
                 </div>
             </div>
         </div>
-
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">Pending Tasks</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2" id="pending-tasks">0</p>
-                    <p class="text-xs text-orange-600 mt-2">Action needed</p>
+                    <p class="text-sm font-medium text-gray-600">In Progress</p>
+                    <p class="text-3xl font-bold text-blue-600 mt-2" id="inprogress-tasks">0</p>
                 </div>
-                <div class="bg-orange-100 p-3 rounded-lg">
-                    <i data-lucide="clock" class="w-8 h-8 text-orange-600"></i>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i data-lucide="loader" class="w-6 h-6 text-blue-600"></i>
                 </div>
             </div>
         </div>
-
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">In Progress</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-2" id="in-progress-tasks">0</p>
-                    <p class="text-xs text-green-600 mt-2">Ongoing</p>
+                    <p class="text-sm font-medium text-gray-600">Completed</p>
+                    <p class="text-3xl font-bold text-green-600 mt-2" id="completed-tasks">0</p>
                 </div>
-                <div class="bg-green-100 p-3 rounded-lg">
-                    <i data-lucide="truck" class="w-8 h-8 text-green-600"></i>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i data-lucide="check-circle-2" class="w-6 h-6 text-green-600"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Task Filters -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div class="flex flex-wrap gap-3">
-            <button onclick="filterTasks('all')" id="filter-all" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium">
-                All Tasks
-            </button>
-            <button onclick="filterTasks('pending')" id="filter-pending" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
-                Pending
-            </button>
-            <button onclick="filterTasks('in-progress')" id="filter-in-progress" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
-                In Progress
-            </button>
-            <button onclick="filterTasks('completed')" id="filter-completed" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
-                Completed
-            </button>
-            <button onclick="filterTasks('delivery')" id="filter-delivery" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
-                Deliveries Only
-            </button>
-            <button onclick="filterTasks('pickup')" id="filter-pickup" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
-                Pickups Only
-            </button>
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left Column - Tasks List (2/3 width) -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Filters -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="filter" class="w-5 h-5 text-red-600"></i>
+                    Filters
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Task Type</label>
+                        <select id="type-filter" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" onchange="filterTasks()">
+                            <option value="">All Tasks</option>
+                            <option value="pickup">Pickup Only</option>
+                            <option value="return">Return Only</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                        <select id="status-filter" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" onchange="filterTasks()">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Search</label>
+                        <div class="relative">
+                            <i data-lucide="search" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="search-input" placeholder="Search by booking ID, customer, vehicle..." 
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                   onkeyup="filterTasks()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks List -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <i data-lucide="list" class="w-5 h-5 text-red-600"></i>
+                        Active Tasks
+                    </h3>
+                    <span class="text-sm text-gray-500" id="task-count">0 tasks</span>
+                </div>
+                
+                <div id="tasks-container" class="space-y-4">
+                    <!-- Loading state -->
+                    <div class="text-center py-12">
+                        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-red-600 mb-4"></div>
+                        <p class="text-gray-500">Loading tasks...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Summary & Schedule (1/3 width) -->
+        <div class="space-y-6">
+            <!-- Commission Summary -->
+            <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold flex items-center gap-2">
+                        <i data-lucide="dollar-sign" class="w-5 h-5"></i>
+                        This Month
+                    </h3>
+                </div>
+                
+                <div class="text-center mb-6">
+                    <p class="text-sm text-purple-100 mb-1">Total Commission</p>
+                    <p class="text-4xl font-bold" id="month-commission">RM 0</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                        <p class="text-xs text-purple-100 mb-1">Total</p>
+                        <p class="text-xl font-bold" id="month-total-tasks">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3 text-center">
+                        <p class="text-xs text-purple-100 mb-1">Done</p>
+                        <p class="text-xl font-bold" id="month-completed-tasks">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Schedule -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="calendar" class="w-5 h-5 text-red-600"></i>
+                    Today's Schedule
+                </h3>
+                
+                <div id="schedule-container" class="space-y-3">
+                    <!-- Schedule items will be populated here -->
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <i data-lucide="zap" class="w-5 h-5 text-red-600"></i>
+                    Quick Actions
+                </h3>
+                
+                <div class="space-y-2">
+                    <button onclick="exportTasks()" class="w-full px-4 py-2.5 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition flex items-center justify-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Export Tasks</span>
+                    </button>
+                    <button onclick="printReport()" class="w-full px-4 py-2.5 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition flex items-center justify-center gap-2">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        <span>Print Report</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- Delivery Tasks List -->
-    <div id="tasks-container" class="space-y-4">
-        <div class="text-center py-12">
-            <div class="spinner"></div>
-            <p class="text-gray-500 mt-4">Loading delivery tasks...</p>
-        </div>
-    </div>
-
 </div>
 
 <!-- Task Details Modal -->
-<div id="task-details-modal" class="hidden"></div>
+<div id="task-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <div class="bg-gradient-to-r from-red-600 to-red-700 px-6 py-5 flex items-center justify-between text-white">
+            <h3 class="text-xl font-bold">Task Details</h3>
+            <button onclick="closeTaskModal()" class="hover:bg-white hover:bg-opacity-20 p-2 rounded-lg transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div id="task-details-content" class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+            <!-- Content populated by JavaScript -->
+        </div>
+    </div>
+</div>
 
 @push('scripts')
 <script>
-    // Sample delivery tasks data
-    let allTasks = [
-        {
-            id: 'DT001',
-            bookingId: 'BK002',
-            type: 'delivery',
-            customer: 'Sarah Lee',
-            phone: '+60198765432',
-            vehicle: 'Honda City',
-            plateNumber: 'WXY 1234',
-            address: 'Jalan Ampang, Kuala Lumpur',
-            scheduledTime: '2026-01-10 14:00',
-            status: 'pending',
-            commission: 80,
-            notes: 'Please call customer 30 mins before delivery'
-        },
-        {
-            id: 'DT002',
-            bookingId: 'BK004',
-            type: 'delivery',
-            customer: 'Lisa Wong',
-            phone: '+60134567890',
-            vehicle: 'Perodua Axia',
-            plateNumber: 'ABC 5678',
-            address: 'SS15, Subang Jaya, Selangor',
-            scheduledTime: '2026-01-10 16:00',
-            status: 'in-progress',
-            commission: 70,
-            notes: 'Customer at office until 5pm'
-        },
-        {
-            id: 'DT003',
-            bookingId: 'BK006',
-            type: 'pickup',
-            customer: 'Emily Ng',
-            phone: '+60156789012',
-            vehicle: 'Toyota Camry',
-            plateNumber: 'DEF 9012',
-            address: 'Section 14, Petaling Jaya',
-            scheduledTime: '2026-01-11 11:00',
-            status: 'pending',
-            commission: 80,
-            notes: 'Return from completed rental'
-        },
-        {
-            id: 'DT004',
-            bookingId: 'BK007',
-            type: 'delivery',
-            customer: 'Rachel Koh',
-            phone: '+60189012345',
-            vehicle: 'Nissan Almera',
-            plateNumber: 'GHI 3456',
-            address: 'Mont Kiara, Kuala Lumpur',
-            scheduledTime: '2026-01-14 15:00',
-            status: 'pending',
-            commission: 90,
-            notes: 'Condo - Call for access code'
-        },
-        {
-            id: 'DT005',
-            bookingId: 'BK003',
-            type: 'pickup',
-            customer: 'Ahmad Hassan',
-            phone: '+60123456789',
-            vehicle: 'Perodua Myvi',
-            plateNumber: 'JKL 7890',
-            address: 'Kepong, Kuala Lumpur',
-            scheduledTime: '2026-01-09 18:00',
-            status: 'completed',
-            commission: 60,
-            completedAt: '2026-01-09 17:45',
-            notes: ''
+    let allTasks = [];
+    let filteredTasks = [];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchTasks();
+        lucide.createIcons();
+    });
+
+    // Fetch and generate mock tasks
+    async function fetchTasks() {
+        try {
+            allTasks = generateMockTasks();
+            filterTasks();
+            updateStats();
+            updateSchedule();
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
         }
-    ];
-
-    let filteredTasks = [...allTasks];
-    let currentFilter = 'all';
-
-    function loadDeliveryTasks() {
-        updateTaskStats();
-        renderTasks();
     }
 
-    function updateTaskStats() {
-        const todayTasks = allTasks.filter(t => {
-            const taskDate = new Date(t.scheduledTime).toDateString();
-            const today = new Date().toDateString();
-            return taskDate === today && t.status !== 'completed';
-        }).length;
-
-        const pendingTasks = allTasks.filter(t => t.status === 'pending').length;
-        const inProgressTasks = allTasks.filter(t => t.status === 'in-progress').length;
-        const completedTasks = allTasks.filter(t => t.status === 'completed').length;
-        const totalCommission = allTasks
-            .filter(t => t.status === 'completed')
-            .reduce((sum, t) => sum + t.commission, 0);
-
-        document.getElementById('today-tasks').textContent = todayTasks;
-        document.getElementById('pending-tasks').textContent = pendingTasks;
-        document.getElementById('in-progress-tasks').textContent = inProgressTasks;
-        document.getElementById('completed-count').textContent = completedTasks;
-        document.getElementById('commission-total').textContent = totalCommission.toFixed(2);
+    function generateMockTasks() {
+        // Mock data generation logic here
+        const mockData = []; // Your existing mock data generation
+        return mockData;
     }
 
-    function renderTasks() {
+    function filterTasks() {
+        const typeFilter = document.getElementById('type-filter').value;
+        const statusFilter = document.getElementById('status-filter').value;
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+
+        filteredTasks = allTasks.filter(task => {
+            const matchesType = !typeFilter || task.type === typeFilter;
+            const matchesStatus = !statusFilter || task.status === statusFilter;
+            const matchesSearch = !searchTerm || 
+                task.booking_code.toLowerCase().includes(searchTerm) ||
+                task.customer_name.toLowerCase().includes(searchTerm);
+            
+            return matchesType && matchesStatus && matchesSearch;
+        });
+
+        updateTasksDisplay();
+        document.getElementById('task-count').textContent = `${filteredTasks.length} tasks`;
+    }
+
+    function updateTasksDisplay() {
         const container = document.getElementById('tasks-container');
         
         if (filteredTasks.length === 0) {
             container.innerHTML = `
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-                    <i data-lucide="inbox" class="w-16 h-16 mx-auto mb-4 text-gray-400"></i>
-                    <p class="text-gray-500 text-lg">No tasks found</p>
-                    <p class="text-gray-400 text-sm mt-2">Try adjusting your filters</p>
+                <div class="text-center py-12">
+                    <i data-lucide="inbox" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+                    <p class="text-gray-500">No tasks found</p>
                 </div>
             `;
             lucide.createIcons();
             return;
         }
 
-        container.innerHTML = filteredTasks.map(task => `
-            <div class="bg-white rounded-lg shadow-sm border-l-4 ${getTaskBorderColor(task.status)} border border-gray-200 p-6 hover:shadow-md transition">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="${getTaskIconBg(task.type)} p-2 rounded-lg">
-                                <i data-lucide="${task.type === 'delivery' ? 'truck' : 'package'}" class="w-5 h-5 text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-gray-800 text-lg">${task.type === 'delivery' ? 'Vehicle Delivery' : 'Vehicle Pickup'}</h3>
-                                <p class="text-sm text-gray-500">${task.id} • ${task.bookingId}</p>
-                            </div>
-                            ${getTaskStatusBadge(task.status)}
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-2 text-gray-700">
-                                    <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
-                                    <span class="font-semibold">${task.customer}</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-gray-600">
-                                    <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
-                                    <a href="tel:${task.phone}" class="hover:text-red-600">${task.phone}</a>
-                                </div>
-                                <div class="flex items-start gap-2 text-gray-600">
-                                    <i data-lucide="map-pin" class="w-4 h-4 text-gray-400 mt-1"></i>
-                                    <span class="flex-1">${task.address}</span>
-                                </div>
-                            </div>
-
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-2 text-gray-700">
-                                    <i data-lucide="car" class="w-4 h-4 text-gray-400"></i>
-                                    <span class="font-semibold">${task.vehicle}</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-gray-600">
-                                    <i data-lucide="hash" class="w-4 h-4 text-gray-400"></i>
-                                    <span>${task.plateNumber}</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-gray-600">
-                                    <i data-lucide="clock" class="w-4 h-4 text-gray-400"></i>
-                                    <span>${formatDateTime(task.scheduledTime)}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        ${task.notes ? `
-                            <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                <div class="flex items-start gap-2">
-                                    <i data-lucide="alert-circle" class="w-4 h-4 text-yellow-600 mt-0.5"></i>
-                                    <p class="text-sm text-yellow-800">${task.notes}</p>
-                                </div>
-                            </div>
-                        ` : ''}
-
-                        ${task.status === 'completed' ? `
-                            <div class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-green-800">Completed at ${formatDateTime(task.completedAt)}</span>
-                                    <span class="font-semibold text-green-700">Commission: RM ${task.commission}</span>
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
-
-                    <div class="flex flex-col gap-2 ml-4">
-                        ${task.status === 'pending' ? `
-                            <button onclick="startTask('${task.id}')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm whitespace-nowrap">
-                                <i data-lucide="play" class="w-4 h-4 inline mr-1"></i>
-                                Start Task
-                            </button>
-                        ` : ''}
-                        
-                        ${task.status === 'in-progress' ? `
-                            <button onclick="completeTask('${task.id}')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm whitespace-nowrap">
-                                <i data-lucide="check-circle" class="w-4 h-4 inline mr-1"></i>
-                                Complete
-                            </button>
-                        ` : ''}
-                        
-                        <button onclick="viewTaskDetails('${task.id}')" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm whitespace-nowrap">
-                            <i data-lucide="eye" class="w-4 h-4 inline mr-1"></i>
-                            Details
-                        </button>
-                        
-                        <button onclick="openGoogleMaps('${task.address}')" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm whitespace-nowrap">
-                            <i data-lucide="map" class="w-4 h-4 inline mr-1"></i>
-                            Navigate
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-        
+        container.innerHTML = filteredTasks.map(task => createTaskCard(task)).join('');
         lucide.createIcons();
     }
 
-    function getTaskBorderColor(status) {
-        const colors = {
-            'pending': 'border-orange-500',
-            'in-progress': 'border-blue-500',
-            'completed': 'border-green-500'
-        };
-        return colors[status] || 'border-gray-300';
-    }
-
-    function getTaskIconBg(type) {
-        return type === 'delivery' ? 'bg-red-600' : 'bg-blue-600';
-    }
-
-    function getTaskStatusBadge(status) {
-        const badges = {
-            'pending': '<span class="px-3 py-1 bg-orange-100 text-orange-700 text-sm rounded-full font-medium">Pending</span>',
-            'in-progress': '<span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full font-medium">In Progress</span>',
-            'completed': '<span class="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full font-medium">Completed</span>'
-        };
-        return badges[status] || '';
-    }
-
-    function filterTasks(filter) {
-        currentFilter = filter;
-        
-        // Update button styles
-        document.querySelectorAll('[id^="filter-"]').forEach(btn => {
-            btn.className = 'px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm';
-        });
-        document.getElementById(`filter-${filter}`).className = 'px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium';
-
-        // Filter tasks
-        if (filter === 'all') {
-            filteredTasks = [...allTasks];
-        } else if (filter === 'delivery') {
-            filteredTasks = allTasks.filter(t => t.type === 'delivery');
-        } else if (filter === 'pickup') {
-            filteredTasks = allTasks.filter(t => t.type === 'pickup');
-        } else {
-            filteredTasks = allTasks.filter(t => t.status === filter);
-        }
-
-        renderTasks();
-    }
-
-    function startTask(taskId) {
-        const task = allTasks.find(t => t.id === taskId);
-        if (!task) return;
-
-        if (confirm(`Start ${task.type} task for ${task.customer}?`)) {
-            task.status = 'in-progress';
-            showToast(`Task ${taskId} started!`, 'success');
-            loadDeliveryTasks();
-        }
-    }
-
-    function completeTask(taskId) {
-        const task = allTasks.find(t => t.id === taskId);
-        if (!task) return;
-
-        if (confirm(`Mark this ${task.type} as completed?\n\nYou will earn RM ${task.commission} commission.`)) {
-            task.status = 'completed';
-            task.completedAt = new Date().toISOString();
-            showToast(`Task ${taskId} completed! Commission RM ${task.commission} earned.`, 'success');
-            loadDeliveryTasks();
-        }
-    }
-
-    function viewTaskDetails(taskId) {
-        const task = allTasks.find(t => t.id === taskId);
-        if (!task) return;
-
-        const modal = document.getElementById('task-details-modal');
-        modal.innerHTML = `
-            <div class="modal-backdrop" onclick="closeTaskModal()">
-                <div class="modal-content" onclick="event.stopPropagation()">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-gray-800">Task Details</h3>
-                            <button onclick="closeTaskModal()" class="text-gray-400 hover:text-gray-600">
-                                <i data-lucide="x" class="w-6 h-6"></i>
-                            </button>
-                        </div>
+    function createTaskCard(task) {
+        return `
+            <div class="border-l-4 ${task.status === 'pending' ? 'border-orange-500' : task.status === 'in-progress' ? 'border-blue-500' : 'border-green-500'} bg-gray-50 rounded-lg p-4 hover:shadow-md transition">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-900">${task.type === 'pickup' ? '🚗 Pickup' : '🔄 Return'} - ${task.booking_code}</h4>
+                        <p class="text-sm text-gray-600 mt-1">${task.customer_name}</p>
                     </div>
-                    
-                    <div class="p-6 space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h4 class="font-semibold text-gray-800">${task.type === 'delivery' ? 'Vehicle Delivery' : 'Vehicle Pickup'}</h4>
-                            ${getTaskStatusBadge(task.status)}
-                        </div>
-
-                        <div class="bg-gray-50 p-4 rounded-lg space-y-3">
-                            <div>
-                                <p class="text-sm text-gray-600">Task ID</p>
-                                <p class="font-semibold text-gray-800">${task.id}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">Booking ID</p>
-                                <p class="font-semibold text-gray-800">${task.bookingId}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600">Commission</p>
-                                <p class="font-bold text-red-600">RM ${task.commission}</p>
-                            </div>
-                        </div>
-
-                        <div class="border-t border-gray-200 pt-4 space-y-3">
-                            <h5 class="font-semibold text-gray-800">Customer Information</h5>
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-2">
-                                    <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
-                                    <span class="text-gray-800">${task.customer}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
-                                    <a href="tel:${task.phone}" class="text-red-600 hover:text-red-700">${task.phone}</a>
-                                </div>
-                                <div class="flex items-start gap-2">
-                                    <i data-lucide="map-pin" class="w-4 h-4 text-gray-400 mt-1"></i>
-                                    <span class="text-gray-800 flex-1">${task.address}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="border-t border-gray-200 pt-4 space-y-3">
-                            <h5 class="font-semibold text-gray-800">Vehicle Information</h5>
-                            <div class="space-y-2">
-                                <div class="flex items-center gap-2">
-                                    <i data-lucide="car" class="w-4 h-4 text-gray-400"></i>
-                                    <span class="text-gray-800">${task.vehicle}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <i data-lucide="hash" class="w-4 h-4 text-gray-400"></i>
-                                    <span class="text-gray-800">${task.plateNumber}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <i data-lucide="clock" class="w-4 h-4 text-gray-400"></i>
-                                    <span class="text-gray-800">${formatDateTime(task.scheduledTime)}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        ${task.notes ? `
-                            <div class="border-t border-gray-200 pt-4">
-                                <h5 class="font-semibold text-gray-800 mb-2">Special Instructions</h5>
-                                <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                    <p class="text-sm text-yellow-800">${task.notes}</p>
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
-
-                    <div class="p-6 border-t border-gray-200 flex gap-3">
-                        <button onclick="openGoogleMaps('${task.address}')" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                            <i data-lucide="map" class="w-4 h-4 inline mr-2"></i>
-                            Navigate with Google Maps
-                        </button>
-                        <button onclick="closeTaskModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                            Close
-                        </button>
-                    </div>
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full ${
+                        task.status === 'pending' ? 'bg-orange-100 text-orange-700' :
+                        task.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
+                        'bg-green-100 text-green-700'
+                    }">
+                        ${task.status.replace('-', ' ')}
+                    </span>
+                </div>
+                
+                <div class="text-sm text-gray-600 space-y-1 mb-3">
+                    <p>🚙 ${task.vehicle_model} (${task.vehicle_plate})</p>
+                    <p>📍 ${task.address}</p>
+                    <p>⏰ ${formatTime(task.scheduled_time)}</p>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-semibold text-purple-600">Commission: RM ${task.commission}</span>
+                    <button onclick="viewTask(${task.id})" class="px-3 py-1.5 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition">
+                        View Details
+                    </button>
                 </div>
             </div>
         `;
-        modal.classList.remove('hidden');
-        lucide.createIcons();
+    }
+
+    function updateStats() {
+        // Update statistics
+        const today = new Date().toDateString();
+        const todayTasks = allTasks.filter(t => new Date(t.scheduled_time).toDateString() === today);
+        
+        document.getElementById('total-tasks').textContent = todayTasks.length;
+        document.getElementById('pending-tasks').textContent = todayTasks.filter(t => t.status === 'pending').length;
+        document.getElementById('inprogress-tasks').textContent = todayTasks.filter(t => t.status === 'in-progress').length;
+        document.getElementById('completed-tasks').textContent = todayTasks.filter(t => t.status === 'completed').length;
+    }
+
+    function updateSchedule() {
+        // Update today's schedule
+        const container = document.getElementById('schedule-container');
+        // Implementation here
+    }
+
+    function formatTime(dateString) {
+        return new Date(dateString).toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function viewTask(taskId) {
+        // Show task details modal
+        document.getElementById('task-modal').classList.remove('hidden');
     }
 
     function closeTaskModal() {
-        document.getElementById('task-details-modal').innerHTML = '';
-        document.getElementById('task-details-modal').classList.add('hidden');
+        document.getElementById('task-modal').classList.add('hidden');
     }
 
-    function openGoogleMaps(address) {
-        const encodedAddress = encodeURIComponent(address);
-        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+    function refreshTasks() {
+        fetchTasks();
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadDeliveryTasks();
-    });
+    function exportTasks() {
+        alert('Export functionality coming soon!');
+    }
+
+    function printReport() {
+        window.print();
+    }
 </script>
 @endpush
 

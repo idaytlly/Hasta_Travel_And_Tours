@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Payment extends Model
 {
@@ -32,6 +32,7 @@ class Payment extends Model
     ];
 
     protected $casts = [
+        'amount' => 'decimal:2',
         'payment_date' => 'date',
         'verified_at' => 'datetime',
         'refunded_at' => 'datetime',
@@ -100,11 +101,6 @@ class Payment extends Model
     public function scopePending($query)
     {
         return $query->where('payment_status', 'pending');
-    }
-
-    public function scopePaid($query)
-    {
-        return $query->where('payment_status', 'paid');
     }
 
     public function scopeFailed($query)

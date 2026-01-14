@@ -10,6 +10,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withBroadcasting(__DIR__.'/../routes/channels.php')  // Fixed: Correct spelling and string path
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'usertype' => \App\Http\Middleware\CheckUserType::class,

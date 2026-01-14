@@ -28,7 +28,10 @@ return new class extends Migration
             $table->double('total_price');
             $table->enum('booking_status', ['pending', 'confirmed', 'active', 'completed', 'cancelled'])->default('pending');
             $table->text('special_requests')->nullable();
-            
+
+            $table->integer('stamps_earned')->default(0);
+            $table->boolean('stamp_awarded')->default(false);
+
             // Late return charges
             $table->date('actual_return_date')->nullable();
             $table->time('actual_return_time')->nullable();

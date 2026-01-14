@@ -7,11 +7,16 @@ use App\Models\Customer;
 use App\Models\Vehicle;
 use App\Models\Voucher;
 use App\Models\Payment;
+use App\Events\BookingCreated;
+use App\Events\BookingUpdated;
+use App\Events\PaymentReceived;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Pagination\Paginator;
 
 class BookingController extends Controller
 {
@@ -23,10 +28,12 @@ class BookingController extends Controller
      */
     public function index()
     {
-        $bookings = Booking::with(['vehicle', 'customer'])
-            ->where('customer_id', Auth::guard('customer')->id())
+        Paginator::useBootstrapFive();
+
+        $bookings = Booking::where('customer_id', auth()->user()->customer_id)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(6)
+            ->withQueryString();
 
         return view('bookings.index', compact('bookings'));
     }
@@ -34,24 +41,81 @@ class BookingController extends Controller
     /**
      * Show the form for creating a new booking
      */
-    public function create($plateNo)
+    public function create($plate_no)
     {
-        $vehicle = Vehicle::where('plate_no', $plateNo)->firstOrFail();
+        $vehicle = Vehicle::where('plate_no', $plate_no)->firstOrFail();
         
         if ($vehicle->availability_status !== 'available') {
             return redirect()->route('vehicles.index')
                 ->with('error', 'This vehicle is not available for booking.');
         }
 
-        return view('bookings.create', compact('vehicle'));
+        $vehicles = Vehicle::where('availability_status', 'available')->get();
+        $vouchers = Voucher::where('voucherStatus', 'active')->get();
+
+        return view('bookings.create', compact('vehicle', 'vehicles', 'vouchers'));
     }
-    
+
+    /**
+     * Validate voucher code via AJAX
+     */
+    public function validateVoucher(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string'
+        ]);
+        
+        $code = strtoupper(trim($request->code));
+        
+        Log::info('Validating voucher', ['code' => $code]);
+        
+        $voucher = Voucher::where('voucherCode', $code)->first();
+        
+        if (!$voucher) {
+            Log::info('Voucher not found', ['code' => $code]);
+            return response()->json([
+                'valid' => false,
+                'message' => 'Invalid voucher code'
+            ]);
+        }
+        
+        if ($voucher->voucherStatus !== 'active') {
+            Log::info('Voucher not active', ['code' => $code, 'status' => $voucher->voucherStatus]);
+            return response()->json([
+                'valid' => false,
+                'message' => 'This voucher is no longer active'
+            ]);
+        }
+        
+        if ($voucher->expiryDate) {
+            $expiryDate = Carbon::parse($voucher->expiryDate);
+            if (now()->gt($expiryDate)) {
+                Log::info('Voucher expired', ['code' => $code, 'expiry' => $voucher->expiryDate]);
+                return response()->json([
+                    'valid' => false,
+                    'message' => 'This voucher has expired'
+                ]);
+            }
+        }
+        
+        Log::info('Voucher validated successfully', [
+            'code' => $code,
+            'discount' => $voucher->voucherAmount
+        ]);
+        
+        return response()->json([
+            'valid' => true,
+            'discount' => $voucher->voucherAmount,
+            'code' => $voucher->voucherCode
+        ]);
+    }
+
     /**
      * Store a newly created booking
      */
     public function store(Request $request)
     {
-        \Log::info('=== BOOKING STORE METHOD CALLED ===');
+        Log::info('=== BOOKING STORE METHOD CALLED ===');
         
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
@@ -71,20 +135,16 @@ class BookingController extends Controller
             'signature' => 'required|string',
         ]);
 
+        $customer = Auth::guard('customer')->user();
+        
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
-            // 1. Get Vehicle
             $vehicle = Vehicle::where('plate_no', $validated['plate_no'])->firstOrFail();
 
             if ($vehicle->availability_status !== 'available') {
                 return back()->with('error', 'This vehicle is no longer available.')->withInput();
             }
 
-            // 2. Get Customer and verify their information
-            $customer = Auth::guard('customer')->user();
-            
-            // Verify that the customer name and phone match the authenticated user
             if (trim($validated['customer_name']) !== trim($customer->name)) {
                 return back()->with('error', 'Customer name does not match your profile.')->withInput();
             }
@@ -93,64 +153,60 @@ class BookingController extends Controller
                 return back()->with('error', 'Phone number does not match your profile.')->withInput();
             }
             
-            // Check if customer profile is complete
             if (empty($customer->name) || empty($customer->phone_no)) {
                 return redirect()->route('customer.profile.edit')
                     ->with('error', 'Please complete your profile before making a booking.');
             }
 
-            // 3. FIX: Sanitize Dates (Take only first 10 chars YYYY-MM-DD)
             $pickupDateOnly = substr($validated['pickup_date'], 0, 10);
             $returnDateOnly = substr($validated['return_date'], 0, 10);
 
             $pickupDateTime = Carbon::parse($pickupDateOnly . ' ' . $validated['pickup_time']);
             $returnDateTime = Carbon::parse($returnDateOnly . ' ' . $validated['return_time']);
             
-            // Validate that return is after pickup
             if ($returnDateTime->lte($pickupDateTime)) {
                 return back()->with('error', 'Return date/time must be after pickup date/time.')->withInput();
             }
             
             $totalHours = (int) ceil($pickupDateTime->diffInHours($returnDateTime));
             
-            // Validate minimum rental duration (e.g., at least 1 hour)
             if ($totalHours < 1) {
                 return back()->with('error', 'Minimum rental duration is 1 hour.')->withInput();
             }
             
-            // Calculate base price (rental only)
             $rentalPrice = $totalHours * $vehicle->price_perHour;
 
-            // 4. Check if delivery is required
             $deliveryRequired = ($validated['pickup_location'] !== 'HASTA office') || 
                                ($validated['dropoff_location'] !== 'HASTA office');
             
-            // Add delivery fee if required
             $deliveryFee = $deliveryRequired ? self::DELIVERY_FEE : 0;
-            
-            // Calculate subtotal (rental + delivery)
             $subtotal = $rentalPrice + $deliveryFee;
             
-            // 5. Apply Voucher Discount
             $voucherId = null;
             $discountAmount = 0;
+
             if (!empty($validated['voucher_code'])) {
                 $voucher = Voucher::where('voucherCode', strtoupper($validated['voucher_code']))
                     ->where('voucherStatus', 'active')
+                    ->where('is_used', false)
                     ->where('expiryDate', '>=', now())
                     ->first();
                 
                 if ($voucher) {
-                    // Calculate discount based on RENTAL PRICE ONLY (not including delivery)
+                    if ($voucher->customer_id && $voucher->customer_id !== $customer->customer_id) {
+                        return back()->with('error', 'This voucher code is not valid for your account.')->withInput();
+                    }
+                    
                     $discountAmount = ($rentalPrice * $voucher->voucherAmount) / 100;
                     $voucherId = $voucher->voucher_id;
+                    $voucher->markAsUsed();
+                } else {
+                    return back()->with('error', 'Invalid or expired voucher code.')->withInput();
                 }
             }
             
-            // Calculate final total price
             $totalPrice = $subtotal - $discountAmount;
 
-            // 6. Format Locations
             $pickupDetails = $this->formatLocationDetails(
                 $validated['pickup_location'],
                 $validated['pickup_college'] ?? null,
@@ -163,7 +219,6 @@ class BookingController extends Controller
                 $validated['dropoff_faculty'] ?? null
             );
 
-            // 7. Handle Signature
             $signaturePath = null;
             if (!empty($validated['signature'])) {
                 $signatureData = $validated['signature'];
@@ -175,7 +230,6 @@ class BookingController extends Controller
                 $signaturePath = $fileName;
             }
 
-            // 8. Generate ID & Create Booking
             $bookingId = 'BKG-' . time() . '-' . rand(100, 999);
 
             $booking = Booking::create([
@@ -197,11 +251,9 @@ class BookingController extends Controller
                 'signature' => $signaturePath,
             ]);
 
-            // Update vehicle availability
             $vehicle->update(['availability_status' => 'booked']);
             
-            // Log the booking creation
-            \Log::info('Booking created successfully', [
+            Log::info('Booking created successfully', [
                 'booking_id' => $bookingId,
                 'customer_id' => $customer->customer_id,
                 'rental_price' => $rentalPrice,
@@ -212,12 +264,20 @@ class BookingController extends Controller
 
             DB::commit();
 
+            // 🔥 BROADCAST EVENT TO STAFF DASHBOARD
+            try {
+                broadcast(new BookingCreated($booking))->toOthers();
+                Log::info('Booking broadcast sent', ['booking_id' => $bookingId]);
+            } catch (\Exception $e) {
+                Log::error('Broadcast failed: ' . $e->getMessage());
+            }
+
             return redirect()->route('bookings.payment', $booking->booking_id)
                 ->with('success', 'Booking created successfully! Please complete payment.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Booking Error: ' . $e->getMessage(), [
+            Log::error('Booking Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
             return back()->with('error', 'Error creating booking: ' . $e->getMessage())->withInput();
@@ -242,20 +302,18 @@ class BookingController extends Controller
     public function storePayment(Request $request, $bookingId)
     {
         $validated = $request->validate([
-            'payment_proof' => 'required|file|mimes:pdf,png,jpg,jpeg|max:5120', // 5MB max
+            'payment_proof' => 'required|file|mimes:pdf,png,jpg,jpeg|max:5120',
             'payment_method' => 'nullable|string',
         ]);
 
         try {
             $booking = Booking::findOrFail($bookingId);
 
-            // Upload payment proof
             $file = $request->file('payment_proof');
             $fileName = 'payment_proofs/' . $booking->booking_id . '_' . time() . '.' . $file->getClientOriginalExtension();
             $file->storeAs('public', $fileName);
 
-            // Create payment record
-            Payment::create([
+            $payment = Payment::create([
                 'booking_id' => $booking->booking_id,
                 'amount' => $booking->total_price,
                 'payment_method' => $validated['payment_method'] ?? 'online',
@@ -266,6 +324,26 @@ class BookingController extends Controller
                 'remaining_payment' => $booking->total_price,
             ]);
 
+            $booking->update(['booking_status' => 'confirmed']);
+
+            // 🔥 Broadcast booking status update to staff
+            try {
+                broadcast(new BookingUpdated($booking, 'payment_received'))->toOthers();
+                Log::info('Booking confirmed broadcast sent', ['booking_id' => $booking->booking_id]);
+            } catch (\Exception $e) {
+                Log::error('Booking confirmed broadcast failed: ' . $e->getMessage());
+            }
+            
+            // 🔥 BROADCAST PAYMENT EVENT
+            try {
+                broadcast(new PaymentReceived($payment))->toOthers();
+                Log::info('Payment broadcast sent', ['booking_id' => $booking->booking_id]);
+            } catch (\Exception $e) {
+                Log::error('Payment broadcast failed: ' . $e->getMessage());
+            }
+            
+            $this->awardStamps($booking);
+
             return redirect()->route('bookings.show', $booking->booking_id)
                 ->with('success', 'Payment proof uploaded successfully! Your booking is pending approval.');
 
@@ -275,14 +353,95 @@ class BookingController extends Controller
     }
 
     /**
+     * Award stamps after booking completion 
+     */
+    private function awardStamps($booking)
+    {
+        try {
+            if ($booking->stamp_awarded) {
+                return;
+            }
+            
+            $totalHours = $booking->calculateTotalHours();
+            
+            if ($totalHours >= 7) {
+                $booking->update([
+                    'stamps_earned' => 1,
+                    'stamp_awarded' => true,
+                ]);
+                
+                $totalStamps = Booking::where('customer_id', $booking->customer_id)
+                    ->where('stamp_awarded', true)
+                    ->sum('stamps_earned');
+                
+                $this->checkAndGenerateVoucher($booking->customer_id, $totalStamps);
+                
+                Log::info('Stamp awarded', [
+                    'customer_id' => $booking->customer_id,
+                    'booking_id' => $booking->booking_id,
+                    'total_stamps' => $totalStamps,
+                    'booking_hours' => $totalHours
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error awarding stamp: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Generate voucher when customer reaches milestones (3, 9, 12 stamps)
+     */
+    private function checkAndGenerateVoucher($customerId, $totalStamps)
+    {
+        $milestones = [
+            3 => 20,
+            9 => 30,
+            12 => 50,
+        ];
+        
+        foreach ($milestones as $stampCount => $discountPercent) {
+            if ($totalStamps == $stampCount) {
+                $existingVoucher = Voucher::where('customer_id', $customerId)
+                    ->where('stamp_milestone', $stampCount)
+                    ->first();
+                
+                if (!$existingVoucher) {
+                    $voucherCode = 'STAMP' . $stampCount . '-' . strtoupper(substr(md5($customerId . time()), 0, 6));
+                    
+                    Voucher::create([
+                        'voucher_id' => 'VOU-' . time() . '-' . rand(100, 999),
+                        'customer_id' => $customerId,
+                        'voucherCode' => $voucherCode,
+                        'voucherAmount' => $discountPercent,
+                        'stamp_milestone' => $stampCount,
+                        'used_count' => 0,
+                        'is_used' => false,
+                        'expiryDate' => now()->addMonths(6),
+                        'voucherStatus' => 'active',
+                    ]);
+                    
+                    Log::info('Voucher generated', [
+                        'customer_id' => $customerId,
+                        'voucher_code' => $voucherCode,
+                        'discount' => $discountPercent . '%',
+                        'milestone' => $stampCount
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
      * Display the specified booking
      */
     public function show($id)
     {
-        $booking = Booking::with(['vehicle', 'customer', 'voucher', 'payments'])
-            ->where('booking_id', $id)
-            ->firstOrFail();
-
+        $customer = Auth::guard('customer')->user();
+        $booking = $customer->bookings()
+                          ->with(['vehicle', 'voucher', 'payments'])
+                          ->where('booking_id', $id)
+                          ->firstOrFail();
+        
         return view('bookings.show', compact('booking'));
     }
 
@@ -291,19 +450,16 @@ class BookingController extends Controller
      */
     public function inspection($id, $type)
     {
-        $booking = Booking::with('vehicle', 'customer')->findOrFail($id);
+        $booking = Booking::with('vehicle', 'customer')->where('booking_id', $id)->firstOrFail();
         
-        // Verify customer owns this booking
-        if ($booking->customer_id !== Auth::guard('customer')->id()) {
+        if ($booking->customer_id !== Auth::guard('customer')->user()->customer_id) {
             abort(403, 'Unauthorized access to this booking.');
         }
         
-        // Validate inspection type
         if (!in_array($type, ['pickup', 'dropoff'])) {
             abort(404, 'Invalid inspection type.');
         }
         
-        // Check if booking status allows inspection
         if ($type === 'pickup' && $booking->booking_status !== 'confirmed') {
             return redirect()->route('bookings.show', $id)
                 ->with('error', 'Pick-up inspection can only be done for confirmed bookings.');
@@ -314,7 +470,6 @@ class BookingController extends Controller
                 ->with('error', 'Drop-off inspection can only be done for active rentals.');
         }
         
-        // Check if inspection already exists
         $existingInspection = \App\Models\Inspection::where('booking_id', $id)
             ->where('inspection_type', $type)
             ->first();
@@ -333,14 +488,12 @@ class BookingController extends Controller
      */
     public function storeInspection(Request $request, $id, $type)
     {
-        $booking = Booking::findOrFail($id);
+        $booking = Booking::where('booking_id', $id)->firstOrFail();
         
-        // Verify customer owns this booking
-        if ($booking->customer_id !== Auth::guard('customer')->id()) {
+        if ($booking->customer_id !== Auth::guard('customer')->user()->customer_id) {
             abort(403, 'Unauthorized access to this booking.');
         }
         
-        // Validate inspection type
         if (!in_array($type, ['pickup', 'dropoff'])) {
             abort(404, 'Invalid inspection type.');
         }
@@ -358,10 +511,8 @@ class BookingController extends Controller
         try {
             DB::beginTransaction();
             
-            // Generate inspection ID
             $inspectionId = 'INS-' . time() . '-' . rand(100, 999);
             
-            // Handle 4 sides car photos
             $carPhotos = [];
             $photoTypes = ['front', 'back', 'left', 'right'];
             
@@ -375,7 +526,6 @@ class BookingController extends Controller
                 }
             }
             
-            // Handle fuel gauge photo
             $fuelPhotoPath = null;
             if ($request->hasFile('photo_fuel')) {
                 $file = $request->file('photo_fuel');
@@ -384,7 +534,6 @@ class BookingController extends Controller
                 $fuelPhotoPath = $fileName;
             }
             
-            // Handle signature
             $signaturePath = null;
             if (!empty($validated['signature'])) {
                 $signatureData = $validated['signature'];
@@ -396,7 +545,6 @@ class BookingController extends Controller
                 $signaturePath = $fileName;
             }
             
-            // Create inspection record
             \App\Models\Inspection::create([
                 'inspection_id' => $inspectionId,
                 'booking_id' => $id,
@@ -408,33 +556,32 @@ class BookingController extends Controller
                 'signature' => $signaturePath,
                 'inspection_status' => 'completed',
                 'damage_notes' => $validated['remarks'],
-                'inspected_by' => Auth::guard('customer')->id(),
+                'inspected_by' => Auth::guard('customer')->user()->customer_id,
                 'inspected_at' => now(),
             ]);
             
-            // Update booking status based on inspection type
             if ($type === 'pickup') {
                 $booking->update(['booking_status' => 'active']);
-                
-                // Update vehicle status to in-use
                 $booking->vehicle->update(['availability_status' => 'in-use']);
-                
                 $message = 'Pick-up inspection completed successfully! You can now use the vehicle.';
             } elseif ($type === 'dropoff') {
                 $booking->update(['booking_status' => 'completed']);
-                
-                // Update vehicle status back to available
                 $booking->vehicle->update(['availability_status' => 'available']);
-                
                 $message = 'Drop-off inspection completed successfully! Thank you for using our service.';
             }
             
-            // Log the inspection
-            \Log::info('Inspection completed', [
+            // 🔥 BROADCAST STATUS UPDATE
+            try {
+                broadcast(new BookingUpdated($booking, $type . '_inspection'))->toOthers();
+            } catch (\Exception $e) {
+                Log::error('Inspection broadcast failed: ' . $e->getMessage());
+            }
+            
+            Log::info('Inspection completed', [
                 'inspection_id' => $inspectionId,
                 'booking_id' => $id,
                 'type' => $type,
-                'customer_id' => Auth::guard('customer')->id(),
+                'customer_id' => Auth::guard('customer')->user()->customer_id,
                 'photos_uploaded' => count($carPhotos) + 1
             ]);
             
@@ -445,7 +592,7 @@ class BookingController extends Controller
                 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Inspection Error: ' . $e->getMessage(), [
+            Log::error('Inspection Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'booking_id' => $id,
                 'type' => $type
@@ -458,7 +605,7 @@ class BookingController extends Controller
     /**
      * Cancel a booking
      */
-    public function cancel($id)
+    public function cancel(Request $request, $id)
     {
         $booking = Booking::where('booking_id', $id)->firstOrFail();
 
@@ -468,21 +615,32 @@ class BookingController extends Controller
 
         DB::beginTransaction();
         try {
-            // Update booking status
             $booking->update(['booking_status' => 'cancelled']);
             
-            // Make vehicle available again
             $booking->vehicle->update(['availability_status' => 'available']);
 
-            // Update payment status if exists
             $booking->payments()->where('payment_status', 'pending')->update([
                 'payment_status' => 'refunded'
             ]);
 
-            DB::commit();
+            if ($booking->voucher_id) {
+                $voucher = Voucher::find($booking->voucher_id);
+                if ($voucher && $voucher->used_count > 0) {
+                    $voucher->decrement('used_count');
+                }
+            }
 
-            return redirect()->route('bookings.index')
-                ->with('success', 'Booking cancelled successfully.');
+            DB::commit();
+            
+            // 🔥 BROADCAST CANCELLATION
+            try {
+                broadcast(new BookingUpdated($booking, 'cancelled'))->toOthers();
+                Log::info('Cancellation broadcast sent', ['booking_id' => $id]);
+            } catch (\Exception $e) {
+                Log::error('Cancellation broadcast failed: ' . $e->getMessage());
+            }
+            
+            return back()->with('success', 'Booking cancelled successfully!');
 
         } catch (\Exception $e) {
             DB::rollBack();
