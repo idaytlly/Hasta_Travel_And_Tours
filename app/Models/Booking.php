@@ -103,6 +103,10 @@ class Booking extends Model
         return $this->belongsTo(Staff::class, 'late_charge_approved_by', 'staff_id');
     }
 
+<<<<<<< Updated upstream
 }
 
 
+=======
+}
+>>>>>>> Stashed changes
