@@ -14,7 +14,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('phone_no')->nullable();
-            $table->string('ic_number')->nullable(); 
             $table->string('password');
             $table->enum('role', ['admin', 'staff', 'runner'])->default('staff');            $table->boolean('is_active')->default(true);
             $table->rememberToken();

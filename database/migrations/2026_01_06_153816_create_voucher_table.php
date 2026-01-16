@@ -27,7 +27,6 @@ return new class extends Migration
             $table->tinyInteger('used_count')->nullable();
             
             // Track if voucher has been used (one-time use)
-            $table->boolean('is_used')->default(false);
             
             $table->date('expiryDate')->nullable();
             $table->mediumText('voucherStatus')->nullable();

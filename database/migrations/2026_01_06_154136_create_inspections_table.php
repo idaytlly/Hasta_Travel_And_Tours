@@ -18,16 +18,15 @@ return new class extends Migration
             $table->string('fuel_photo')->nullable();
             $table->text('remarks')->nullable();
             $table->string('signature')->nullable();
-            $table->string('inspected_by')->nullable();
+
+            $table->string('inspected by')->nullable();
+            $table->foreign('inspected by')->references('staff_id')->on('staff')->onDelete('set null');
+            
             $table->timestamp('inspected_at')->nullable();
             
             // Original fields
             $table->date('inspection_date')->nullable();
-            $table->string('fuel_level')->nullable();
             $table->mediumText('inspection_status')->nullable();
-            $table->string('damage_notes')->nullable();
-            $table->string('photo_evidence')->nullable();
-            $table->string('person_in_charge')->nullable();
             
             $table->timestamps();
         });

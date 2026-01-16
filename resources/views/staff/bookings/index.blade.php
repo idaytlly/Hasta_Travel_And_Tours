@@ -280,81 +280,79 @@
 
     // Fetch bookings from API
     async function fetchBookings() {
-    try {
-        const data = await apiRequest('/api/staff/bookings');
-        // Use the API endpoint you just added
-    } catch (error) {
-        console.error('Error fetching bookings:', error);
-        // Fallback to mock data for testing
-        loadMockBookings();
+        try {
+            showLoadingState();
+            
+            const response = await fetch('/api/staff/bookings', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                },
+                credentials: 'same-origin'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.success && data.bookings && Array.isArray(data.bookings)) {
+                allBookings = data.bookings;
+                filteredBookings = [...allBookings];
+                sortBookingsData();
+                updateBookingsDisplay();
+                updateStats();
+            } else {
+                throw new Error('Invalid data format received');
+            }
+            
+        } catch (error) {
+            console.error('Error fetching bookings:', error);
+            showErrorState();
+            showToast('Failed to load bookings. Please try again.', 'error');
+        }
     }
-}
 
-function loadMockBookings() {
-    const mockData = {
-        bookings: [
-            {
-                id: '1',
-                booking_code: 'BK-2024-001',
-                customer_name: 'John Doe',
-                customer_phone: '012-3456789',
-                customer_email: 'john@example.com',
-                customer_ic: '900101-01-1234',
-                vehicle_name: 'Toyota Camry 2023',
-                vehicle_plate: 'ABC1234',
-                vehicle_category: 'Sedan',
-                start_date: '2024-01-15T10:00:00',
-                end_date: '2024-01-20T10:00:00',
-                duration_days: 5,
-                pickup_type: 'delivery',
-                daily_rate: 120.00,
-                delivery_fee: 20.00,
-                total_amount: 620.00,
-                status: 'pending',
-                is_urgent: false
-            },
-            {
-                id: '2',
-                booking_code: 'BK-2024-002',
-                customer_name: 'Jane Smith',
-                customer_phone: '013-9876543',
-                customer_email: 'jane@example.com',
-                customer_ic: '910202-02-5678',
-                vehicle_name: 'Honda Civic 2024',
-                vehicle_plate: 'XYZ5678',
-                vehicle_category: 'Sedan',
-                start_date: '2024-01-16T09:00:00',
-                end_date: '2024-01-19T09:00:00',
-                duration_days: 3,
-                pickup_type: 'self-pickup',
-                daily_rate: 110.00,
-                delivery_fee: 0.00,
-                total_amount: 330.00,
-                status: 'confirmed',
-                is_urgent: true
-            },
-            // Add more mock bookings as needed
-        ]
-    };
+    // Add this helper function if you don't have it
+    function showLoadingState() {
+        const loading = document.getElementById('loading-indicator');
+        const noResults = document.getElementById('no-results');
+        const tbody = document.getElementById('bookings-table');
+        const pagination = document.getElementById('pagination-container');
+        
+        loading.style.display = 'block';
+        noResults.classList.add('hidden');
+        pagination.classList.add('hidden');
+        tbody.innerHTML = '';
+    }
     
-    allBookings = mockData.bookings;
-    filteredBookings = [...allBookings];
-    updateBookingsDisplay();
-    updateStats();
-    showToast('Using mock data. API endpoint not configured.', 'warning');
-}
-
     // Show error state
     function showErrorState() {
         const loading = document.getElementById('loading-indicator');
         const noResults = document.getElementById('no-results');
         const tbody = document.getElementById('bookings-table');
+        const pagination = document.getElementById('pagination-container');
         
         loading.style.display = 'none';
+        pagination.classList.add('hidden');
         tbody.innerHTML = '';
-        noResults.querySelector('p').textContent = 'Failed to load bookings';
+        
+        noResults.innerHTML = `
+            <div class="inline-block p-4">
+                <i data-lucide="alert-circle" class="w-16 h-16 text-red-400 mx-auto mb-4"></i>
+                <p class="text-red-500 text-lg font-medium mb-2">Failed to load bookings</p>
+                <p class="text-gray-400 text-sm">Please check your connection and try refreshing the page</p>
+            </div>
+        `;
+        
         noResults.classList.remove('hidden');
+        lucide.createIcons();
     }
+
 
     // Sort bookings data
     function sortBookingsData() {
