@@ -891,7 +891,6 @@
                     <div class="signature-actions">
                         <button type="button" class="btn-clear" onclick="clearSignature()">Clear Signature</button>
                     </div>
-                </form>
                 </div>
             
             <button type="submit" class="btn-submit">Confirm Booking</button>

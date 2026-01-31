@@ -134,7 +134,7 @@
                             <div class="vehicle-info">
                                 <div class="vehicle-image">
                                     @if($vehicle->display_image)
-                                        <img src="{{ asset('storage/' . $vehicle->display_image) }}" alt="{{ $vehicle->name }}">
+                                        <img src="{{ asset('car_images/' . $vehicle->display_image) }}" alt="{{ $vehicle->name }}">
                                     @else
                                         <i class="fas fa-car fa-3x"></i>
                                     @endif

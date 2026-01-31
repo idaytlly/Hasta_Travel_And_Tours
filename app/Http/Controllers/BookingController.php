@@ -45,7 +45,7 @@ class BookingController extends Controller
     {
         $vehicle = Vehicle::where('plate_no', $plate_no)->firstOrFail();
         
-        if ($vehicle->availability_status !== 'available') {
+        if (strtolower($vehicle->availability_status) !== 'available') {
             return redirect()->route('vehicles.index')
                 ->with('error', 'This vehicle is not available for booking.');
         }

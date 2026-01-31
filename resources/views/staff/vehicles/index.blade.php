@@ -187,7 +187,7 @@
                         <div class="relative w-24 h-24 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-200 group-hover:border-red-200 transition overflow-hidden">
                             @if($vehicle->display_image)
                                 <!-- Use display_image if it exists -->
-                                <img src="{{ asset('storage/' . $vehicle->display_image) }}" alt="{{ $vehicle->name }}" 
+                                <img src="{{ asset('car_images/' . $vehicle->display_image) }}" alt="{{ $vehicle->name }}" 
                                     class="w-full h-full object-cover">
                             @elseif($vehicle->images)
                                 <!-- Fallback to first detail image if no display_image -->
@@ -196,7 +196,7 @@
                                     $firstImage = !empty($images) ? reset($images) : null;
                                 @endphp
                                 @if($firstImage)
-                                    <img src="{{ asset('storage/' . $firstImage) }}" alt="{{ $vehicle->name }}" 
+                                    <img src="{{ asset('car_images/' . $firstImage) }}" alt="{{ $vehicle->name }}" 
                                         class="w-full h-full object-cover">
                                 @else
                                     <i data-lucide="{{ $vehicle->vehicle_type == 'motorcycle' ? 'bike' : 'car' }}" class="w-12 h-12 text-gray-300"></i>

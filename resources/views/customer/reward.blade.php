@@ -338,7 +338,7 @@
                         <tbody>
                             @forelse ($stampHistory ?? [] as $history)
                                 <tr>
-                                    <td>{{ $history->created_at->format('d/m/Y') }}</td>
+                                    <td>{{ $history->created_at ?? 'N/A' }}</td>
                                     <td><strong>#{{ $history->order_id }}</strong></td>
                                     <td>{{ $history->hours }} hours</td>
                                     <td>

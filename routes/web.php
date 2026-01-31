@@ -59,10 +59,8 @@ Route::middleware(['auth:customer'])->group(function () {
 
     Route::post('/vouchers/validate', [BookingController::class, 'validateVoucher'])->name('vouchers.validate');
     
-    // === ADD THESE TWO MISSING LINES ===
     Route::get('/bookings/{id}/payment', [BookingController::class, 'payment'])->name('bookings.payment');
     Route::post('/bookings/{id}/payment', [BookingController::class, 'storePayment'])->name('bookings.payment.store');
-    // ===================================
 
     Route::get('/bookings/{id}/inspection/{type}', [BookingController::class, 'inspection'])->name('bookings.inspection');
     Route::post('/bookings/{id}/inspection/{type}', [BookingController::class, 'storeInspection'])->name('bookings.inspection.store');
@@ -77,15 +75,22 @@ Route::middleware(['auth:customer'])->group(function () {
 // Staff Booking Routes
 Route::middleware(['staff.auth'])->prefix('staff')->group(function () {
     // Bookings
-    Route::get('/bookings', [Staff\BookingController::class, 'index'])->name('staff.bookings.index');
-    Route::get('/bookings/create', [Staff\BookingController::class, 'create'])->name('staff.bookings.create');
-    Route::post('/bookings', [Staff\BookingController::class, 'store'])->name('staff.bookings.store');
-    Route::get('/bookings/{id}', [Staff\BookingController::class, 'show'])->name('staff.bookings.show');
-    Route::get('/bookings/{id}/edit', [Staff\BookingController::class, 'edit'])->name('staff.bookings.edit');
-    Route::put('/bookings/{id}', [Staff\BookingController::class, 'update'])->name('staff.bookings.update');
-    Route::delete('/bookings/{id}', [Staff\BookingController::class, 'destroy'])->name('staff.bookings.destroy');
+    Route::get('/bookings', [StaffBookingController::class, 'index'])->name('staff.bookings.index');
+    Route::get('/bookings/create', [StaffBookingController::class, 'create'])->name('staff.bookings.create');
+    Route::post('/bookings', [StaffBookingController::class, 'store'])->name('staff.bookings.store');
+    Route::get('/bookings/{id}', [StaffBookingController::class, 'show'])->name('staff.bookings.show');
+    Route::get('/bookings/{id}/edit', [StaffBookingController::class, 'edit'])->name('staff.bookings.edit');
+    Route::put('/bookings/{id}', [StaffBookingController::class, 'update'])->name('staff.bookings.update');
+    Route::delete('/bookings/{id}', [StaffBookingController::class, 'destroy'])->name('staff.bookings.destroy');
+    
+    Route::post('/bookings/{id}/approve', [StaffBookingController::class, 'approve'])->name('staff.bookings.approve');
+    Route::post('/bookings/{id}/mark-active', [StaffBookingController::class, 'markActive'])->name('staff.bookings.mark-active');
+    Route::post('/bookings/{id}/mark-completed', [StaffBookingController::class, 'markCompleted'])->name('staff.bookings.mark-completed');
+    Route::post('/bookings/{id}/cancel', [StaffBookingController::class, 'cancel'])->name('staff.bookings.cancel');
+    
+    Route::post('/payments/record', [StaffBookingController::class, 'recordPayment'])->name('staff.payments.record');
+});
 
-    });
 Route::get('/test-auth', function () {
     Log::info('=== TEST AUTH ROUTE ===');
     Log::info('Session ID: ' . session()->getId());

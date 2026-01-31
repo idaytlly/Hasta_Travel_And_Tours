@@ -45,11 +45,11 @@
                     @if(!empty($images))
                         <div class="relative">
                             @php $firstImage = reset($images); @endphp
-                            <img src="{{ asset('storage/' . $firstImage) }}" alt="{{ $vehicle->name }}" 
+                            <img src="{{ asset('car_images/' . $firstImage) }}" alt="{{ $vehicle->name }}" 
                                  class="w-full h-64 object-cover" id="mainImage">
                             <div class="absolute top-3 right-3">
                                 <span class="px-3 py-1.5 rounded-full text-sm font-bold shadow-lg
-                                    {{ $vehicle->availability_status == 'available' ? 'bg-green-500 text-white' : '' }}
+                                    {{ $vehicle->availability_status == 'Available' ? 'bg-green-500 text-white' : '' }}
                                     {{ $vehicle->availability_status == 'booked' ? 'bg-blue-500 text-white' : '' }}
                                     {{ $vehicle->availability_status == 'maintenance' ? 'bg-orange-500 text-white' : '' }}">
                                     {{ ucfirst($vehicle->availability_status) }}
@@ -59,9 +59,9 @@
                         @if(count($images) > 1)
                             <div class="p-3 grid grid-cols-4 gap-2 bg-gray-50">
                                 @foreach($images as $key => $image)
-                                    <button onclick="changeImage('{{ asset('storage/' . $image) }}')" 
+                                    <button onclick="changeImage('{{ asset('car_images/' . $image) }}')" 
                                             class="aspect-square rounded-lg overflow-hidden border-2 border-gray-200 hover:border-red-500 transition">
-                                        <img src="{{ asset('storage/' . $image) }}" 
+                                        <img src="{{ asset('car_images/' . $image) }}" 
                                              class="w-full h-full object-cover">
                                     </button>
                                 @endforeach
@@ -151,13 +151,15 @@
                 </div>
             </div>
 
-            @if($vehicle->features && !empty(json_decode($vehicle->features, true)))
+            @if($vehicle->features && !empty($vehicle->features))
                 <div class="bg-white rounded-xl border border-gray-200 p-6">
                     <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <i data-lucide="check-circle" class="w-5 h-5 text-red-600"></i>
                         Features
                     </h3>
-                    @php $features = json_decode($vehicle->features, true); @endphp
+                    @php 
+                        $features = is_array($vehicle->features) ? $vehicle->features : json_decode($vehicle->features, true); 
+                    @endphp
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         @foreach($features as $feature)
                             <div class="flex items-center gap-2">
@@ -200,14 +202,14 @@
                             <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
                             <span>Added to fleet</span>
                         </div>
-                        <span class="text-gray-600">{{ $vehicle->created_at->format('d M Y') }}</span>
+                        <span class="text-gray-600">{{ $vehicle->created_at ? $vehicle->created_at->format('d M Y') : 'N/A' }}</span>
                     </div>
                     <div class="flex items-center justify-between text-sm">
                         <div class="flex items-center gap-2">
                             <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
                             <span>Last updated</span>
                         </div>
-                        <span class="text-gray-600">{{ $vehicle->updated_at->format('d M Y') }}</span>
+                        <span class="text-gray-600">{{ $vehicle->updated_at ? $vehicle->updated_at->format('d M Y') : 'N/A' }}</span>
                     </div>
                 </div>
             </div>

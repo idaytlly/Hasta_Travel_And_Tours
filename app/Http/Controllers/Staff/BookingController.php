@@ -12,7 +12,7 @@ use App\Models\Vehicle;
 use App\Models\Customer;
 use App\Models\Voucher;
 use App\Models\Payment;
-use App\Events\BookingUpdated; // 🔥 ADD THIS
+use App\Events\BookingUpdated; 
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
@@ -105,7 +105,6 @@ class BookingController extends Controller
 
             DB::commit();
             
-            // 🔥 BROADCAST BOOKING CREATED
             try {
                 broadcast(new BookingUpdated($booking, 'created'))->toOthers();
             } catch (\Exception $e) {
@@ -223,8 +222,7 @@ class BookingController extends Controller
             }
 
             DB::commit();
-            
-            // 🔥 BROADCAST UPDATE
+
             try {
                 broadcast(new BookingUpdated($booking, 'updated'))->toOthers();
             } catch (\Exception $e) {
@@ -265,7 +263,6 @@ class BookingController extends Controller
             
             DB::commit();
             
-            // 🔥 BROADCAST DELETION (Optional)
             try {
                 // You might want to create a separate BookingDeleted event
                 broadcast(new BookingUpdated($booking, 'deleted'))->toOthers();
@@ -292,7 +289,6 @@ class BookingController extends Controller
         
         $booking->update(['booking_status' => 'confirmed']);
         
-        // 🔥 BROADCAST APPROVAL
         try {
             broadcast(new BookingUpdated($booking, 'approved'))->toOthers();
         } catch (\Exception $e) {
@@ -330,7 +326,6 @@ class BookingController extends Controller
             
             DB::commit();
             
-            // 🔥 BROADCAST CANCELLATION
             try {
                 broadcast(new BookingUpdated($booking, 'cancelled'))->toOthers();
             } catch (\Exception $e) {
@@ -355,7 +350,6 @@ class BookingController extends Controller
         
         $booking->update(['booking_status' => 'active']);
         
-        // 🔥 BROADCAST MARKED ACTIVE
         try {
             broadcast(new BookingUpdated($booking, 'marked_active'))->toOthers();
         } catch (\Exception $e) {
@@ -385,7 +379,6 @@ class BookingController extends Controller
             
             DB::commit();
             
-            // 🔥 BROADCAST COMPLETED
             try {
                 broadcast(new BookingUpdated($booking, 'completed'))->toOthers();
             } catch (\Exception $e) {
@@ -436,7 +429,6 @@ class BookingController extends Controller
             
             DB::commit();
             
-            // 🔥 BROADCAST EXTENSION
             try {
                 broadcast(new BookingUpdated($booking, 'extended'))->toOthers();
             } catch (\Exception $e) {
@@ -531,4 +523,5 @@ class BookingController extends Controller
         
         return response()->stream($callback, 200, $headers);
     }
+    
 }

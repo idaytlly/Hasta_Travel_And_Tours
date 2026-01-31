@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class StaffAuthMiddleware
@@ -13,9 +14,9 @@ class StaffAuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if staff is authenticated via cookie
-        if ($request->cookie('staff_authenticated') !== 'true') {
-            return redirect()->route('staff.login')
+        // Check if staff is authenticated using Laravel's auth guard
+        if (!Auth::guard('staff')->check()) {
+            return redirect('/staff')
                 ->with('error', 'Please login as staff first');
         }
         

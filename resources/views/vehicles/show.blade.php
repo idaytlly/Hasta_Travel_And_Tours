@@ -290,13 +290,13 @@
         <div class="vehicle-top">
             <div class="vehicle-photo">
                 {{-- image from DB if available otherwise placeholder --}}
-                <img src="{{ asset('storage/' . $vehicle->display_image) }}" alt="{{ $vehicle->name }}">
+                <img src="{{ asset('car_images/' . $vehicle->display_image) }}" alt="{{ $vehicle->name }}">
             </div>
 
             <div class="vehicle-header">
                 {{-- header uses same compact style as index: name, plate, price --}}
                 <div class="vehicle-title">{{ $vehicle->name }}</div>
-                <div class="avail-badge {{ $vehicle->availability_status === 'available' ? 'available' : 'unavailable' }}">
+                <div class="avail-badge {{ strtolower($vehicle->availability_status) === 'available' ? 'available' : 'unavailable' }}">
                     {{ ucfirst($vehicle->availability_status) }}
                 </div>
 
@@ -325,18 +325,20 @@
                     <button class="gallery-nav prev" onclick="prevThumbs()">❮</button>
                     <div class="gallery-window">
                         <div class="gallery-thumbs">
-                            @foreach ($images as $image)
+                            @if($vehicle->images && count($vehicle->images) > 0)
+                                @foreach($vehicle->images as $image)
                                 <div class="gallery-thumb">
-                                    <img src="{{ asset('storage/' . $image) }}">
+                                    <img src="{{ asset('car_images/' . $image) }}">
                                 </div>
-                            @endforeach
+                                @endforeach
+                            @endif
                         </div>
                     </div>
                     <button class="gallery-nav next" onclick="nextThumbs()">❯</button>
                 </div>                
                 <div class="booking-row">
                     <div class="booking-price">RM{{ number_format($vehicle->price_perHour) }} <medium style="font-size:12px; color:#666; font-weight:600">/hour</medium></div>
-                    @if($vehicle->availability_status === 'available')
+                    @if(strtolower($vehicle->availability_status) === 'available')
                         <a href="{{ route('bookings.create', $vehicle->plate_no) }}" class="btn-book" style="text-decoration: none; display: inline-block;">Book Now</a>
                     @else
                         <button class="btn-book" disabled style="opacity: 0.5; cursor: not-allowed;">Unavailable</button>

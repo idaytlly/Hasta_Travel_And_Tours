@@ -304,7 +304,7 @@
                                         <p class="text-sm font-medium text-gray-700 mb-2 capitalize">
                                             {{ str_replace('_', ' ', $key) }}
                                         </p>
-                                        <img src="{{ asset('storage/' . $image) }}" 
+                                        <img src="{{ asset('car_images/' . $image) }}" 
                                              alt="{{ $key }}"
                                              class="w-full h-32 object-cover rounded-lg">
                                     </div>
@@ -473,7 +473,7 @@
                     <div class="mb-6">
                         <p class="text-sm font-semibold text-gray-700 mb-3">Current Display Image:</p>
                         <div class="max-w-xs">
-                            <img src="{{ asset('storage/' . $vehicle->display_image) }}" 
+                            <img src="{{ asset('car_images/' . $vehicle->display_image) }}" 
                                 alt="Display Image" 
                                 class="w-full h-48 object-cover rounded-lg border border-gray-200">
                         </div>

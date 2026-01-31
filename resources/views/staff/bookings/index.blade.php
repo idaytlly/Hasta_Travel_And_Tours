@@ -38,8 +38,6 @@
                     <option value="">All Status</option>
                     <option value="pending">Pending</option>
                     <option value="confirmed">Confirmed</option>
-                    <option value="payment_verified">Payment Verified</option>
-                    <option value="approved">Approved</option>
                     <option value="active">Active</option>
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
@@ -47,13 +45,10 @@
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
-                <select id="type-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                        onchange="filterBookings()">
-                    <option value="">All Types</option>
-                    <option value="delivery">Delivery</option>
-                    <option value="self-pickup">Self Pickup</option>
-                </select>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Vehicle</label>
+                <input type="text" id="vehicle-filter" placeholder="Filter by vehicle..." 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                       onkeyup="debouncedFilterBookings()">
             </div>
             
             <div>
@@ -165,7 +160,6 @@
                                 <i data-lucide="chevron-up-down" class="w-3 h-3"></i>
                             </div>
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Type</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase cursor-pointer" onclick="sortBookings('status')">
                             <div class="flex items-center gap-1">
                                 Status
@@ -214,40 +208,6 @@
     </div>
 </div>
 
-<!-- Booking Details Modal -->
-<div id="booking-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div class="sticky top-0 bg-white p-6 border-b border-gray-200 flex items-center justify-between z-10">
-            <h3 class="text-xl font-bold text-gray-800">Booking Details</h3>
-            <button onclick="closeBookingModal()" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-        </div>
-        
-        <div id="booking-details-content" class="p-6">
-            <!-- Content populated by JavaScript -->
-        </div>
-    </div>
-</div>
-
-<!-- Action Confirmation Modal -->
-<div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-        <div class="p-6 border-b border-gray-200">
-            <h3 id="confirmation-title" class="text-lg font-bold text-gray-800"></h3>
-            <p id="confirmation-message" class="text-gray-600 mt-1"></p>
-        </div>
-        <div class="p-6 flex items-center justify-end gap-3">
-            <button onclick="closeConfirmationModal()" class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">
-                Cancel
-            </button>
-            <button id="confirm-action-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-                Confirm
-            </button>
-        </div>
-    </div>
-</div>
-
 @push('styles')
 <style>
     .spinner {
@@ -275,8 +235,37 @@
     let itemsPerPage = 10;
     let sortField = 'start_date';
     let sortDirection = 'desc';
-    let currentAction = null;
-    let currentBookingId = null;
+
+    // Transform backend data to match frontend expectations
+    function transformBookingData(bookings) {
+        return bookings.map(booking => ({
+            id: booking.booking_id,
+            booking_code: booking.booking_id,
+            customer_name: booking.customer?.name || 'N/A',
+            customer_phone: booking.customer?.phone_no || 'N/A',
+            customer_email: booking.customer?.email || 'N/A',
+            customer_ic: booking.customer?.ic_no || booking.customer?.nric || 'N/A',
+            vehicle_name: booking.vehicle?.name || 'N/A',
+            vehicle_plate: booking.vehicle?.plate_no || 'N/A',
+            vehicle_category: booking.vehicle?.category || 'Standard',
+            start_date: booking.pickup_date,
+            end_date: booking.return_date,
+            status: booking.booking_status,
+            total_amount: booking.total_price || 0,
+            daily_rate: booking.vehicle?.price_perHour || 0,
+            duration_days: calculateDays(booking.pickup_date, booking.return_date),
+            delivery_fee: 0,
+            is_urgent: false
+        }));
+    }
+
+    function calculateDays(start, end) {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        const diffTime = Math.abs(endDate - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays || 1;
+    }
 
     // Fetch bookings from API
     async function fetchBookings() {
@@ -299,9 +288,11 @@
             }
 
             const data = await response.json();
+            console.log('Raw API response:', data); // Debug log
             
             if (data.success && data.bookings && Array.isArray(data.bookings)) {
-                allBookings = data.bookings;
+                allBookings = transformBookingData(data.bookings);
+                console.log('Transformed bookings:', allBookings); // Debug log
                 filteredBookings = [...allBookings];
                 sortBookingsData();
                 updateBookingsDisplay();
@@ -317,7 +308,6 @@
         }
     }
 
-    // Add this helper function if you don't have it
     function showLoadingState() {
         const loading = document.getElementById('loading-indicator');
         const noResults = document.getElementById('no-results');
@@ -330,7 +320,6 @@
         tbody.innerHTML = '';
     }
     
-    // Show error state
     function showErrorState() {
         const loading = document.getElementById('loading-indicator');
         const noResults = document.getElementById('no-results');
@@ -353,14 +342,11 @@
         lucide.createIcons();
     }
 
-
-    // Sort bookings data
     function sortBookingsData() {
         allBookings.sort((a, b) => {
             let aVal = a[sortField];
             let bVal = b[sortField];
             
-            // Handle different data types
             if (sortField.includes('date')) {
                 aVal = new Date(aVal);
                 bVal = new Date(bVal);
@@ -379,7 +365,6 @@
         });
     }
 
-    // Sort bookings when header clicked
     function sortBookings(field) {
         if (sortField === field) {
             sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
@@ -391,7 +376,6 @@
         sortBookingsData();
         filterBookings();
         
-        // Update sort indicators
         document.querySelectorAll('thead th').forEach(th => {
             th.classList.remove('sort-asc', 'sort-desc');
             const icon = th.querySelector('i');
@@ -410,18 +394,16 @@
         }
     }
 
-    // Debounced filter for search input
     let filterTimeout;
     function debouncedFilterBookings() {
         clearTimeout(filterTimeout);
         filterTimeout = setTimeout(filterBookings, 300);
     }
 
-    // Filter bookings
     function filterBookings() {
         const searchTerm = document.getElementById('search-input').value.toLowerCase();
         const statusFilter = document.getElementById('status-filter').value;
-        const typeFilter = document.getElementById('type-filter').value;
+        const vehicleFilter = document.getElementById('vehicle-filter').value.toLowerCase();
         const dateFilter = document.getElementById('date-filter').value;
         
         filteredBookings = allBookings.filter(booking => {
@@ -432,7 +414,7 @@
                 (booking.customer_phone && booking.customer_phone.includes(searchTerm));
             
             const matchesStatus = !statusFilter || booking.status === statusFilter;
-            const matchesType = !typeFilter || booking.pickup_type === typeFilter;
+            const matchesVehicle = !vehicleFilter || booking.vehicle_name.toLowerCase().includes(vehicleFilter);
             
             let matchesDate = true;
             if (dateFilter) {
@@ -455,21 +437,19 @@
                 }
             }
             
-            return matchesSearch && matchesStatus && matchesType && matchesDate;
+            return matchesSearch && matchesStatus && matchesVehicle && matchesDate;
         });
         
         currentPage = 1;
         updateBookingsDisplay();
     }
 
-    // Get paginated bookings
     function getPaginatedBookings() {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         return filteredBookings.slice(startIndex, endIndex);
     }
 
-    // Update bookings table
     function updateBookingsDisplay() {
         const tbody = document.getElementById('bookings-table');
         const loading = document.getElementById('loading-indicator');
@@ -491,15 +471,12 @@
         
         const paginatedBookings = getPaginatedBookings();
         
-        // Update results count
         resultsCount.textContent = `Showing ${filteredBookings.length} booking${filteredBookings.length !== 1 ? 's' : ''}`;
         
-        // Update table
         tbody.innerHTML = paginatedBookings.map(booking => `
             <tr class="hover:bg-gray-50 transition">
                 <td class="px-6 py-4 whitespace-nowrap">
                     <span class="font-mono font-semibold text-gray-800">${escapeHtml(booking.booking_code)}</span>
-                    ${booking.is_urgent ? '<span class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">URGENT</span>' : ''}
                 </td>
                 <td class="px-6 py-4">
                     <div>
@@ -513,12 +490,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     ${formatDate(booking.start_date)}<br>
-                    <span class="text-gray-400">${booking.duration_days} days</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    ${booking.pickup_type === 'delivery' 
-                        ? '<span class="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium"><i data-lucide="truck" class="w-3 h-3"></i>Delivery</span>'
-                        : '<span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium"><i data-lucide="map-pin" class="w-3 h-3"></i>Self Pickup</span>'}
+                    <span class="text-gray-400">${booking.duration_days} day${booking.duration_days !== 1 ? 's' : ''}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     ${getStatusBadge(booking.status)}
@@ -528,78 +500,22 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center gap-1">
-                        <button onclick="viewBooking('${booking.id}')" 
-                                class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                                title="View Details">
+                        <a href="/staff/bookings/${booking.id}" 
+                           class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                           title="View Details">
                             <i data-lucide="eye" class="w-4 h-4"></i>
-                        </button>
-                        ${getActionButtons(booking)}
+                        </a>
                     </div>
                 </td>
             </tr>
         `).join('');
         
-        // Update pagination
         updatePagination();
         pagination.classList.remove('hidden');
         
         lucide.createIcons();
     }
 
-    // Get action buttons based on status and user role
-    function getActionButtons(booking) {
-        const userRole = '{{ Auth::guard("staff")->user()->role }}';
-        let buttons = '';
-        
-        if (booking.status === 'pending') {
-            buttons += `
-                <button onclick="showConfirmation('approve', '${booking.id}')" 
-                        class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
-                        title="Approve">
-                    <i data-lucide="check" class="w-4 h-4"></i>
-                </button>
-                <button onclick="showConfirmation('cancel', '${booking.id}')" 
-                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                        title="Cancel">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
-            `;
-        }
-        
-        if (booking.status === 'confirmed' && userRole === 'admin') {
-            buttons += `
-                <button onclick="showConfirmation('verifyPayment', '${booking.id}')" 
-                        class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition"
-                        title="Verify Payment">
-                    <i data-lucide="dollar-sign" class="w-4 h-4"></i>
-                </button>
-            `;
-        }
-        
-        if (booking.status === 'payment_verified') {
-            buttons += `
-                <button onclick="showConfirmation('verifyBooking', '${booking.id}')" 
-                        class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                        title="Complete Verification">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i>
-                </button>
-            `;
-        }
-        
-        if (booking.status === 'active') {
-            buttons += `
-                <button onclick="showConfirmation('complete', '${booking.id}')" 
-                        class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition"
-                        title="Mark as Complete">
-                    <i data-lucide="check-square" class="w-4 h-4"></i>
-                </button>
-            `;
-        }
-        
-        return buttons;
-    }
-
-    // Update statistics
     function updateStats() {
         const total = allBookings.length;
         const pending = allBookings.filter(b => b.status === 'pending').length;
@@ -612,11 +528,9 @@
         document.getElementById('completed-bookings').textContent = completed;
     }
 
-    // Update pagination
     function updatePagination() {
         const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
         
-        // Update info
         const start = (currentPage - 1) * itemsPerPage + 1;
         const end = Math.min(currentPage * itemsPerPage, filteredBookings.length);
         
@@ -624,7 +538,6 @@
         document.getElementById('page-end').textContent = end;
         document.getElementById('total-count').textContent = filteredBookings.length;
         
-        // Update controls
         const controls = document.getElementById('pagination-controls');
         let html = '';
         
@@ -636,7 +549,6 @@
             `;
         }
         
-        // Show page numbers
         for (let i = 1; i <= totalPages; i++) {
             if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
                 html += `
@@ -662,426 +574,40 @@
         lucide.createIcons();
     }
 
-    // Change page
     function changePage(page) {
         currentPage = page;
         updateBookingsDisplay();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Show confirmation modal
-    function showConfirmation(action, bookingId) {
-        currentAction = action;
-        currentBookingId = bookingId;
-        
-        const modal = document.getElementById('confirmation-modal');
-        const title = document.getElementById('confirmation-title');
-        const message = document.getElementById('confirmation-message');
-        const button = document.getElementById('confirm-action-btn');
-        
-        const actions = {
-            'approve': {
-                title: 'Approve Booking',
-                message: 'Are you sure you want to approve this booking?',
-                buttonText: 'Approve',
-                buttonClass: 'bg-green-600 hover:bg-green-700'
-            },
-            'cancel': {
-                title: 'Cancel Booking',
-                message: 'Are you sure you want to cancel this booking? This action cannot be undone.',
-                buttonText: 'Cancel Booking',
-                buttonClass: 'bg-red-600 hover:bg-red-700'
-            },
-            'verifyPayment': {
-                title: 'Verify Payment',
-                message: 'Verify that payment has been received for this booking?',
-                buttonText: 'Verify Payment',
-                buttonClass: 'bg-purple-600 hover:bg-purple-700'
-            },
-            'verifyBooking': {
-                title: 'Complete Verification',
-                message: 'Complete booking verification? The vehicle will be marked as ready for pickup.',
-                buttonText: 'Complete Verification',
-                buttonClass: 'bg-blue-600 hover:bg-blue-700'
-            },
-            'complete': {
-                title: 'Mark as Complete',
-                message: 'Mark this booking as completed? The vehicle will be returned to available status.',
-                buttonText: 'Mark Complete',
-                buttonClass: 'bg-green-600 hover:bg-green-700'
-            }
-        };
-        
-        const config = actions[action] || actions.cancel;
-        
-        title.textContent = config.title;
-        message.textContent = config.message;
-        button.textContent = config.buttonText;
-        button.className = `px-4 py-2 ${config.buttonClass} text-white rounded-lg hover:${config.buttonClass.replace('600', '700')} transition`;
-        
-        modal.classList.remove('hidden');
-    }
-
-    // Close confirmation modal
-    function closeConfirmationModal() {
-        document.getElementById('confirmation-modal').classList.add('hidden');
-        currentAction = null;
-        currentBookingId = null;
-    }
-
-    // Confirm action from modal
-    async function confirmAction() {
-        closeConfirmationModal();
-        
-        const actions = {
-            'approve': approveBooking,
-            'cancel': cancelBooking,
-            'verifyPayment': verifyPayment,
-            'verifyBooking': verifyBooking,
-            'complete': completeBooking
-        };
-        
-        if (actions[currentAction] && currentBookingId) {
-            await actions[currentAction](currentBookingId);
-        }
-    }
-
-    // Set up confirmation button
-    document.getElementById('confirm-action-btn').onclick = confirmAction;
-
-    // View booking details
-    async function viewBooking(bookingId) {
-        try {
-            const data = await apiRequest(`/api/staff/bookings/${bookingId}`);
-            showBookingModal(data.booking);
-        } catch (error) {
-            showToast('Failed to load booking details', 'error');
-        }
-    }
-
-    // Show booking modal
-    function showBookingModal(booking) {
-        const modal = document.getElementById('booking-modal');
-        const content = document.getElementById('booking-details-content');
-        
-        content.innerHTML = `
-            <div class="space-y-6">
-                <!-- Header Info -->
-                <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div>
-                        <p class="text-sm text-gray-600">Booking Code</p>
-                        <p class="font-mono font-bold text-gray-800 text-lg">${booking.booking_code}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm text-gray-600">Status</p>
-                        <div class="mt-1">${getStatusBadge(booking.status)}</div>
-                    </div>
-                </div>
-
-                <!-- Customer Section -->
-                <div class="border border-gray-200 rounded-lg">
-                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                        <h4 class="font-semibold text-gray-800 flex items-center gap-2">
-                            <i data-lucide="user" class="w-4 h-4"></i>
-                            Customer Information
-                        </h4>
-                    </div>
-                    <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-sm text-gray-600">Name</label>
-                            <p class="font-medium text-gray-800 mt-1">${escapeHtml(booking.customer_name)}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">Phone</label>
-                            <p class="font-medium text-gray-800 mt-1">${escapeHtml(booking.customer_phone)}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">Email</label>
-                            <p class="font-medium text-gray-800 mt-1">${escapeHtml(booking.customer_email)}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">IC Number</label>
-                            <p class="font-medium text-gray-800 mt-1">${escapeHtml(booking.customer_ic)}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Vehicle Section -->
-                <div class="border border-gray-200 rounded-lg">
-                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                        <h4 class="font-semibold text-gray-800 flex items-center gap-2">
-                            <i data-lucide="car" class="w-4 h-4"></i>
-                            Vehicle Information
-                        </h4>
-                    </div>
-                    <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-sm text-gray-600">Vehicle</label>
-                            <p class="font-medium text-gray-800 mt-1">${escapeHtml(booking.vehicle_name)}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">Plate Number</label>
-                            <p class="font-medium text-gray-800 mt-1">${escapeHtml(booking.vehicle_plate)}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">Daily Rate</label>
-                            <p class="font-medium text-gray-800 mt-1">${formatCurrency(booking.daily_rate)}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">Category</label>
-                            <p class="font-medium text-gray-800 mt-1">${escapeHtml(booking.vehicle_category)}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Rental Period -->
-                <div class="border border-gray-200 rounded-lg">
-                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                        <h4 class="font-semibold text-gray-800 flex items-center gap-2">
-                            <i data-lucide="calendar" class="w-4 h-4"></i>
-                            Rental Period
-                        </h4>
-                    </div>
-                    <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-sm text-gray-600">Start Date & Time</label>
-                            <p class="font-medium text-gray-800 mt-1">${formatDateTime(booking.start_date)}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">End Date & Time</label>
-                            <p class="font-medium text-gray-800 mt-1">${formatDateTime(booking.end_date)}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">Duration</label>
-                            <p class="font-medium text-gray-800 mt-1">${booking.duration_days} days</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">Pickup Type</label>
-                            <p class="font-medium text-gray-800 mt-1">
-                                ${booking.pickup_type === 'delivery' 
-                                    ? '<span class="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium"><i data-lucide="truck" class="w-3 h-3"></i>Delivery</span>'
-                                    : '<span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium"><i data-lucide="map-pin" class="w-3 h-3"></i>Self Pickup</span>'}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Payment Details -->
-                <div class="border border-gray-200 rounded-lg">
-                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                        <h4 class="font-semibold text-gray-800 flex items-center gap-2">
-                            <i data-lucide="credit-card" class="w-4 h-4"></i>
-                            Payment Details
-                        </h4>
-                    </div>
-                    <div class="p-4">
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-600">Daily Rate × ${booking.duration_days} days</span>
-                                <span class="font-medium">${formatCurrency(booking.daily_rate * booking.duration_days)}</span>
-                            </div>
-                            ${booking.delivery_fee > 0 ? `
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-600">Delivery Fee</span>
-                                    <span class="font-medium">${formatCurrency(booking.delivery_fee)}</span>
-                                </div>
-                            ` : ''}
-                            <div class="border-t pt-3 flex justify-between items-center">
-                                <span class="font-semibold text-gray-800 text-lg">Total Amount</span>
-                                <span class="font-bold text-red-600 text-xl">${formatCurrency(booking.total_amount)}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div id="booking-actions" class="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
-                    ${generateActionButtons(booking)}
-                </div>
-            </div>
-        `;
-        
-        modal.classList.remove('hidden');
-        lucide.createIcons();
-    }
-
-    // Generate action buttons for modal
-    function generateActionButtons(booking) {
-        const userRole = '{{ Auth::guard("staff")->user()->role }}';
-        let buttons = '';
-        
-        if (booking.status === 'pending') {
-            buttons += `
-                <button onclick="showConfirmation('approve', '${booking.id}')" 
-                        class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2">
-                    <i data-lucide="check" class="w-4 h-4"></i>
-                    Approve Booking
-                </button>
-                <button onclick="showConfirmation('cancel', '${booking.id}')" 
-                        class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center justify-center gap-2">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                    Cancel Booking
-                </button>
-            `;
-        }
-        
-        if (booking.status === 'confirmed' && userRole === 'admin') {
-            buttons += `
-                <button onclick="showConfirmation('verifyPayment', '${booking.id}')" 
-                        class="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition flex items-center justify-center gap-2">
-                    <i data-lucide="dollar-sign" class="w-4 h-4"></i>
-                    Verify Payment (Admin Only)
-                </button>
-            `;
-        }
-        
-        if (booking.status === 'payment_verified') {
-            buttons += `
-                <button onclick="showConfirmation('verifyBooking', '${booking.id}')" 
-                        class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i>
-                    Complete Booking Verification
-                </button>
-            `;
-        }
-        
-        if (booking.status === 'active') {
-            buttons += `
-                <button onclick="showConfirmation('complete', '${booking.id}')" 
-                        class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2">
-                    <i data-lucide="check-square" class="w-4 h-4"></i>
-                    Mark as Complete
-                </button>
-            `;
-        }
-        
-        return buttons || '<p class="text-gray-500 text-sm">No actions available for this booking status.</p>';
-    }
-
-    // Close booking modal
-    function closeBookingModal() {
-        document.getElementById('booking-modal').classList.add('hidden');
-    }
-
-    // API actions
-    async function approveBooking(bookingId) {
-        try {
-            await apiRequest(`/api/staff/bookings/${bookingId}/approve`, { method: 'POST' });
-            showToast('Booking approved successfully!', 'success');
-            await fetchBookings();
-            closeBookingModal();
-        } catch (error) {
-            showToast('Failed to approve booking', 'error');
-        }
-    }
-
-    async function verifyPayment(bookingId) {
-        try {
-            await apiRequest(`/api/staff/bookings/${bookingId}/verify-payment`, { method: 'POST' });
-            showToast('Payment verified successfully! Booking can now be completed by staff.', 'success');
-            await fetchBookings();
-            closeBookingModal();
-        } catch (error) {
-            showToast('Failed to verify payment', 'error');
-        }
-    }
-
-    async function verifyBooking(bookingId) {
-        try {
-            await apiRequest(`/api/staff/bookings/${bookingId}/verify`, { method: 'POST' });
-            showToast('Booking verification completed successfully!', 'success');
-            await fetchBookings();
-            closeBookingModal();
-        } catch (error) {
-            showToast('Failed to verify booking', 'error');
-        }
-    }
-
-    async function cancelBooking(bookingId) {
-        try {
-            await apiRequest(`/api/staff/bookings/${bookingId}/cancel`, { method: 'POST' });
-            showToast('Booking cancelled successfully!', 'success');
-            await fetchBookings();
-            closeBookingModal();
-        } catch (error) {
-            showToast('Failed to cancel booking', 'error');
-        }
-    }
-
-    async function completeBooking(bookingId) {
-        try {
-            await apiRequest(`/api/staff/bookings/${bookingId}/complete`, { method: 'POST' });
-            showToast('Booking marked as completed successfully!', 'success');
-            await fetchBookings();
-            closeBookingModal();
-        } catch (error) {
-            showToast('Failed to complete booking', 'error');
-        }
-    }
-
-    // Export bookings
-    async function exportBookings() {
+    function exportBookings() {
         showToast('Preparing export...', 'info');
-        try {
-            const response = await fetch('/api/staff/bookings/export');
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `bookings-export-${new Date().toISOString().split('T')[0]}.csv`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-                showToast('Export downloaded successfully!', 'success');
-            } else {
-                throw new Error('Export failed');
-            }
-        } catch (error) {
-            showToast('Failed to export bookings', 'error');
-        }
+        // Implement export functionality
+        console.log('Export bookings');
     }
 
-    // Refresh bookings
-    async function refreshBookings() {
+    function refreshBookings() {
         showToast('Refreshing bookings...', 'info');
-        await fetchBookings();
-        showToast('Bookings refreshed successfully!', 'success');
+        fetchBookings();
     }
 
-    // Get status badge
     function getStatusBadge(status) {
         const badges = {
             'pending': '<span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">Pending</span>',
             'confirmed': '<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">Confirmed</span>',
-            'payment_verified': '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">Payment Verified</span>',
-            'approved': '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Approved</span>',
-            'active': '<span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full font-medium">Active</span>',
-            'completed': '<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">Completed</span>',
+            'active': '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">Active</span>',
+            'completed': '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Completed</span>',
             'cancelled': '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">Cancelled</span>'
         };
-        return badges[status.toLowerCase()] || '<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">Unknown</span>';
+        return badges[status?.toLowerCase()] || '<span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">Unknown</span>';
     }
 
-    // Utility functions (should be in a shared file)
     function formatDate(dateString) {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-MY', { 
             day: '2-digit', 
             month: 'short', 
             year: 'numeric' 
-        });
-    }
-
-    function formatDateTime(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-MY', { 
-            day: '2-digit', 
-            month: 'short', 
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
         });
     }
 
@@ -1097,29 +623,12 @@
     }
 
     function showToast(message, type = 'info') {
-        // Implement toast notification
         console.log(`[${type.toUpperCase()}] ${message}`);
     }
 
-    // Initialize with real-time updates
     document.addEventListener('DOMContentLoaded', () => {
         fetchBookings();
-        
-        // Start real-time updates (every 30 seconds)
         setInterval(fetchBookings, 30000);
-    });
-
-    // Close modal on backdrop click
-    document.getElementById('booking-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeBookingModal();
-        }
-    });
-
-    document.getElementById('confirmation-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeConfirmationModal();
-        }
     });
 </script>
 @endpush
